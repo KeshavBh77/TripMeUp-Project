@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'TripMeUpApp.apps.TripMeUpAppConfig',
+    'TripMeUpApp',
 ]
 
 MIDDLEWARE = [
@@ -76,10 +76,10 @@ WSGI_APPLICATION = 'TripMeUp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Keshav71$default',
-        'USER':'Keshav71',
-        'PASSWORD':'data1234',
-        'HOST':'Keshav71.mysql.pythonanywhere-services.com',
+        'NAME': 'project_db',
+        'USER':'Keshav',
+        'PASSWORD':'Keshav123',
+        'HOST':'127.0.0.1',
         'PORT':'3306',
     }
 }
