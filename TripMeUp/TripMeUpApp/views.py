@@ -12,5 +12,5 @@ class CityListView(APIView):
    def get(self, request):
       cities = City.objects.all().values()
       serializer = CitySerializer(cities, many=True)
-      return Response("Hello")
+      return Response(cities)
 

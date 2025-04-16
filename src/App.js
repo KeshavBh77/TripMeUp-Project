@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
 function App() {
-  const [message, setMessage] = useState('');
+  const [cities, setCities] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('/TripMeUp')
+    fetch('/TripMeUpApp/city/')
       .then((res) => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
@@ -13,7 +13,7 @@ function App() {
         return res.json();
       })
       .then((data) => {
-        setMessage(data.message);  // from Django: {"message": "Hello from Django!"}
+        setCities(data);  // list of city objects
       })
       .catch((err) => {
         console.error('Fetch error:', err);
@@ -27,7 +27,20 @@ function App() {
       {error ? (
         <p style={{ color: 'red' }}>{error}</p>
       ) : (
-        <p><strong>Message from Django API:</strong> {message || 'Loading...'}</p>
+        <>
+          <h2>Cities:</h2>
+          {cities.length === 0 ? (
+            <p>Loading...</p>
+          ) : (
+            <ul>
+              {cities.map((city) => (
+                <li key={city.city_id}>
+                  <strong>{city.name}</strong> – {city.location}
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
       )}
     </div>
   );
