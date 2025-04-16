@@ -1,33 +1,34 @@
-// src/App.js
-import React, { useState } from 'react';
-import Navbar from './components/common/Navbar/Navbar';
-import Home from './pages/Home/Home';
-import User from './pages/User/User';
-import Booking from './pages/Booking/Booking';
-import './assets/styles/global.css';
+import React, { useEffect, useState } from 'react';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState(null);
 
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'home':
-        return <Home />;
-      case 'user':
-        return <User />;
-      case 'booking':
-        return <Booking />;
-      default:
-        return <Home />;
-    }
-  };
+  useEffect(() => {
+    fetch('/TripMeUp')
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setMessage(data.message);  // from Django: {"message": "Hello from Django!"}
+      })
+      .catch((err) => {
+        console.error('Fetch error:', err);
+        setError('Failed to fetch from Django API.');
+      });
+  }, []);
 
   return (
-    <div className="app">
-      <Navbar setCurrentPage={setCurrentPage} />
-      <main>
-        {renderPage()}
-      </main>
+    <div style={{ padding: '20px', fontFamily: 'Arial' }}>
+      <h1>TripMeUp Frontend</h1>
+      {error ? (
+        <p style={{ color: 'red' }}>{error}</p>
+      ) : (
+        <p><strong>Message from Django API:</strong> {message || 'Loading...'}</p>
+      )}
     </div>
   );
 }

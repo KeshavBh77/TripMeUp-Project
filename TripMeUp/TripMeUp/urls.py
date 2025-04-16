@@ -23,6 +23,6 @@ router = routers.DefaultRouter()
 router.register(r'City', views.CityListView, 'City')
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('TripMeUpApp/', include('TripMeUpApp.urls')),
+    path('', include('TripMeUpApp.urls')),
     re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
 ]
