@@ -7,16 +7,25 @@ from .serializers import *
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateAPIView
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.exceptions import NotFound
 # Create your views here.
 class HomeListView(ListAPIView):
    def get(self,request,*args,**kwargs):
       queryset = City.objects.all()
       serializer = CitySerializer(queryset, many=True)
       return Response(serializer.data)
+
 class CityDetailView(ModelViewSet):
    queryset = City.objects.all()
    serializer_class = CitySerializer
    lookup_field = 'name'
+   def get_object(self):
+      name = self.kwargs.get('name')
+      try:
+         return City.objects.get(name__iexact=name)
+      except City.DoesNotExist:
+         raise NotFound('City not found')
+
    def retrieve(self, request, *args, **kwargs):
       city = self.get_object()  # Gets the City object based on 'name' from URL
       serializer_city = self.get_serializer(city)
