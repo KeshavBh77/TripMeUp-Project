@@ -26,7 +26,7 @@ class RestaurantAdmin(admin.ModelAdmin):
 class UserAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(AdminModel)
+@admin.register(Admin)
 class AdminModelAdmin(admin.ModelAdmin):
     pass
 
