@@ -9,7 +9,7 @@ from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIV
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import NotFound
 # Create your views here.
-class HomeListView(ListAPIView):
+class HomeListView(ModelViewSet):
    def get(self,request,*args,**kwargs):
       queryset = City.objects.all()
       serializer = CitySerializer(queryset, many=True)

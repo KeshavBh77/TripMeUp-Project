@@ -28,7 +28,7 @@ function App() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('/TripMeUpApp/city/')
+    fetch('/TripMeUpApp/')
       .then((res) => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
