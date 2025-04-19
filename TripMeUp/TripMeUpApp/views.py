@@ -27,7 +27,7 @@ class CityDetailView(ModelViewSet):
          raise NotFound('City not found')
 
    def retrieve(self, request, *args, **kwargs):
-      city = self.get_object()  # Gets the City object based on 'name' from URL
+      city = self.get_object()
       serializer_city = self.get_serializer(city)
 
       # Get all Places that belong to this City
