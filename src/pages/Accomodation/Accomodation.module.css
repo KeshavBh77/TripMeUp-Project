@@ -1,0 +1,110 @@
+.hero {
+  position: relative;
+  height: 60vh;
+  margin: 2rem;
+  border-radius: 25px;
+  overflow: hidden;
+  box-shadow: 10px 10px 20px var(--shadow-light), -10px -10px 20px var(--shadow-dark);
+}
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1935');
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+}
+.content {
+  position: relative;
+  z-index: 1;
+  color: white;
+  text-align: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 2rem;
+}
+
+  /* Ensure the search wrapper and its children are styled exactly like the other pages */
+  .searchBar {
+    display: flex;
+    width: 100%;
+    max-width: 800px;
+    background: var(--bg-light);
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 
+      5px 5px 15px var(--shadow-light),
+      -5px -5px 15px var(--shadow-dark);
+  }
+  
+  .searchBar input {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    color: var(--dark);                    /* ensure text is dark */
+    background: var(--bg-light);           /* match neomorphic background */
+    border: none;
+    outline: none;
+  }
+  
+  .searchBar button {
+    padding: 0.8rem 1.5rem;
+    background: var(--bg-light);
+    color: var(--primary);                 /* visible primary color */
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: 0 50px 50px 0;
+    box-shadow: 
+      5px 5px 10px var(--shadow-light),
+      -5px -5px 10px var(--shadow-dark);
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .searchBar button:hover {
+    box-shadow:
+      inset 5px 5px 10px var(--shadow-light),
+      inset -5px -5px 10px var(--shadow-dark);
+  }
+  
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+.tabGroup {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+.tab {
+  padding: 0.8rem 1.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  color: #666;
+  background: var(--bg-light);
+  border-radius: 25px;
+  box-shadow: 5px 5px 10px var(--shadow-light), -5px -5px 10px var(--shadow-dark);
+  transition: all 0.3s ease;
+}
+.tab:hover {
+  box-shadow: inset 5px 5px 10px var(--shadow-light), inset -5px -5px 10px var(--shadow-dark);
+}
+.active {
+  color: var(--primary);
+  box-shadow: inset 5px 5px 10px var(--shadow-light), inset -5px -5px 10px var(--shadow-dark);
+}
+.grid {
+  /* center cards just like Home */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+.cardWrapper {
+  flex: 0 1 350px;
+}
