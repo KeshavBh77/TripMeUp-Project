@@ -6,19 +6,23 @@ from rest_framework.views import APIView, HttpResponseBase
 from .serializers import *
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateAPIView
+from rest_framework.viewsets import ModelViewSet
 # Create your views here.
 
-class CityDetailView(RetrieveAPIView):
-   def get(self, request, *args, **kwargs):
-      city_id = kwargs.get('pk')
+class CityDetailView(ModelViewSet):
+   queryset = City.objects.all()
+   serializer_class = CitySerializer
+   lookup_field = 'name'
+   def retrieve(self, request, *args, **kwargs):
+      city = self.get_object()  # Gets the City object based on 'name' from URL
+      serializer_city = self.get_serializer(city)
 
-      city_details = City.objects.get(pk=city_id)
-      place_details = Place.objects.filter(city=city_details)
+      # Get all Places that belong to this City
+      places = Place.objects.filter(city=city)
+      serializer_places = PlaceSerializer(places, many=True)
 
-      serializer_city = CitySerializer(city_details)
-      serializer_place = PlaceSerializer(place_details, many=True)
       return Response({
          'city': serializer_city.data,
-         'place': serializer_place.data
+         'places': serializer_places.data
       })
 
