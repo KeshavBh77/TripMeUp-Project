@@ -21,7 +21,8 @@ yarn-error.log
 dist/
 build/
 .cache/
-
+/node_modules/.cache/
+/node_modules/.cache/.eslintcache
 # VS Code
 .vscode/
 
@@ -29,4 +30,3 @@ build/
 .DS_Store
 # Ignore JetBrains IDE project files
 .idea/
-/node_modules/.cache/
