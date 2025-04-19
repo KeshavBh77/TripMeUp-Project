@@ -1,59 +1,78 @@
-// src/pages/Cities/Cities.jsx
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './Cities.module.css';
-import SearchBar from '../../components/SearchBar/SearchBar';
-import SectionTitle from '../../components/SectionTitle/SectionTitle';
-import CityCard from '../../components/CityCard/CityCard';
-import parisImg from '../../assets/images/paris.png';
-import tokyoImg from '../../assets/images/tokyo.png';
-import newyorkImg from '../../assets/images/new-york.jpg';
-import Footer from '../../components/Footer/Footer';
+import React, { useState, useEffect } from 'react';
+import { useNavigate }           from 'react-router-dom';
+import SectionTitle              from '../../components/SectionTitle/SectionTitle';
+import CityCard                  from '../../components/CityCard/CityCard';
+import styles                    from './Cities.module.css';
+import parisImg                  from '../../assets/images/paris.png';
+import tokyoImg                  from '../../assets/images/tokyo.png';
+import newyorkImg                from '../../assets/images/new-york.jpg';
 
-const allCities = [
-  { image: parisImg, title: 'Paris', description: 'The city of love and lights.', types: ['Restaurants','Hotels','Landmarks'] },
-  { image: tokyoImg, title: 'Tokyo', description: 'A vibrant mix of traditional culture and cutting-edge technology.', types: ['Sushi','Ryokan','Temples'] },
-  { image: newyorkImg, title: 'New York', description: 'The city that never sleeps.', types: ['Bistros','Skyscrapers','Broadway'] }
-];
-
-const Cities = () => {
-  const [filter, setFilter] = useState('');
-  const navigate = useNavigate();
-  const filtered = allCities.filter(c => c.title.toLowerCase().includes(filter.toLowerCase()));
-
-  return (
-    <div>
-      <section className={styles.hero}>
-        <div className={styles.overlay} />
-        <div className={styles.content}>
-          <h1>Explore World Cities</h1>
-          <p>Discover the most exciting destinations around the globe</p>
-          <div className={styles.searchWrapper}>
-            <SearchBar onSearch={setFilter} />
-          </div>
-        </div>
-      </section>
-      <div className={styles.container}>
-        <SectionTitle title="Popular Cities" subtitle="Browse our selection of the most visited cities by travelers" />
-        <div className={styles.list}>
-          {filtered.map(city => (
-            <div
-              key={city.title}
-              className={styles.cardWrapper}
-              onClick={() => navigate(`/cities/${city.title}`)}
-            >
-              <CityCard {...city} 
-              
-              onExplore={() => navigate(`/cities/${city.title}`)}
-
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
-    </div>
-  );
+// static mapping for your images & types – you can extend this as you add more cities 
+const IMAGE_MAP = {
+  Paris: parisImg,
+  Tokyo: tokyoImg,
+  'New York': newyorkImg
+};
+const TYPES_MAP = {
+  Paris: ['Restaurants','Hotels','Landmarks'],
+  Tokyo: ['Sushi','Ryokan','Temples'],
+  'New York': ['Bistros','Skyscrapers','Broadway']
 };
 
-export default Cities;
+export default function Cities() {
+  const [filter, setFilter] = useState('');
+  const [cities, setCities] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch('/api/cities/')
+      .then(res => res.json())
+      .then(data => {
+        // data = [{ city_id, name, location }, ...]
+        const prepared = data.map(c => ({
+          id:          c.city_id,
+          image:       IMAGE_MAP[c.name] || '',
+          title:       c.name,
+          description: c.location,
+          types:       TYPES_MAP[c.name] || []
+        }));
+        setCities(prepared);
+      })
+      .catch(console.error);
+  }, []);
+
+  const filtered = cities.filter(c =>
+    c.title.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  return (
+    <div className={styles.page}>
+      <SectionTitle
+        title="Popular Cities"
+        subtitle="Browse our selection of the most visited cities"
+      />
+
+      <div className={styles.searchWrapper}>
+        <input
+          type="text"
+          placeholder="Search cities…"
+          value={filter}
+          onChange={e => setFilter(e.target.value)}
+          className={styles.searchInput}
+        />
+      </div>
+
+      <div className={styles.list}>
+        {filtered.map(city => (
+          <div
+            key={city.id}
+            className={styles.cardWrapper}
+            onClick={() => navigate(`/cities/${city.id}`)}
+          >
+            <CityCard {...city}/>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
