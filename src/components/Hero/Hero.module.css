@@ -1,0 +1,33 @@
+.hero {
+  margin-top: 1.5rem; /* space below the sticky navbar */
+  position: relative;
+  height: 100vh;
+
+  border-radius: 25px;
+  overflow: hidden;
+  box-shadow: 10px 10px 20px var(--shadow-light), -10px -10px 20px var(--shadow-dark);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  animation: zoomIn 20s infinite;
+}
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 0 2rem;
+  color: white;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+@keyframes zoomIn {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}

@@ -1,0 +1,41 @@
+
+/* src/pages/Home/Home.module.css */
+.home {
+  background: var(--bg-light);
+  color: var(--dark);
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+
+.Rlist {
+
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+
+.cardWrapper {
+  flex: 0 1 350px;
+}
+@media (max-width: 768px) {
+  .list {
+    flex-direction: column;
+    align-items: center;
+  }
+  .cardWrapper {
+    flex: 1 1 100%;
+  }
+}
