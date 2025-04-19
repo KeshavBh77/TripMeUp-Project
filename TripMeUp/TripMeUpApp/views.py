@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateAPIView
 from rest_framework.viewsets import ModelViewSet
 # Create your views here.
-class CityListSearch(ListAPIView):
+class HomeListView(ListAPIView):
    def get(self,request,*args,**kwargs):
       queryset = City.objects.all()
       serializer = CitySerializer(queryset, many=True)
