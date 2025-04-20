@@ -9,9 +9,11 @@ from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIV
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import NotFound
 # Create your views here.
-class HomeListView(ListAPIView):
+class HomeListView(ModelViewSet):
+   queryset = City.objects.all()
+   serializer_class = CitySerializer
    def get(self,request,*args,**kwargs):
-      queryset = City.objects.all()
+      queryset = self.get_queryset()
       serializer = CitySerializer(queryset, many=True)
       return Response(serializer.data)
 
@@ -38,4 +40,8 @@ class CityDetailView(ModelViewSet):
          'city': serializer_city.data,
          'places': serializer_places.data
       })
+
+class CreateBookingView(ModelViewSet):
+   queryset = Booking.objects.all()
+   serializer_class = BookingSerializer
 
