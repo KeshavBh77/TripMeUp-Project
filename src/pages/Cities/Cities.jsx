@@ -25,7 +25,7 @@ export default function Cities() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('/api/cities/')
+    fetch('http://localhost:8000/TripMeUpApp/city/')
       .then(res => res.json())
       .then(data => {
         // data = [{ city_id, name, location }, ...]

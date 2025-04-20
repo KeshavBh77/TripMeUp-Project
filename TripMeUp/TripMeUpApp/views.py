@@ -10,10 +10,14 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import NotFound
 # Create your views here.
 class HomeListView(ModelViewSet):
-   def get(self,request,*args,**kwargs):
-      queryset = City.objects.all()
-      serializer = CitySerializer(queryset, many=True)
+   queryset = City.objects.all()
+   serializer_class = CitySerializer
+
+   def list(self, request, *args, **kwargs):
+      queryset = self.get_queryset()
+      serializer = self.get_serializer(queryset, many=True)
       return Response(serializer.data)
+
 
 class CityDetailView(ModelViewSet):
    queryset = City.objects.all()
