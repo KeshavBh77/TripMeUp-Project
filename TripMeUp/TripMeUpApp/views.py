@@ -45,3 +45,55 @@ class CreateBookingView(ModelViewSet):
    queryset = Booking.objects.all()
    serializer_class = BookingSerializer
 
+class CreateReviewView(ModelViewSet):
+   queryset = Review.objects.all()
+   serializer_class = ReviewSerializer
+
+class PlaceDetailView(ModelViewSet):
+   queryset = Place.objects.all()
+   serializer_class = PlaceSerializer
+   lookup_field = 'name'
+   def get_object(self):
+      name = self.kwargs.get('name')
+      try:
+         return Place.objects.get(name__iexact=name)
+      except Place.DoesNotExist:
+         raise NotFound('Place not found')
+
+   def retrieve(self, request, *args, **kwargs):
+      place = self.get_object()
+      serializer = PlaceSerializer(place)
+      return Response(serializer.data)
+
+
+class AccommodationDetailView(ModelViewSet):
+   queryset = Accommodation.objects.all()
+   serializer_class = AccommodationSerializer
+   lookup_field = 'name'
+
+   def get_object(self):
+      name = self.kwargs.get('name')
+      try:
+         return Accommodation.objects.get(name__iexact=name)
+      except Accommodation.DoesNotExist:
+         raise NotFound('Place not found')
+
+   def retrieve(self, request, *args, **kwargs):
+      place = self.get_object()
+      serializer = AccommodationSerializer(place)
+      return Response(serializer.data)
+
+class RestaurantDetailView(ModelViewSet):
+   queryset = Restaurant.objects.all()
+   serializer_class = RestaurantSerializer
+   lookup_field = 'name'
+   def get_object(self):
+      name = self.kwargs.get('name')
+      try:
+         return Restaurant.objects.get(name__iexact=name)
+      except Restaurant.DoesNotExist:
+         raise NotFound('Restaurant not found')
+   def retrieve(self, request, *args, **kwargs):
+      restaurant = self.get_object()
+      serializer = RestaurantSerializer(restaurant)
+      return Response(serializer.data)
