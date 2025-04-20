@@ -34,4 +34,24 @@
   box-shadow: inset 5px 5px 10px var(--shadow-dark),
               inset -5px -5px 10px var(--shadow-light);
 }
+.suggestions {
+    background: white;
+    border: 1px solid #ccc;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+}
 
+.suggestions li {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.suggestions li:hover {
+    background-color: #f0f0f0;
+}
