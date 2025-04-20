@@ -1,247 +1,259 @@
 // src/pages/CityDetail/CityDetail.jsx
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import SectionTitle from '../../components/SectionTitle/SectionTitle';
-import PlaceCard from '../../components/PlaceCard/PlaceCard';
-import CityCard from '../../components/CityCard/CityCard';
-import BookingModal from '../../components/BookingModal/BookingModal';
-import styles from './CityDetail.module.css';
+import React, { useState } from "react";
+import { useParams } from "react-router-dom";
+import SectionTitle from "../../components/SectionTitle/SectionTitle";
+import PlaceCard from "../../components/PlaceCard/PlaceCard";
+import CityCard from "../../components/CityCard/CityCard";
+import BookingModal from "../../components/BookingModal/BookingModal";
+import styles from "./CityDetail.module.css";
 import {
   FaLandmark,
   FaLanguage,
   FaMoneyBillWave,
   FaPlane,
-  FaSubway
-} from 'react-icons/fa';
+  FaSubway,
+} from "react-icons/fa";
 
 const details = {
   Paris: {
     about: `Paris, France's capital, is a major European city and a global center for art, fashion, gastronomy and culture...`,
     attractions: [
-      'Eiffel Tower',
-      'Louvre Museum',
-      'Notre-Dame Cathedral',
-      'Champs-Élysées',
-      'Montmartre & Sacré-Cœur'
+      "Eiffel Tower",
+      "Louvre Museum",
+      "Notre-Dame Cathedral",
+      "Champs-Élysées",
+      "Montmartre & Sacré-Cœur",
     ],
     facts: [
-      { icon: FaLanguage, label: 'Language: French' },
-      { icon: FaMoneyBillWave, label: 'Currency: Euro (€)' },
-      { icon: FaPlane, label: 'Airport: CDG, ORY' },
-      { icon: FaSubway, label: 'Metro: 16 lines' }
+      { icon: FaLanguage, label: "Language: French" },
+      { icon: FaMoneyBillWave, label: "Currency: Euro (€)" },
+      { icon: FaPlane, label: "Airport: CDG, ORY" },
+      { icon: FaSubway, label: "Metro: 16 lines" },
     ],
     restaurants: [
       {
-        image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4',
-        title: 'Le Meurice',
+        image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4",
+        title: "Le Meurice",
         rating: 4.8,
-        location: 'Paris, France • French',
-        description: 'Classic French fine dining in a historic palace setting.',
+        location: "Paris, France • French",
+        description: "Classic French fine dining in a historic palace setting.",
         features: [
-          { icon: 'fas fa-clock', text: 'Open: 12:00 PM - 10:00 PM' },
-          { icon: 'fas fa-utensils', text: 'Fine Dining' }
+          { icon: "fas fa-clock", text: "Open: 12:00 PM - 10:00 PM" },
+          { icon: "fas fa-utensils", text: "Fine Dining" },
         ],
         price: 60,
-        unit: 'person'
+        unit: "person",
       },
       {
-        image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5',
-        title: 'Sakura Sushi Bar',
+        image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5",
+        title: "Sakura Sushi Bar",
         rating: 4.9,
-        location: 'Paris, France • Japanese, Sushi',
-        description: 'Authentic sushi experience with premium imports.',
+        location: "Paris, France • Japanese, Sushi",
+        description: "Authentic sushi experience with premium imports.",
         features: [
-          { icon: 'fas fa-fish', text: 'Fresh Seafood' },
-          { icon: 'fas fa-utensils', text: 'Sushi Omakase' }
+          { icon: "fas fa-fish", text: "Fresh Seafood" },
+          { icon: "fas fa-utensils", text: "Sushi Omakase" },
         ],
         price: 40,
-        unit: 'person'
-      }
+        unit: "person",
+      },
     ],
     accommodations: [
       {
-        image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945',
-        title: 'Hotel Le Bristol',
+        image: "https://images.unsplash.com/photo-1566073771259-6a8506099945",
+        title: "Hotel Le Bristol",
         rating: 4.7,
-        location: 'Paris, France • 5-star Hotel',
-        description: 'Luxurious rooms with Michelin-starred dining.',
+        location: "Paris, France • 5-star Hotel",
+        description: "Luxurious rooms with Michelin-starred dining.",
         features: [
-          { icon: 'fas fa-wifi', text: 'Free WiFi' },
-          { icon: 'fas fa-swimming-pool', text: 'Indoor Pool' }
+          { icon: "fas fa-wifi", text: "Free WiFi" },
+          { icon: "fas fa-swimming-pool", text: "Indoor Pool" },
         ],
         price: 450,
-        unit: 'night'
+        unit: "night",
       },
       {
-        image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267',
-        title: 'Parisian Boutique',
+        image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
+        title: "Parisian Boutique",
         rating: 4.4,
-        location: 'Paris, France • Boutique Hotel',
-        description: 'Charming boutique experience in the heart of the city.',
+        location: "Paris, France • Boutique Hotel",
+        description: "Charming boutique experience in the heart of the city.",
         features: [
-          { icon: 'fas fa-parking', text: 'Valet Parking' },
-          { icon: 'fas fa-spa', text: 'Spa Services' }
+          { icon: "fas fa-parking", text: "Valet Parking" },
+          { icon: "fas fa-spa", text: "Spa Services" },
         ],
         price: 220,
-        unit: 'night'
-      }
-    ]
-    },
-    'New York': {
-        about: `New York City, often called simply New York, is the most populous city in the United States...`,
-        attractions: [
-            'Statue of Liberty',
-            'Central Park',
-            'Times Square',
-            'Brooklyn Bridge',
-            'Empire State Building'
+        unit: "night",
+      },
+    ],
+  },
+  "New York": {
+    about: `New York City, often called simply New York, is the most populous city in the United States...`,
+    attractions: [
+      "Statue of Liberty",
+      "Central Park",
+      "Times Square",
+      "Brooklyn Bridge",
+      "Empire State Building",
+    ],
+    facts: [
+      { icon: FaLanguage, label: "Language: English" },
+      { icon: FaMoneyBillWave, label: "Currency: USD ($)" },
+      { icon: FaPlane, label: "Airport: JFK, LGA" },
+      { icon: FaSubway, label: "Subway: 27 lines" },
+    ],
+    restaurants: [
+      {
+        image: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
+        title: "Katz's Delicatessen",
+        rating: 4.6,
+        location: "New York, USA • Deli",
+        description:
+          "Famous for its pastrami sandwiches and classic deli experience.",
+        features: [
+          { icon: "fas fa-clock", text: "Open: 8:00 AM - 10:00 PM" },
+          { icon: "fas fa-utensils", text: "Casual Dining" },
         ],
-        facts: [
-            { icon: FaLanguage, label: 'Language: English' },
-            { icon: FaMoneyBillWave, label: 'Currency: USD ($)' },
-            { icon: FaPlane, label: 'Airport: JFK, LGA' },
-            { icon: FaSubway, label: 'Subway: 27 lines' }
+        price: 25,
+        unit: "person",
+      },
+      {
+        image: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
+        title: "Le Bernardin",
+        rating: 4.8,
+        location: "New York, USA • French, Seafood",
+        description:
+          "Michelin-starred seafood restaurant with a refined atmosphere.",
+        features: [
+          { icon: "fas fa-clock", text: "Open: 12:00 PM - 10:30 PM" },
+          { icon: "fas fa-utensils", text: "Fine Dining" },
         ],
-        restaurants: [
-            {
-            image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0',
-            title: 'Katz\'s Delicatessen',
-            rating: 4.6,
-            location: 'New York, USA • Deli',
-                description: 'Famous for its pastrami sandwiches and classic deli experience.',
-                features: [
-                    { icon: 'fas fa-clock', text: 'Open: 8:00 AM - 10:00 PM' },
-                    { icon: 'fas fa-utensils', text: 'Casual Dining' }
-                ],
-                price: 25,
-                unit: 'person'
-            },
-            {
-                image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0',
-                title: 'Le Bernardin',
-                rating: 4.8,
-                location: 'New York, USA • French, Seafood',
-                description: 'Michelin-starred seafood restaurant with a refined atmosphere.',
-                features: [
-                    { icon: 'fas fa-clock', text: 'Open: 12:00 PM - 10:30 PM' },
-                    { icon: 'fas fa-utensils', text: 'Fine Dining' }
-                ],
-                price: 150,
-                unit: 'person'
-            }
+        price: 150,
+        unit: "person",
+      },
+    ],
+    accommodations: [
+      {
+        image: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
+        title: "The Standard, High Line",
+        rating: 4.5,
+        location: "New York, USA • 4-star Hotel",
+        description: "Stylish hotel with stunning views of the Hudson River.",
+        features: [
+          { icon: "fas fa-wifi", text: "Free WiFi" },
+          { icon: "fas fa-swimming-pool", text: "Rooftop Pool" },
         ],
-        accommodations: [
-            {
-                image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0',
-                title: 'The Standard, High Line',
-                rating: 4.5,
-                location: 'New York, USA • 4-star Hotel',
-                description: 'Stylish hotel with stunning views of the Hudson River.',
-                features: [
-                    { icon: 'fas fa-wifi', text: 'Free WiFi' },
-                    { icon: 'fas fa-swimming-pool', text: 'Rooftop Pool' }
-                ],
-                price: 350,
-                unit: 'night'
-            },
-            {
-                image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0',
-                title: 'The NoMad Hotel',
-                rating: 4.7,
-                location: 'New York, USA • Boutique Hotel',
-                description: 'Chic boutique hotel in the heart of Manhattan.',
-                features: [
-                    { icon: 'fas fa-parking', text: 'Valet Parking' },
-                    { icon: 'fas fa-spa', text: 'Spa Services' }
-                ],
-                price: 300,
-                unit: 'night'
-            }
-        ]
-    },
-    // Add more cities as needed
-    Tokyo: { 
-        about: `Tokyo, Japan's bustling capital, mixes the ultramodern and the traditional...`,
-        attractions: [
-            'Tokyo Tower',
-            'Shinjuku Gyoen National Garden',
-            'Senso-ji Temple',
-            'Shibuya Crossing',
-            'Akihabara Electric Town'
+        price: 350,
+        unit: "night",
+      },
+      {
+        image: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
+        title: "The NoMad Hotel",
+        rating: 4.7,
+        location: "New York, USA • Boutique Hotel",
+        description: "Chic boutique hotel in the heart of Manhattan.",
+        features: [
+          { icon: "fas fa-parking", text: "Valet Parking" },
+          { icon: "fas fa-spa", text: "Spa Services" },
         ],
-        facts: [
-            { icon: FaLanguage, label: 'Language: Japanese' },
-            { icon: FaMoneyBillWave, label: 'Currency: Yen (¥)' },
-            { icon: FaPlane, label: 'Airport: NRT, HND' },
-            { icon: FaSubway, label: 'Metro: 13 lines' }
+        price: 300,
+        unit: "night",
+      },
+    ],
+  },
+  // Add more cities as needed
+  Tokyo: {
+    about: `Tokyo, Japan's bustling capital, mixes the ultramodern and the traditional...`,
+    attractions: [
+      "Tokyo Tower",
+      "Shinjuku Gyoen National Garden",
+      "Senso-ji Temple",
+      "Shibuya Crossing",
+      "Akihabara Electric Town",
+    ],
+    facts: [
+      { icon: FaLanguage, label: "Language: Japanese" },
+      { icon: FaMoneyBillWave, label: "Currency: Yen (¥)" },
+      { icon: FaPlane, label: "Airport: NRT, HND" },
+      { icon: FaSubway, label: "Metro: 13 lines" },
+    ],
+    restaurants: [
+      {
+        image: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
+        title: "Sukiyabashi Jiro",
+        rating: 4.9,
+        location: "Tokyo, Japan • Sushi",
+        description: "World-renowned sushi restaurant with a Michelin star.",
+        features: [
+          { icon: "fas fa-clock", text: "Open: 5 PM - 10 PM" },
+          { icon: "fas fa-utensils", text: "Fine Dining" },
         ],
-        restaurants: [
-            {
-                image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0',
-                title: 'Sukiyabashi Jiro',
-                rating: 4.9,
-                location: 'Tokyo, Japan • Sushi',
-                description: 'World-renowned sushi restaurant with a Michelin star.',
-                features: [
-                    { icon: 'fas fa-clock', text: 'Open: 5 PM - 10 PM' },
-                    { icon: 'fas fa-utensils', text: 'Fine Dining' }
-                ],
-                price: 300,
-                unit: 'person'
-            },
-            {
-                image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0',
-                title: 'Ichiran Ramen',
-                rating: 4.7,
-                location: 'Tokyo, Japan • Ramen',
-                description: 'Famous for its tonkotsu ramen and unique dining experience.',
-                features: [
-                    { icon: 'fas fa-clock', text: 'Open 24/7' },
-                    { icon: 'fas fa-utensils', text: 'Casual Dining' }
-                ],
-                price: 15,
-                unit: 'person'
-            }
+        price: 300,
+        unit: "person",
+      },
+      {
+        image: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
+        title: "Ichiran Ramen",
+        rating: 4.7,
+        location: "Tokyo, Japan • Ramen",
+        description:
+          "Famous for its tonkotsu ramen and unique dining experience.",
+        features: [
+          { icon: "fas fa-clock", text: "Open 24/7" },
+          { icon: "fas fa-utensils", text: "Casual Dining" },
         ],
-        accommodations: [
-            {
-                image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0',
-                title: 'Park Hyatt Tokyo',
-                rating: 4.8,
-                location: 'Tokyo, Japan • 5-star Hotel',
-                description: 'Luxurious hotel with stunning views of Mount Fuji.',
-                features: [
-                    {
-                        icon:
-                            'fas fa-wifi', text: 'Free WiFi'
-                    },
-                    { icon: 'fas fa-swimming-pool', text: 'Indoor Pool' }
-                ],
-                price: 600,
-                unit: 'night'
-            },
-        {
-            image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0',
-            title: 'The Peninsula Tokyo',
-            rating: 4.7,
-            location: 'Tokyo, Japan • Luxury Hotel',
-            description: 'Elegant hotel with a blend of modern and traditional Japanese design.',
-            features: [
-                { icon: 'fas fa-parking', text: 'Valet Parking' },
-                { icon: 'fas fa-spa', text: 'Spa Services' }
-            ],
-            price: 500,
-            unit: 'night'
-        }
-        ]
-    },
+        price: 15,
+        unit: "person",
+      },
+    ],
+    accommodations: [
+      {
+        image: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
+        title: "Park Hyatt Tokyo",
+        rating: 4.8,
+        location: "Tokyo, Japan • 5-star Hotel",
+        description: "Luxurious hotel with stunning views of Mount Fuji.",
+        features: [
+          {
+            icon: "fas fa-wifi",
+            text: "Free WiFi",
+          },
+          { icon: "fas fa-swimming-pool", text: "Indoor Pool" },
+        ],
+        price: 600,
+        unit: "night",
+      },
+      {
+        image: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
+        title: "The Peninsula Tokyo",
+        rating: 4.7,
+        location: "Tokyo, Japan • Luxury Hotel",
+        description:
+          "Elegant hotel with a blend of modern and traditional Japanese design.",
+        features: [
+          { icon: "fas fa-parking", text: "Valet Parking" },
+          { icon: "fas fa-spa", text: "Spa Services" },
+        ],
+        price: 500,
+        unit: "night",
+      },
+    ],
+  },
 };
 
 const CityDetail = () => {
   const { title } = useParams();
-    const cityKey = title.replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
-  const data = details[cityKey] || { about: '', attractions: [], facts: [], restaurants: [], accommodations: [] };
-  const [view, setView] = useState('restaurants');
+  const cityKey = title
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+  const data = details[cityKey] || {
+    about: "",
+    attractions: [],
+    facts: [],
+    restaurants: [],
+    accommodations: [],
+  };
+  const [view, setView] = useState("restaurants");
   const [bookingOpen, setBookingOpen] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState(null);
 
@@ -252,17 +264,23 @@ const CityDetail = () => {
 
   return (
     <div>
-          <section className={styles.heroDetail}>
-              <div className={styles.overlayDetail} />
-              <div className={styles.contentDetail}>
-                  <h1>{cityKey}, {cityKey === 'Paris' ? 'France' : cityKey === 'New York' ? 'USA' : 'Japan'}</h1>
-                  <p>{data.about}</p>
-              </div>
-          </section>
-
+      <section className={styles.heroDetail}>
+        <div className={styles.overlayDetail} />
+        <div className={styles.contentDetail}>
+          <h1>
+            {cityKey},{" "}
+            {cityKey === "Paris"
+              ? "France"
+              : cityKey === "New York"
+                ? "USA"
+                : "Japan"}
+          </h1>
+          <p>{data.about}</p>
+        </div>
+      </section>
 
       <div className={styles.containerDetail}>
-              <SectionTitle title={`About ${cityKey}`} />
+        <SectionTitle title={`About ${cityKey}`} />
         <div className={styles.detailGrid}>
           <div className={styles.textBlock}>
             <p>{data.about}</p>
@@ -288,26 +306,31 @@ const CityDetail = () => {
 
         <div className={styles.buttonGroup}>
           <button
-            className={`${styles.toggleBtn} ${view === 'restaurants' ? styles.active : ''}`}
-            onClick={() => setView('restaurants')}
+            className={`${styles.toggleBtn} ${view === "restaurants" ? styles.active : ""}`}
+            onClick={() => setView("restaurants")}
           >
             Restaurants
           </button>
           <button
-            className={`${styles.toggleBtn} ${view === 'accommodations' ? styles.active : ''}`}
-            onClick={() => setView('accommodations')}
+            className={`${styles.toggleBtn} ${view === "accommodations" ? styles.active : ""}`}
+            onClick={() => setView("accommodations")}
           >
             Accommodations
           </button>
         </div>
 
         <div className={styles.placeGrid}>
-          {(view === 'restaurants' ? data.restaurants : data.accommodations).map((item, i) => (
+          {(view === "restaurants"
+            ? data.restaurants
+            : data.accommodations
+          ).map((item, i) => (
             <div key={i} className={styles.cardWrapper}>
               <PlaceCard
                 {...item}
-                isAccommodation={view === 'accommodations'}
-                onBook={view === 'accommodations' ? () => handleBook(item) : undefined}
+                isAccommodation={view === "accommodations"}
+                onBook={
+                  view === "accommodations" ? () => handleBook(item) : undefined
+                }
               />
             </div>
           ))}
@@ -318,7 +341,7 @@ const CityDetail = () => {
           place={selectedPlace}
           onClose={() => setBookingOpen(false)}
           onSubmit={({ place, dates, guests }) =>
-            console.log('Booking confirmed for', place, dates, guests)
+            console.log("Booking confirmed for", place, dates, guests)
           }
         />
       </div>

@@ -1,6 +1,6 @@
-import React from 'react';
-import styles from './PlaceCard.module.css';
-import { FaStar, FaMapMarkerAlt, FaHeart } from 'react-icons/fa';
+import React from "react";
+import styles from "./PlaceCard.module.css";
+import { FaStar, FaMapMarkerAlt, FaHeart } from "react-icons/fa";
 
 const PlaceCard = ({
   image,
@@ -11,10 +11,13 @@ const PlaceCard = ({
   features,
   price,
   unit,
-  isAccommodation = false,    // <-- new prop
-  onBook                   // <-- callback when clicking Book Now
+  isAccommodation = false, // <-- new prop
+  onBook, // <-- callback when clicking Book Now
 }) => (
-  <div className={`${styles.card} neo-embed`} style={{ cursor: isAccommodation ? 'pointer' : 'default' }}>
+  <div
+    className={`${styles.card} neo-embed`}
+    style={{ cursor: isAccommodation ? "pointer" : "default" }}
+  >
     <img src={image} alt={title} className={styles.image} />
     <div className={styles.details}>
       <div className={styles.header}>
@@ -44,9 +47,9 @@ const PlaceCard = ({
         {isAccommodation && (
           <button
             className={styles.bookNow}
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation();
-              onBook && onBook();     
+              onBook && onBook();
             }}
           >
             Book Now

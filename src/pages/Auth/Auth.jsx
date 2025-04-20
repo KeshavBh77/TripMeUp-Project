@@ -1,29 +1,25 @@
 // src/pages/Auth/Auth.jsx
-import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  FaGlobeAmericas,
-  FaUtensils,
-  FaHotel,
-} from 'react-icons/fa';
-import styles from './Auth.module.css';
-import { AuthContext } from '../../context/AuthContext';
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaGlobeAmericas, FaUtensils, FaHotel } from "react-icons/fa";
+import styles from "./Auth.module.css";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function Auth() {
   const { login, register } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [view, setView] = useState('login');
+  const [view, setView] = useState("login");
 
   // login form state
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
 
   // register form state
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [regEmail, setRegEmail] = useState('');
-  const [regPassword, setRegPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [regEmail, setRegEmail] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState(null);
 
   const switchTab = (tab) => {
@@ -35,7 +31,7 @@ export default function Auth() {
     e.preventDefault();
     try {
       await login(loginEmail, loginPassword);
-      navigate('/cities');
+      navigate("/cities");
     } catch (err) {
       setError(err.message);
     }
@@ -44,12 +40,12 @@ export default function Auth() {
   const handleRegister = async (e) => {
     e.preventDefault();
     if (regPassword !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
     try {
       await register(regEmail, regPassword, { firstName, lastName });
-      navigate('/cities');
+      navigate("/cities");
     } catch (err) {
       setError(err.message);
     }
@@ -58,11 +54,11 @@ export default function Auth() {
   return (
     <div className={styles.authContainer}>
       <div className={styles.authHero}>
-        <h1>{view === 'login' ? 'Welcome Back!' : 'Join Us!'}</h1>
+        <h1>{view === "login" ? "Welcome Back!" : "Join Us!"}</h1>
         <p>
-          {view === 'login'
-            ? 'Login to your account and continue exploring amazing destinations.'
-            : 'Create an account to discover and book restaurants and stays around the world.'}
+          {view === "login"
+            ? "Login to your account and continue exploring amazing destinations."
+            : "Create an account to discover and book restaurants and stays around the world."}
         </p>
         <div className={styles.authFeatures}>
           <div className={styles.authFeature}>
@@ -83,14 +79,14 @@ export default function Auth() {
       <div className={styles.authContent}>
         <div className={styles.authTabs}>
           <div
-            className={`${styles.authTab} ${view === 'login' ? styles.active : ''}`}
-            onClick={() => switchTab('login')}
+            className={`${styles.authTab} ${view === "login" ? styles.active : ""}`}
+            onClick={() => switchTab("login")}
           >
             Login
           </div>
           <div
-            className={`${styles.authTab} ${view === 'register' ? styles.active : ''}`}
-            onClick={() => switchTab('register')}
+            className={`${styles.authTab} ${view === "register" ? styles.active : ""}`}
+            onClick={() => switchTab("register")}
           >
             Register
           </div>
@@ -98,7 +94,10 @@ export default function Auth() {
 
         {error && <div className={styles.error}>{error}</div>}
 
-        <div className={styles.authForm} style={{ display: view === 'login' ? 'block' : 'none' }}>
+        <div
+          className={styles.authForm}
+          style={{ display: view === "login" ? "block" : "none" }}
+        >
           <form onSubmit={handleLogin}>
             <div className={styles.formGroup}>
               <label htmlFor="loginEmail">Email Address</label>
@@ -107,7 +106,7 @@ export default function Auth() {
                 type="email"
                 className={styles.formControl}
                 value={loginEmail}
-                onChange={e => setLoginEmail(e.target.value)}
+                onChange={(e) => setLoginEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
               />
@@ -119,7 +118,7 @@ export default function Auth() {
                 type="password"
                 className={styles.formControl}
                 value={loginPassword}
-                onChange={e => setLoginPassword(e.target.value)}
+                onChange={(e) => setLoginPassword(e.target.value)}
                 placeholder="Enter your password"
                 required
               />
@@ -127,17 +126,28 @@ export default function Auth() {
             <div className={styles.forgotPassword}>
               <a href="#">Forgot password?</a>
             </div>
-            <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`}>Login</button>
+            <button
+              type="submit"
+              className={`${styles.btn} ${styles.btnPrimary}`}
+            >
+              Login
+            </button>
             <div className={styles.authFooter}>
-              Don't have an account?{' '}
-              <span onClick={() => switchTab('register')} className={styles.toggleLink}>
+              Don't have an account?{" "}
+              <span
+                onClick={() => switchTab("register")}
+                className={styles.toggleLink}
+              >
                 Register
               </span>
             </div>
           </form>
         </div>
 
-        <div className={styles.authForm} style={{ display: view === 'register' ? 'block' : 'none' }}>
+        <div
+          className={styles.authForm}
+          style={{ display: view === "register" ? "block" : "none" }}
+        >
           <form onSubmit={handleRegister}>
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
@@ -147,7 +157,7 @@ export default function Auth() {
                   type="text"
                   className={styles.formControl}
                   value={firstName}
-                  onChange={e => setFirstName(e.target.value)}
+                  onChange={(e) => setFirstName(e.target.value)}
                   placeholder="First name"
                   required
                 />
@@ -159,7 +169,7 @@ export default function Auth() {
                   type="text"
                   className={styles.formControl}
                   value={lastName}
-                  onChange={e => setLastName(e.target.value)}
+                  onChange={(e) => setLastName(e.target.value)}
                   placeholder="Last name"
                   required
                 />
@@ -172,7 +182,7 @@ export default function Auth() {
                 type="email"
                 className={styles.formControl}
                 value={regEmail}
-                onChange={e => setRegEmail(e.target.value)}
+                onChange={(e) => setRegEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
               />
@@ -184,7 +194,7 @@ export default function Auth() {
                 type="password"
                 className={styles.formControl}
                 value={regPassword}
-                onChange={e => setRegPassword(e.target.value)}
+                onChange={(e) => setRegPassword(e.target.value)}
                 placeholder="Create a password"
                 required
               />
@@ -196,15 +206,23 @@ export default function Auth() {
                 type="password"
                 className={styles.formControl}
                 value={confirmPassword}
-                onChange={e => setConfirmPassword(e.target.value)}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm your password"
                 required
               />
             </div>
-            <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`}>Create Account</button>
+            <button
+              type="submit"
+              className={`${styles.btn} ${styles.btnPrimary}`}
+            >
+              Create Account
+            </button>
             <div className={styles.authFooter}>
-              Already have an account?{' '}
-              <span onClick={() => switchTab('login')} className={styles.toggleLink}>
+              Already have an account?{" "}
+              <span
+                onClick={() => switchTab("login")}
+                className={styles.toggleLink}
+              >
                 Login
               </span>
             </div>

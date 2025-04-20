@@ -1,7 +1,13 @@
 // src/components/CityCard/CityCard.jsx
-import React from 'react';
-import styles from './CityCard.module.css';
-import { FaUtensils, FaHotel, FaLandmark, FaTag, FaArrowRight } from 'react-icons/fa';
+import React from "react";
+import styles from "./CityCard.module.css";
+import {
+  FaUtensils,
+  FaHotel,
+  FaLandmark,
+  FaTag,
+  FaArrowRight,
+} from "react-icons/fa";
 
 const TypeIconMap = {
   Restaurants: FaUtensils,
@@ -12,7 +18,7 @@ const TypeIconMap = {
   Temples: FaLandmark,
   Bistros: FaUtensils,
   Skyscrapers: FaLandmark,
-  Broadway: FaTag
+  Broadway: FaTag,
 };
 
 const CityCard = ({ image, title, description, types, onExplore }) => (
@@ -22,7 +28,7 @@ const CityCard = ({ image, title, description, types, onExplore }) => (
       <h3 className={styles.title}>{title}</h3>
       <p className={styles.description}>{description}</p>
       <div className={styles.types}>
-        {types.map(type => {
+        {types.map((type) => {
           const Icon = TypeIconMap[type] || FaTag;
           return (
             <span key={type} className={styles.type}>
@@ -33,7 +39,7 @@ const CityCard = ({ image, title, description, types, onExplore }) => (
       </div>
       <button
         className={styles.exploreBtn}
-        onClick={e => {
+        onClick={(e) => {
           e.stopPropagation();
           onExplore && onExplore();
         }}

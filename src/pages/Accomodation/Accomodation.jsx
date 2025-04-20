@@ -1,54 +1,54 @@
 // src/pages/Accommodations/Accommodations.jsx
-import React, { useState } from 'react';
-import SectionTitle from '../../components/SectionTitle/SectionTitle';
-import PlaceCard from '../../components/PlaceCard/PlaceCard';
-import styles from './Accomodation.module.css';
+import React, { useState } from "react";
+import SectionTitle from "../../components/SectionTitle/SectionTitle";
+import PlaceCard from "../../components/PlaceCard/PlaceCard";
+import styles from "./Accomodation.module.css";
 
 const dummyData = {
   all: [
     {
-      image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945',
-      title: 'Hotel Le Bristol',
+      image: "https://images.unsplash.com/photo-1566073771259-6a8506099945",
+      title: "Hotel Le Bristol",
       rating: 4.7,
-      location: 'Paris, France • 5-star Hotel',
-      description: 'Luxurious rooms with Michelin-starred dining.',
+      location: "Paris, France • 5-star Hotel",
+      description: "Luxurious rooms with Michelin-starred dining.",
       features: [
-        { icon: 'fas fa-wifi', text: 'Free WiFi' },
-        { icon: 'fas fa-swimming-pool', text: 'Indoor Pool' }
+        { icon: "fas fa-wifi", text: "Free WiFi" },
+        { icon: "fas fa-swimming-pool", text: "Indoor Pool" },
       ],
       price: 450,
-      unit: 'night'
+      unit: "night",
     },
     {
-      image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267',
-      title: 'Parisian Boutique',
+      image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
+      title: "Parisian Boutique",
       rating: 4.4,
-      location: 'Paris, France • Boutique Hotel',
-      description: 'Charming boutique experience in the heart of the city.',
+      location: "Paris, France • Boutique Hotel",
+      description: "Charming boutique experience in the heart of the city.",
       features: [
-        { icon: 'fas fa-parking', text: 'Valet Parking' },
-        { icon: 'fas fa-spa', text: 'Spa Services' }
+        { icon: "fas fa-parking", text: "Valet Parking" },
+        { icon: "fas fa-spa", text: "Spa Services" },
       ],
       price: 220,
-      unit: 'night'
+      unit: "night",
     },
     {
-      image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb',
-      title: 'Skyline Suites',
+      image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb",
+      title: "Skyline Suites",
       rating: 4.6,
-      location: 'New York, USA • Luxury Suites',
-      description: 'Penthouse views and concierge service for VIP guests.',
+      location: "New York, USA • Luxury Suites",
+      description: "Penthouse views and concierge service for VIP guests.",
       features: [
-        { icon: 'fas fa-concierge-bell', text: 'Concierge' },
-        { icon: 'fas fa-glass-martini-alt', text: 'Rooftop Bar' }
+        { icon: "fas fa-concierge-bell", text: "Concierge" },
+        { icon: "fas fa-glass-martini-alt", text: "Rooftop Bar" },
       ],
       price: 580,
-      unit: 'night'
-    }
+      unit: "night",
+    },
   ],
   luxury: [],
   budget: [],
-  boutique: []
+  boutique: [],
 };
 
 dummyData.luxury = [dummyData.all[0], dummyData.all[2]];
@@ -56,7 +56,7 @@ dummyData.budget = [dummyData.all[1]];
 dummyData.boutique = [dummyData.all[1]];
 
 export default function Accommodations() {
-  const [tab, setTab] = useState('all');
+  const [tab, setTab] = useState("all");
   const list = dummyData[tab];
 
   return (
@@ -67,25 +67,33 @@ export default function Accommodations() {
           <h1>Find Your Perfect Stay</h1>
           <p>Explore top-rated hotels, boutique inns, and more worldwide</p>
           <div className={styles.searchBar}>
-            <input type="text" placeholder="Search for hotels, hostels, or locations..." />
-            <button><i className="fas fa-search" /> Search</button>
+            <input
+              type="text"
+              placeholder="Search for hotels, hostels, or locations..."
+            />
+            <button>
+              <i className="fas fa-search" /> Search
+            </button>
           </div>
         </div>
       </section>
 
       <div className={styles.container}>
-        <SectionTitle title="Top Accommodations" subtitle="Browse our curated list of best places to stay" />
+        <SectionTitle
+          title="Top Accommodations"
+          subtitle="Browse our curated list of best places to stay"
+        />
 
         <div className={styles.tabGroup}>
           {[
-            { key: 'all', label: 'All' },
-            { key: 'luxury', label: 'Luxury' },
-            { key: 'budget', label: 'Budget' },
-            { key: 'boutique', label: 'Boutique' }
-          ].map(tabInfo => (
+            { key: "all", label: "All" },
+            { key: "luxury", label: "Luxury" },
+            { key: "budget", label: "Budget" },
+            { key: "boutique", label: "Boutique" },
+          ].map((tabInfo) => (
             <button
               key={tabInfo.key}
-              className={`${styles.tab} ${tab === tabInfo.key ? styles.active : ''}`}
+              className={`${styles.tab} ${tab === tabInfo.key ? styles.active : ""}`}
               onClick={() => setTab(tabInfo.key)}
             >
               {tabInfo.label}

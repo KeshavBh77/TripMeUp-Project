@@ -1,5 +1,5 @@
-import React from 'react';
-import styles from './SectionTitle.module.css';
+import React from "react";
+import styles from "./SectionTitle.module.css";
 
 const SectionTitle = ({ title, subtitle }) => (
   <div className={styles.sectionTitle}>
