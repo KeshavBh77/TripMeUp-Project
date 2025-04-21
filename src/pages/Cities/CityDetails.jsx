@@ -18,9 +18,9 @@ const CityDetail = () => {
         .replace(/-/g, " ")
         .replace(/\b\w/g, (char) => char.toUpperCase());
 
-    console.log("Title:", title);
-    console.log("City Key:", cityKey);
     const [data, setData] = useState(null);
+    const [restaurants, setRestaurants] = useState([]);
+    const [accommodations, setAccommodations] = useState([]);
     const [view, setView] = useState("restaurants");
     const [bookingOpen, setBookingOpen] = useState(false);
     const [selectedPlace, setSelectedPlace] = useState(null);
@@ -31,31 +31,42 @@ const CityDetail = () => {
         setBookingOpen(true);
     };
 
-    // Fetch city data from the Django backend
-    // Adjust the URL to match your Django backend endpoint
     useEffect(() => {
         const fetchCityData = async () => {
             try {
                 setLoading(true);
-                const res = await fetch(`http://localhost:8000/TripMeUpApp/city/`);
-                if (!res.ok) {
-                    throw new Error(`HTTP error! Status: ${res.status}`);
-                }
-                const cities = await res.json();
-                console.log("Fetched cities:", cities);
 
-                // Find the city matching the title param
+                // Fetch cities
+                const cityRes = await fetch(`http://localhost:8000/TripMeUpApp/city/`);
+                if (!cityRes.ok) throw new Error("City fetch failed");
+                const cities = await cityRes.json();
+
                 const matchedCity = cities.find(
                     (c) => c.name.toLowerCase() === cityKey.toLowerCase()
                 );
-
-                if (!matchedCity) {
-                    throw new Error("City not found");
-                }
+                if (!matchedCity) throw new Error("City not found");
 
                 setData(matchedCity);
+
+                // Fetch all restaurants and filter by city_id
+                const restaurantRes = await fetch(`http://localhost:8000/TripMeUpApp/restaurants/`);
+                if (!restaurantRes.ok) throw new Error("Restaurant fetch failed");
+                const allRestaurants = await restaurantRes.json();
+                console.log("Filtered restaurants:", allRestaurants.filter((r) => r.place.city === matchedCity.city_id));
+                setRestaurants(allRestaurants.filter((r) => r.place.city === matchedCity.city_id));
+
+                // Fetch all accommodations and filter by city_id
+                const accommodationRes = await fetch(`http://localhost:8000/TripMeUpApp/accommodation/`);
+                if (!accommodationRes.ok) throw new Error("Accommodation fetch failed");
+                const allAccommodations = await accommodationRes.json();
+                console.log("Filtered accommodations:", allAccommodations.filter((a) => a.place.city === matchedCity.city_id));
+                setAccommodations(allAccommodations.filter((a) => a.place.city === matchedCity.city_id));
+                console.log(`City ID: ${matchedCity.city_id}`);
+                console.log("Filtered restaurants:", allRestaurants.filter((r) => r.place.city === matchedCity.city_id));
+                console.log("Filtered accommodations:", allAccommodations.filter((a) => a.place.city === matchedCity.city_id));
+
             } catch (error) {
-                console.error("Failed to fetch city data:", error);
+                console.error("Failed to fetch data:", error);
                 setData(null);
             } finally {
                 setLoading(false);
@@ -65,14 +76,12 @@ const CityDetail = () => {
         fetchCityData();
     }, [title]);
 
+    
     if (loading) return <div className={styles.loading}>Loading...</div>;
     if (!data) return <div className={styles.error}>No data found for {cityKey}</div>;
 
     return (
         <div>
-            {/* Log the city object */}
-            {console.log(cityKey, data)}
-
             <section className={styles.heroDetail}>
                 <div className={styles.overlayDetail} />
                 <div className={styles.contentDetail}>
@@ -81,7 +90,6 @@ const CityDetail = () => {
                 </div>
             </section>
 
-            
             <div className={styles.containerDetail}>
                 <SectionTitle title={`About ${cityKey}`} />
                 <div className={styles.detailGrid}>
@@ -99,9 +107,9 @@ const CityDetail = () => {
                         </ul>
                     </div>
                 </div>
-                
-                {/* TODO: After wards */}
-                {/* <div className={styles.buttonGroup}>
+
+                {/* Button toggle and place grid */}
+                <div className={styles.buttonGroup}>
                     <button
                         className={`${styles.toggleBtn} ${view === "restaurants" ? styles.active : ""}`}
                         onClick={() => setView("restaurants")}
@@ -117,7 +125,7 @@ const CityDetail = () => {
                 </div>
 
                 <div className={styles.placeGrid}>
-                    {(view === "restaurants" ? data.restaurants : data.accommodations).map((item, i) => (
+                    {(view === "restaurants" ? restaurants : accommodations).map((item, i) => (
                         <div key={i} className={styles.cardWrapper}>
                             <PlaceCard
                                 {...item}
@@ -126,7 +134,7 @@ const CityDetail = () => {
                             />
                         </div>
                     ))}
-                </div> */}
+                </div>
 
                 <BookingModal
                     show={bookingOpen}
@@ -141,7 +149,6 @@ const CityDetail = () => {
     );
 };
 
-// Helper to map icon names from backend to icon components
 const getFactIcon = (iconName) => {
     switch (iconName) {
         case "language":
