@@ -17,6 +17,7 @@
   box-shadow: 5px 5px 10px var(--shadow-light), -5px -5px 10px var(--shadow-dark);
   color: #666;
   font-weight: 500;
+  border: none;
 }
 .active {
   color: var(--primary);

@@ -16,6 +16,7 @@
   inset: 0;
   z-index: -1;
 }
+
 .content {
   position: relative;
   z-index: 1;
@@ -92,6 +93,7 @@
   border-radius: 25px;
   box-shadow: 5px 5px 10px var(--shadow-light), -5px -5px 10px var(--shadow-dark);
   transition: all 0.3s ease;
+  border:none;
 }
 .tab:hover {
   box-shadow: inset 5px 5px 10px var(--shadow-light), inset -5px -5px 10px var(--shadow-dark);

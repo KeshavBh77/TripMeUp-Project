@@ -285,7 +285,7 @@
   display: flex;
       min-height: 1.5em;
       flex-direction: column;
-      color: var(--danger);
+      color: red ;
       align-items: flex-start;
       align-content: center;
       flex-wrap: wrap;
