@@ -4,9 +4,14 @@ import styles from "./Hero.module.css";
 import heroImg from "../../assets/images/hero.png";
 import SearchBar from "../SearchBar/SearchBar";
 
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
+
+
 const Hero = () => {
   const [cities, setCities] = useState([]);
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -14,6 +19,7 @@ const Hero = () => {
         const response = await fetch("http://localhost:8000/TripMeUpApp/city/");
         const data = await response.json();
 
+        
         const transformed = data.map(city => ({
           title: city.name,
           description: city.location,
@@ -48,15 +54,25 @@ const Hero = () => {
           Find and book the best restaurants and accommodations for your next
           adventure
         </p>
-        <SearchBar
-          suggestions={cities.map(c => ({
-            label: c.title,
-            image: c.image,
-            original: c
-          }))}
-          onSearch={() => {}} // Optional — can be no-op if not filtering anything
-          onSelect={handleSearchSelect}
-        />
+        {user ? (
+  <SearchBar
+    suggestions={cities.map(c => ({
+      label: c.title,
+      image: c.image,
+      original: c
+    }))}
+    onSearch={() => {}}
+    onSelect={handleSearchSelect}
+  />
+) : (
+  <button
+    className={styles.exploreBtn}
+    onClick={() => navigate("/login")}
+  >
+    Get started
+  </button>
+)}
+
       </div>
     </section>
   );

@@ -7,9 +7,12 @@ import { AuthContext } from "../../context/AuthContext";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
+  
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false); // ✅ for modal
+  const [showConfirm, setShowConfirm] = useState(false); 
+
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -96,6 +99,11 @@ const Navbar = () => {
         )}
       </div>
 
+
+      {showToast && (
+  <div className={styles.toast}>You’ve been logged out.</div>
+)}
+
       {/* Logout confirmation modal */}
       {showConfirm && (
         <div className={styles.modalOverlay}>
@@ -110,9 +118,11 @@ const Navbar = () => {
               </button>
               <button
                 className={`${styles.btn} ${styles.primary}`}
-                onClick={() => {
+               onClick={() => {
                   logout();
                   setShowConfirm(false);
+                  setShowToast(true);
+                  setTimeout(() => setShowToast(false), 3000);
                 }}
               >
                 Logout
