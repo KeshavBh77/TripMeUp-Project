@@ -21,7 +21,7 @@
 .overlay {
   position: absolute;
   inset: 0;
-
+ 
   z-index: -1;
 }
 .content {
@@ -81,7 +81,6 @@
   cursor: pointer;
   font-weight: 500;
   color: #666;
-  border: none;
   transition: all 0.3s ease;
 }
 .tab:hover {

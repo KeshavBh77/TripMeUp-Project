@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import SectionTitle from "../../components/SectionTitle/SectionTitle";
 import PlaceCard from "../../components/PlaceCard/PlaceCard";
 import styles from "./Restaurants.module.css";
+import SearchBar from "../../components/SearchBar/SearchBar";
 
 export default function Restaurants() {
     const [restaurants, setRestaurants] = useState([]);
@@ -34,15 +35,7 @@ export default function Restaurants() {
                         Find and book the best restaurants for an unforgettable culinary
                         experience
                     </p>
-                    <div className={styles.searchBar}>
-                        <input
-                            type="text"
-                            placeholder="Search for restaurants, cuisines, or locations..."
-                        />
-                        <button>
-                            <i className="fas fa-search" /> Search
-                        </button>
-                    </div>
+                    <SearchBar/>
                 </div>
             </section>
 

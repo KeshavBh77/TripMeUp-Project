@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import SectionTitle from "../../components/SectionTitle/SectionTitle";
 import PlaceCard from "../../components/PlaceCard/PlaceCard";
 import styles from "./Accomodation.module.css";
+import SearchBar from "../../components/SearchBar/SearchBar";
 
 export default function Accommodations() {
     const [places, setPlaces] = useState([]);
@@ -30,15 +31,7 @@ export default function Accommodations() {
                 <div className={styles.content}>
                     <h1>Find Your Perfect Stay</h1>
                     <p>Explore top-rated hotels, boutique inns, and more worldwide</p>
-                    <div className={styles.searchBar}>
-                        <input
-                            type="text"
-                            placeholder="Search for hotels, hostels, or locations..."
-                        />
-                        <button>
-                            <i className="fas fa-search" /> Search
-                        </button>
-                    </div>
+                    <SearchBar className={styles.searchBar}/>
                 </div>
             </section>
 
