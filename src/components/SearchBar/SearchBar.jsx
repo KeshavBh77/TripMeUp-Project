@@ -96,30 +96,33 @@ const handleSelect = item => {
 
       {showDropdown && (
         <div className={styles.dropdownModal}>
-          {filtered.length > 0 ? (
-            <ul className={styles.suggestions} role="listbox">
-              {filtered.map((item, i) => (
-                <li
-                  key={item.label}
-                  className={`${styles.suggestion} ${
-                    i === selectedIndex ? styles.highlighted : ''
-                  }`}
-                  onClick={() => handleSelect(item)}
-                  role="option"
-                  aria-selected={i === selectedIndex}
-                >
-                  <img
-                    src={item.image}
-                    alt={item.label}
-                    className={styles.suggestionAvatar}
-                  />
-                  <span className={styles.suggestionText}>{item.label}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className={styles.noResults}>No matches found</div>
-          )}
+        {query.trim() === '' ? (
+  <div className={styles.noResults}>Start typing to search for a city...</div>
+) : filtered.length > 0 ? (
+  <ul className={styles.suggestions} role="listbox">
+    {filtered.map((item, i) => (
+      <li
+        key={item.label}
+        className={`${styles.suggestion} ${
+          i === selectedIndex ? styles.highlighted : ''
+        }`}
+        onClick={() => handleSelect(item)}
+        role="option"
+        aria-selected={i === selectedIndex}
+      >
+        <img
+          src={item.image}
+          alt={item.label}
+          className={styles.suggestionAvatar}
+        />
+        <span className={styles.suggestionText}>{item.label}</span>
+      </li>
+    ))}
+  </ul>
+) : (
+  <div className={styles.noResults}>No matches found</div>
+)}
+
         </div>
       )}
     </div>
