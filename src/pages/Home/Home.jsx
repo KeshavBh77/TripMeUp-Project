@@ -7,6 +7,7 @@ import Tabs from "../../components/Tabs/Tabs";
 import PlaceCard from "../../components/PlaceCard/PlaceCard";
 import ReviewCard from "../../components/ReviewCard/ReviewCard";
 import Skeleton from "../../components/Skeleton/Skeleton";
+import BookingModal from "../../components/BookingModal/BookingModal";
 import styles from "./Home.module.css";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -20,13 +21,17 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [selectedPlace, setSelectedPlace] = useState(null);
+  const [bookingDetails, setBookingDetails] = useState({ guests: 1, from: '', to: '', guestNames: [''] });
+
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const loadCities = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 1500)); // simulate delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
         const res = await fetch("http://localhost:8000/TripMeUpApp/");
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
@@ -44,6 +49,22 @@ export default function Home() {
 
   const toggleFavorite = (id) => {
     setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleBook = (place) => {
+    setSelectedPlace(place);
+    setBookingDetails({ guests: 1, from: '', to: '', guestNames: [''] });
+    setBookingOpen(true);
+  };
+
+  const handleBookingSubmit = ({ place, dates, guests, guestNames }) => {
+    console.log("Booking confirmed:", {
+      place,
+      dates,
+      guests,
+      guestNames
+    });
+    setBookingOpen(false);
   };
 
   const featuredPlaces = {
@@ -107,7 +128,7 @@ export default function Home() {
         {showLoginModal && (
           <div className={styles.modalOverlay}>
             <div className={styles.loginModal}>
-              <p>Please login to view city details. Redirecting to login.....</p>
+              <p>Please login to view city details.</p>
             </div>
           </div>
         )}
@@ -169,6 +190,7 @@ export default function Home() {
                     isAccommodation={activeTab === "accommodations"}
                     isFavorite={favorites[i]}
                     onToggleFavorite={() => toggleFavorite(i)}
+                    onBook={() => handleBook(place)}
                   />
                 </div>
               ))}
@@ -189,6 +211,18 @@ export default function Home() {
               ))}
         </div>
       </div>
+
+      <BookingModal
+        show={bookingOpen}
+        place={selectedPlace}
+        guests={bookingDetails.guests}
+        from={bookingDetails.from}
+        to={bookingDetails.to}
+        guestNames={bookingDetails.guestNames}
+        onClose={() => setBookingOpen(false)}
+        onSubmit={handleBookingSubmit}
+        onChange={(key, value) => setBookingDetails(prev => ({ ...prev, [key]: value }))}
+      />
     </div>
   );
 }

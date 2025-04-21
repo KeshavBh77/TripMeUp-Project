@@ -1,54 +1,175 @@
-.backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  .modal {
-    background: var(--bg-light);
-    padding: 2rem;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 5px 5px 15px var(--shadow-dark), -5px -5px 15px var(--shadow-light);
-  }
-  .form label {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-    font-weight: 500;
-    color: var(--dark);
-  }
-  .form input {
-    margin-top: 0.3rem;
-    padding: 0.5rem;
-    border: none;
-    border-radius: 8px;
-    box-shadow: inset 2px 2px 6px var(--shadow-dark), inset -2px -2px 6px var(--shadow-light);
-  }
-  .footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.5rem;
-    margin-top: 1.5rem;
-  }
-  .cancel, .confirm {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  .cancel {
-    background: var(--bg-light);
-    box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
-  }
-  .confirm {
-    background: var(--primary);
-    color: white;
-    box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
-  }
-  
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg-light);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.modal {
+  background: var(--bg-light);
+  border-radius: 20px;
+  padding: 5rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 10px 10px 20px var(--shadow-dark), 
+             -10px -10px 20px var(--shadow-light);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--dark);
+  font-weight: 600;
+}
+
+.closeBtn {
+  background: var(--bg-light);
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0.5rem;
+  border-radius: 50%;
+  box-shadow: 3px 3px 6px var(--shadow-dark),
+             -3px -3px 6px var(--shadow-light);
+  transition: all 0.2s;
+}
+
+.closeBtn:hover {
+  box-shadow: inset 3px 3px 6px var(--shadow-dark),
+             inset -3px -3px 6px var(--shadow-light);
+}
+
+.progress {
+  height: 8px;
+  background: var(--bg-light);
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  box-shadow: inset 3px 3px 6px var(--shadow-dark),
+             inset -3px -3px 6px var(--shadow-light);
+}
+
+.progress div {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  box-shadow: 2px 2px 4px var(--shadow-dark);
+}
+
+.formSection {
+  margin: 1rem 0;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 1rem;
+  background: var(--bg-light);
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  box-shadow: inset 5px 5px 10px var(--shadow-dark),
+             inset -5px -5px 10px var(--shadow-light);
+  transition: all 0.3s ease;
+}
+
+.formGroup input:focus {
+  outline: none;
+  box-shadow: 3px 3px 6px var(--shadow-dark),
+             -3px -3px 6px var(--shadow-light);
+}
+
+.error {
+  color: var(--danger);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+.footer {
+  margin-top: 2rem;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.primaryBtn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 5px 5px 10px var(--shadow-dark),
+             -5px -5px 10px var(--shadow-light);
+  transition: all 0.2s;
+}
+
+.primaryBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 5px 5px 10px var(--shadow-dark),
+             inset -5px -5px 10px var(--shadow-light);
+}
+
+.secondaryBtn {
+  background: var(--bg-light);
+  color: var(--text-primary);
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 5px 5px 10px var(--shadow-dark),
+             -5px -5px 10px var(--shadow-light);
+  transition: all 0.2s;
+}
+
+.secondaryBtn:hover {
+  box-shadow: inset 5px 5px 10px var(--shadow-dark),
+             inset -5px -5px 10px var(--shadow-light);
+}
+
+/* Add these variables to your root CSS */
+:root {
+  --bg-light: #e0e5ec;
+  --shadow-dark: rgba(163, 177, 198, 0.6);
+  --shadow-light: rgba(255, 255, 255, 0.8);
+  --primary: #4a6fa5;
+  --danger: #e53e3e;
+  --warning: #dd6b20;
+  --dark: #2d3748;
+  --text-primary: #4a5568;
+  --text-secondary: #718096;
+  --border-color: rgba(0, 0, 0, 0.1);
+}

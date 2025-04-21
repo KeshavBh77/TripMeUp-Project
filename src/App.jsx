@@ -17,10 +17,8 @@ import Accommodations from "./pages/Accomodation/Accomodation";
 import Bookings from "./pages/Bookings/Bookings";
 import Favorites from "./pages/Favorites/Favorites";
 import Auth from "./pages/Auth/Auth";
-import ScrollToTop from "./components/ScrollToTop";
-import NotFound from "./pages/NotFound404/404NotFound"; 
-
-
+import ScrollToTop from "./components/ScrollToTop"; // 👈 Add this import
+import  NotFound from "./pages/NotFound404/404NotFound";
 import styles from "./App.module.css";
 
 const PrivateRoute = ({ children }) => {
@@ -37,7 +35,6 @@ function AppContent() {
     <div className={styles.app}>
       <Navbar />
 
-      {/* apply centering on Auth pages */}
       <main
         className={`${styles.content} ${
           onAuthPage ? styles.centerContent : ""
@@ -48,16 +45,12 @@ function AppContent() {
           <Route path="/register" element={<Auth />} />
 
           <Route path="/" element={<Home />} />
-
           <Route path="/cities" element={
-            
             <PrivateRoute><Cities /></PrivateRoute>} />
-          
           <Route path="/cities/:title" element={
-            
-            <PrivateRoute><CityDetail /></PrivateRoute>}/>
+            <PrivateRoute><CityDetail /></PrivateRoute>} />
           <Route path="/restaurants" element={
-            <PrivateRoute><Restaurants /></PrivateRoute>}  />
+            <PrivateRoute></PrivateRoute>} />
           <Route
             path="/accommodations"
             element={
@@ -82,8 +75,7 @@ function AppContent() {
               </PrivateRoute>
             }
           />
-
-        <Route path="*" element={<NotFound />} />
+                    <Route path="*" element={<NotFound />} />
 
         </Routes>
       </main>
@@ -97,7 +89,7 @@ export default function App() {
   return (
     <Router>
       <AuthProvider>
-      <ScrollToTop /> 
+        <ScrollToTop /> 
         <AppContent />
       </AuthProvider>
     </Router>
