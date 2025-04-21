@@ -5,84 +5,63 @@ import {
   FaTwitter,
   FaInstagram,
   FaLinkedinIn,
+  FaMapMarkerAlt,
+  FaPhoneAlt,
+  FaEnvelope,
 } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Footer = () => (
   <footer className={styles.footer}>
     <div className={styles.content}>
+      {/* Brand & Social */}
       <div className={styles.column}>
-        <h3>ExploreWorld</h3>
+        <h3>TripMeUp</h3>
         <p>
           Your trusted partner in discovering and booking the best travel
           experiences around the globe.
         </p>
-        <div className={styles.social}>
-          <FaFacebookF />
-          <FaTwitter />
-          <FaInstagram />
-          <FaLinkedinIn />
-        </div>
+      
       </div>
+
+      {/* Quick Links */}
       <div className={styles.column}>
         <h3>Quick Links</h3>
         <ul>
-          <li>
-            <a href="#">Home</a>
-          </li>
-          <li>
-            <a href="#">Cities</a>
-          </li>
-          <li>
-            <a href="#">Restaurants</a>
-          </li>
-          <li>
-            <a href="#">Accommodations</a>
-          </li>
-          <li>
-            <a href="#">My Bookings</a>
-          </li>
-          <li>
-            <a href="#">Favorites</a>
-          </li>
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/cities">Cities</Link></li>
+          <li><Link to="/restaurants">Restaurants</Link></li>
+          <li><Link to="/accommodations">Accommodations</Link></li>
+          <li><Link to="/bookings">My Bookings</Link></li>
+          <li><Link to="/favorites">Favorites</Link></li>
         </ul>
       </div>
-      <div className={styles.column}>
+
+      {/* Support */}
+      {/* <div className={styles.column}>
         <h3>Support</h3>
         <ul>
-          <li>
-            <a href="#">Help Center</a>
-          </li>
-          <li>
-            <a href="#">Contact Us</a>
-          </li>
-          <li>
-            <a href="#">Privacy Policy</a>
-          </li>
-          <li>
-            <a href="#">Terms of Service</a>
-          </li>
-          <li>
-            <a href="#">FAQ</a>
-          </li>
+          <li><Link to="/help">Help Center</Link></li>
+          <li><Link to="/contact">Contact Us</Link></li>
+          <li><Link to="/privacy">Privacy Policy</Link></li>
+          <li><Link to="/terms">Terms of Service</Link></li>
+          <li><Link to="/faq">FAQ</Link></li>
         </ul>
-      </div>
+      </div> */}
+
+      {/* Contact Info */}
       <div className={styles.column}>
         <h3>Contact</h3>
-        <ul>
-          <li>
-            <i className="fas fa-map-marker-alt"></i> 123 Travel St, Suite 100
-          </li>
-          <li>
-            <i className="fas fa-phone"></i> +1 (555) 123-4567
-          </li>
-          <li>
-            <i className="fas fa-envelope"></i> info@exploreworld.com
-          </li>
+        <ul className={styles.contactList}>
+          <li><FaMapMarkerAlt className={styles.icon} /> Hull Estate, Suite 1602</li>
+          <li><FaPhoneAlt className={styles.icon} /> +1 (555) 123-4567</li>
+          <li><FaEnvelope className={styles.icon} /> info@tripmeup.com</li>
         </ul>
       </div>
     </div>
+
     <div className={styles.copy}>
-      © 2023 ExploreWorld. All rights reserved.
+      © {new Date().getFullYear()} TripMeUp. All rights reserved.
     </div>
   </footer>
 );
