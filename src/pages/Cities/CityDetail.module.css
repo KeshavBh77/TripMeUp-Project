@@ -93,6 +93,7 @@
     cursor: pointer;
     font-weight: 500;
     color: #666;
+    border: none;
     background: var(--bg-light);
     border-radius: 25px;
     box-shadow: 5px 5px 10px var(--shadow-light), -5px -5px 10px var(--shadow-dark);
