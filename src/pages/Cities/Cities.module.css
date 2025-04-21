@@ -6,11 +6,12 @@
   border-radius: 25px;
   overflow: hidden;
   box-shadow: 10px 10px 20px var(--shadow-light), -10px -10px 20px var(--shadow-dark);
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1935');
+
 }
 .overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1935');
   background-size: cover;
   background-position: center;
   z-index: -1;
@@ -297,59 +298,4 @@
   .cardWrapper {
     flex: 1 1 100%;
   }
-}
-
-
-
-.hero {
-  position: relative;
-  height: 60vh;
-  background: url('../../assets/images/hero.png') center/cover no-repeat;
-}
-
-.overlay {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(0,0,0,0.3);
-}
-
-.heroContent {
-  position: relative;
-  color: #fff;
-  text-align: center;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.pageBody {
-  background-color: var(--bg-light);
-}
-
-.container {
-  padding: 2rem;
-}
-
-.list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.cardWrapper {
-  cursor: pointer;
-}
-
-.loading,
-.error {
-  text-align: center;
-  margin: 2rem;
-}
-
-.highlight {
-  animation: highlight 2s;
-}
-
-@keyframes highlight {
-  from { box-shadow: 0 0 10px gold; }
-  to { box-shadow: none; }
 }
