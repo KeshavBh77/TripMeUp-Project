@@ -14,10 +14,10 @@ import Cities from "./pages/Cities/Cities";
 import CityDetail from "./pages/Cities/CityDetails";
 import Restaurants from "./pages/Restaurants/Restaurants";
 import Accommodations from "./pages/Accomodation/Accomodation";
-import Bookings from "./pages/Bookings/Bookings";
-import Favorites from "./pages/Favorites/Favorites";
+
+
 import Auth from "./pages/Auth/Auth";
-import ScrollToTop from "./components/ScrollToTop"; // 👈 Add this import
+import ScrollToTop from "./components/ScrollToTop"; 
 import  NotFound from "./pages/NotFound404/404NotFound";
 import styles from "./App.module.css";
 
@@ -50,7 +50,10 @@ function AppContent() {
           <Route path="/cities/:title" element={
             <PrivateRoute><CityDetail /></PrivateRoute>} />
           <Route path="/restaurants" element={
-            <PrivateRoute></PrivateRoute>} />
+            <PrivateRoute>
+
+              <Restaurants />
+            </PrivateRoute>} />
           <Route
             path="/accommodations"
             element={
@@ -59,22 +62,8 @@ function AppContent() {
               </PrivateRoute>
             }
           />
-          <Route
-            path="/bookings"
-            element={
-              <PrivateRoute>
-                <Bookings />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/favorites"
-            element={
-              <PrivateRoute>
-                <Favorites />
-              </PrivateRoute>
-            }
-          />
+
+          
                     <Route path="*" element={<NotFound />} />
 
         </Routes>
