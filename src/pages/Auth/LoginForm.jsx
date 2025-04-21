@@ -14,7 +14,7 @@ export default function LoginForm({ switchTab }) {
     e.preventDefault();
     try {
       await login(email, password);
-      navigate("/cities");
+      navigate("/");
     } catch (err) {
       setError(err.message);
     }
@@ -24,7 +24,8 @@ export default function LoginForm({ switchTab }) {
     <form onSubmit={handleSubmit} className={styles.authForm}>
    <div className={`${styles.error} ${error ? styles.visible : ""}`}>
         {error || "\u00A0"}
-      </div>      <div className={styles.formGroup}>
+      </div>    
+        <div className={styles.formGroup}>
         <label htmlFor="loginEmail">Email Address</label>
         <input
           id="loginEmail"

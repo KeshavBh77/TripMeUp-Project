@@ -16,14 +16,13 @@
     10px 10px 20px var(--shadow-dark),
     -10px -10px 20px var(--shadow-light);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  
+
   cursor: pointer;    
 }
 
 .neo-embed:hover {
   transform: translateY(-5px);
 }
-
 
 :root {
   --primary: #4a6fa5;

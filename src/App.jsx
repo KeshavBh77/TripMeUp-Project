@@ -17,6 +17,7 @@ import Accommodations from "./pages/Accomodation/Accomodation";
 import Bookings from "./pages/Bookings/Bookings";
 import Favorites from "./pages/Favorites/Favorites";
 import Auth from "./pages/Auth/Auth";
+import ScrollToTop from "./components/ScrollToTop";
 
 import styles from "./App.module.css";
 
@@ -84,6 +85,7 @@ export default function App() {
   return (
     <Router>
       <AuthProvider>
+      <ScrollToTop /> 
         <AppContent />
       </AuthProvider>
     </Router>

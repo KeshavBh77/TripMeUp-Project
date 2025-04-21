@@ -1,4 +1,3 @@
-// src/components/Navbar/Navbar.jsx
 import React, { useContext, useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import styles from "./Navbar.module.css";
@@ -10,6 +9,7 @@ const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false); // ✅ for modal
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -69,7 +69,7 @@ const Navbar = () => {
           <>
             <span className={styles.greeting}>Hi, {user.username}</span>
             <button
-              onClick={logout}
+              onClick={() => setShowConfirm(true)}
               className={`${styles.btn} ${styles.primary}`}
             >
               Logout
@@ -95,6 +95,32 @@ const Navbar = () => {
           )
         )}
       </div>
+
+      {/* Logout confirmation modal */}
+      {showConfirm && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h3>Are you sure you want to logout?</h3>
+            <div className={styles.modalActions}>
+              <button
+                className={`${styles.btn} ${styles.outline}`}
+                onClick={() => setShowConfirm(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className={`${styles.btn} ${styles.primary}`}
+                onClick={() => {
+                  logout();
+                  setShowConfirm(false);
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };
