@@ -52,7 +52,7 @@ export default function Cities() {
     const el = cityCardsRef.current[item.label];
     if (!el) return;
 
-    const headerHeight = 120;
+    const headerHeight = 240;
     const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
     const offsetPosition = elementPosition - headerHeight;
 
@@ -120,7 +120,7 @@ export default function Cities() {
         </div>
       </div>
 
-      <Footer />
+
     </div>
   );
 }

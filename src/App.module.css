@@ -1,0 +1,41 @@
+/* App.module.css */
+
+/* Entire app uses grid to define header / content / footer rows */
+.app {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+}
+
+/* Routed content area scrolls if needed */
+.content {
+  overflow: auto;
+}
+
+/* Centering applied only on Auth pages */
+.centerContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+        background-color: var(--bg-light);
+
+}
+
+.content {
+  flex: 1;
+  overflow: auto;
+}
+
+.centerContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

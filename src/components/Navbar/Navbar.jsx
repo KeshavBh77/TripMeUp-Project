@@ -1,13 +1,14 @@
 // src/components/Navbar/Navbar.jsx
 import React, { useContext, useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import logo from "../../assets/images/logo.png";
-import { FaGlobeAmericas, FaHome } from "react-icons/fa";
+import { FaHome } from "react-icons/fa";
 import { AuthContext } from "../../context/AuthContext";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
+  const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -16,17 +17,27 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // are we on an auth page?
+  const onAuthPage =
+    location.pathname === "/login" || location.pathname === "/register";
+
   return (
     <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ""}`}>
+      {/* Logo */}
       <div className={styles.logo}>
         <NavLink to="/" className={styles.logoLink}>
-          <img src={logo} alt="Trip Me Up Logo" className={styles.logoImage} />
+          <img
+            src={logo}
+            alt="Trip Me Up Logo"
+            className={styles.logoImage}
+          />
         </NavLink>
       </div>
 
-      <div className={styles.links}>
-        {user &&
-          [
+      {/* Links only when logged in */}
+      {user && (
+        <div className={styles.links}>
+          {[
             ["Home", "/"],
             ["Cities", "/cities"],
             ["Restaurants", "/restaurants"],
@@ -44,36 +55,44 @@ const Navbar = () => {
               {label}
             </NavLink>
           ))}
-      </div>
+        </div>
+      )}
 
+      {/* Right‑side actions */}
       <div className={styles.actions}>
-        {!user && (
-          <NavLink to="/" className={styles.homeIcon}>
-            <FaHome />
-          </NavLink>
-        )}
+        {/* Always show Home icon */}
+        <NavLink to="/" className={styles.homeIcon}>
+          <FaHome />
+        </NavLink>
+
         {user ? (
           <>
             <span className={styles.greeting}>Hi, {user.username}</span>
             <button
-              className={`${styles.btn} ${styles.primary}`}
               onClick={logout}
+              className={`${styles.btn} ${styles.primary}`}
             >
               Logout
             </button>
           </>
         ) : (
-          <>
-            <NavLink to="/login" className={`${styles.btn} ${styles.outline}`}>
-              Login
-            </NavLink>
-            <NavLink
-              to="/register"
-              className={`${styles.btn} ${styles.primary}`}
-            >
-              Sign Up
-            </NavLink>
-          </>
+          // only show Login/Sign Up when NOT on an auth page
+          !onAuthPage && (
+            <>
+              <NavLink
+                to="/login"
+                className={`${styles.btn} ${styles.outline}`}
+              >
+                Login
+              </NavLink>
+              <NavLink
+                to="/register"
+                className={`${styles.btn} ${styles.primary}`}
+              >
+                Sign Up
+              </NavLink>
+            </>
+          )
         )}
       </div>
     </nav>
