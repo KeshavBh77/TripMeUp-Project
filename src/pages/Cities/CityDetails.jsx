@@ -18,6 +18,8 @@ const CityDetail = () => {
         .replace(/-/g, " ")
         .replace(/\b\w/g, (char) => char.toUpperCase());
 
+    console.log("Title:", title);
+    console.log("City Key:", cityKey);
     const [data, setData] = useState(null);
     const [restaurants, setRestaurants] = useState([]);
     const [accommodations, setAccommodations] = useState([]);
@@ -31,12 +33,12 @@ const CityDetail = () => {
         setBookingOpen(true);
     };
 
+    // Fetch city data from the Django backend
     useEffect(() => {
         const fetchCityData = async () => {
             try {
                 setLoading(true);
 
-                // Fetch cities
                 const cityRes = await fetch(`http://localhost:8000/TripMeUpApp/city/`);
                 if (!cityRes.ok) throw new Error("City fetch failed");
                 const cities = await cityRes.json();
@@ -48,18 +50,16 @@ const CityDetail = () => {
 
                 setData(matchedCity);
 
-                // Fetch all restaurants and filter by city_id
+                // Fetch and filter all restaurants by city_id
                 const restaurantRes = await fetch(`http://localhost:8000/TripMeUpApp/restaurants/`);
                 if (!restaurantRes.ok) throw new Error("Restaurant fetch failed");
                 const allRestaurants = await restaurantRes.json();
-                console.log("Filtered restaurants:", allRestaurants.filter((r) => r.place.city === matchedCity.city_id));
                 setRestaurants(allRestaurants.filter((r) => r.place.city === matchedCity.city_id));
 
                 // Fetch all accommodations and filter by city_id
                 const accommodationRes = await fetch(`http://localhost:8000/TripMeUpApp/accommodation/`);
                 if (!accommodationRes.ok) throw new Error("Accommodation fetch failed");
                 const allAccommodations = await accommodationRes.json();
-                console.log("Filtered accommodations:", allAccommodations.filter((a) => a.place.city === matchedCity.city_id));
                 setAccommodations(allAccommodations.filter((a) => a.place.city === matchedCity.city_id));
                 console.log(`City ID: ${matchedCity.city_id}`);
                 console.log("Filtered restaurants:", allRestaurants.filter((r) => r.place.city === matchedCity.city_id));
@@ -76,12 +76,14 @@ const CityDetail = () => {
         fetchCityData();
     }, [title]);
 
-    
     if (loading) return <div className={styles.loading}>Loading...</div>;
     if (!data) return <div className={styles.error}>No data found for {cityKey}</div>;
 
     return (
         <div>
+            {/* Log the city object */}
+            {console.log(cityKey, data)}
+
             <section className={styles.heroDetail}>
                 <div className={styles.overlayDetail} />
                 <div className={styles.contentDetail}>
@@ -108,7 +110,6 @@ const CityDetail = () => {
                     </div>
                 </div>
 
-                {/* Button toggle and place grid */}
                 <div className={styles.buttonGroup}>
                     <button
                         className={`${styles.toggleBtn} ${view === "restaurants" ? styles.active : ""}`}
@@ -124,17 +125,49 @@ const CityDetail = () => {
                     </button>
                 </div>
 
-                <div className={styles.placeGrid}>
-                    {(view === "restaurants" ? restaurants : accommodations).map((item, i) => (
-                        <div key={i} className={styles.cardWrapper}>
-                            <PlaceCard
-                                {...item}
-                                isAccommodation={view === "accommodations"}
-                                onBook={view === "accommodations" ? () => handleBook(item) : undefined}
-                            />
-                        </div>
-                    ))}
+
+                <div className={styles.grid}>
+                    {view === "restaurants" ? (
+                        restaurants.map((item, index) => (
+                            <div key={index} className={styles.cardWrapper}>
+                                <PlaceCard
+                                    name={item.place.name}
+                                    contact={item.place.contact}
+                                    address={item.place.address}
+                                    street={item.place.street}
+                                    postal_code={item.place.postal_code}
+                                    email={item.place.email}
+                                    rating={item.place.rating}
+                                    description={item.place.description}
+                                    type={item.type}
+                                    charge={item.charge}
+                                    amenities={item.amenities}
+                                    isAccommodation={false} // Assuming this is a restaurant
+                                />
+                            </div>
+                        ))
+                    ) : (
+                        accommodations.map((item, index) => (
+                            <div key={index} className={styles.cardWrapper}>
+                                <PlaceCard
+                                    name={item.place.name}
+                                    contact={item.place.contact}
+                                    address={item.place.address}
+                                    street={item.place.street}
+                                    postal_code={item.place.postal_code}
+                                    email={item.place.email}
+                                    rating={item.place.rating}
+                                    description={item.place.description}
+                                    type={item.type}
+                                    charge={item.charge}
+                                    amenities={item.amenities}
+                                    isAccommodation={true} // Assuming this is an accommodation
+                                />
+                            </div>
+                        ))
+                    )}
                 </div>
+
 
                 <BookingModal
                     show={bookingOpen}
@@ -149,6 +182,7 @@ const CityDetail = () => {
     );
 };
 
+// Helper to map icon names from backend to icon components
 const getFactIcon = (iconName) => {
     switch (iconName) {
         case "language":
