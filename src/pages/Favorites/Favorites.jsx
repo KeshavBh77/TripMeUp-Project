@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SectionTitle from "../../components/SectionTitle/SectionTitle";
 import PlaceCard from "../../components/PlaceCard/PlaceCard";
 import CityCard from "../../components/CityCard/CityCard";
 import BookingModal from "../../components/BookingModal/BookingModal";
+import Skeleton from "../../components/Skeleton/Skeleton";
 import styles from "./Favorites.module.css";
 import { useNavigate } from "react-router-dom";
 
-// Dummy data for favorites
+// Dummy favorites
 const dummyFavorites = {
   restaurants: [
     {
@@ -52,13 +53,25 @@ export default function Favorites() {
   const [tab, setTab] = useState("restaurants");
   const [bookingOpen, setBookingOpen] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const list = dummyFavorites[tab];
+
   const tabs = [
     { key: "restaurants", label: "Restaurants" },
     { key: "hotels", label: "Hotels" },
     { key: "cities", label: "Cities" },
   ];
+
+  useEffect(() => {
+    const simulateLoading = async () => {
+      setLoading(true);
+      await new Promise((res) => setTimeout(res, 1200)); // simulate delay
+      setLoading(false);
+    };
+    simulateLoading();
+  }, [tab]);
+
+  const list = dummyFavorites[tab];
 
   const handleBook = (place) => {
     setSelectedPlace(place);
@@ -85,7 +98,13 @@ export default function Favorites() {
       </div>
 
       <div className={styles.list}>
-        {list.length === 0 ? (
+        {loading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className={styles.cardWrapper}>
+              <Skeleton height={tab === "cities" ? "260px" : "320px"} radius="16px" />
+            </div>
+          ))
+        ) : list.length === 0 ? (
           <div className={styles.emptyState}>
             <i className="fas fa-heart-broken"></i>
             <h3>No Favorites Yet</h3>

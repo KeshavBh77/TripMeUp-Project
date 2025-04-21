@@ -1,4 +1,3 @@
-// src/pages/Home/Home.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Hero from "../../components/Hero/Hero";
@@ -7,7 +6,9 @@ import CityCard from "../../components/CityCard/CityCard";
 import Tabs from "../../components/Tabs/Tabs";
 import PlaceCard from "../../components/PlaceCard/PlaceCard";
 import ReviewCard from "../../components/ReviewCard/ReviewCard";
+import Skeleton from "../../components/Skeleton/Skeleton";
 import styles from "./Home.module.css";
+
 import restaurant from "../../assets/images/restaurant.png";
 import hotel1 from "../../assets/images/hotel1.png";
 
@@ -15,29 +16,32 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("restaurants");
   const [favorites, setFavorites] = useState({});
   const [cities, setCities] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadCities = async () => {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1500)); // simulate delay
+        const res = await fetch("http://localhost:8000/TripMeUpApp/");
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        setCities(data);
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setError("Failed to fetch cities.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCities();
+  }, []);
 
   const toggleFavorite = (id) => {
     setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
   };
-
-  useEffect(() => {
-    fetch("http://localhost:8000/TripMeUpApp/")
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        setCities(data);
-      })
-      .catch((err) => {
-        console.error("Fetch error:", err);
-        setError("Failed to fetch cities.");
-      });
-  }, []);
 
   const featuredPlaces = {
     restaurants: [
@@ -97,18 +101,25 @@ export default function Home() {
           title="Popular Destinations"
           subtitle="Explore our most popular cities"
         />
+
         <div className={styles.list}>
-          {cities.map((city, i) => (
-            <div key={i} className={styles.cardWrapper}>
-              <CityCard
-                image={"https://via.placeholder.com/300"}
-                title={city.name}
-                description={city.location}
-                types={["Restaurants", "Hotels", "Landmarks"]}
-                onExplore={() => navigate(`/cities/${city.name}`)}
-              />
-            </div>
-          ))}
+          {loading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className={styles.cardWrapper}>
+                  <Skeleton height="260px" radius="16px" />
+                </div>
+              ))
+            : cities.map((city, i) => (
+                <div key={i} className={styles.cardWrapper}>
+                  <CityCard
+                    image={"https://via.placeholder.com/300"}
+                    title={city.name}
+                    description={city.location}
+                    types={["Restaurants", "Hotels", "Landmarks"]}
+                    onExplore={() => navigate(`/cities/${city.name}`)}
+                  />
+                </div>
+              ))}
         </div>
 
         {/* Featured Places Section */}
@@ -126,26 +137,38 @@ export default function Home() {
         />
 
         <div className={styles.list}>
-          {featuredPlaces[activeTab].map((place, i) => (
-            <div key={i} className={styles.cardWrapper}>
-              <PlaceCard
-                {...place}
-                isAccommodation={activeTab === "accommodations"}
-                isFavorite={favorites[i]}
-                onToggleFavorite={() => toggleFavorite(i)}
-              />
-            </div>
-          ))}
+          {loading
+            ? Array.from({ length: 2 }).map((_, i) => (
+                <div key={i} className={styles.cardWrapper}>
+                  <Skeleton height="320px" radius="20px" />
+                </div>
+              ))
+            : featuredPlaces[activeTab].map((place, i) => (
+                <div key={i} className={styles.cardWrapper}>
+                  <PlaceCard
+                    {...place}
+                    isAccommodation={activeTab === "accommodations"}
+                    isFavorite={favorites[i]}
+                    onToggleFavorite={() => toggleFavorite(i)}
+                  />
+                </div>
+              ))}
         </div>
 
         {/* Reviews Section */}
         <SectionTitle title="Recent Reviews" subtitle="" />
         <div className={styles.list}>
-          {reviews.map((rev, i) => (
-            <div key={i} className={styles.cardWrapper}>
-              <ReviewCard {...rev} />
-            </div>
-          ))}
+          {loading
+            ? Array.from({ length: 2 }).map((_, i) => (
+                <div key={i} className={styles.cardWrapper}>
+                  <Skeleton height="180px" radius="16px" />
+                </div>
+              ))
+            : reviews.map((rev, i) => (
+                <div key={i} className={styles.cardWrapper}>
+                  <ReviewCard {...rev} />
+                </div>
+              ))}
         </div>
       </div>
     </div>

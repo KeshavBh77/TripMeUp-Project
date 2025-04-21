@@ -1,6 +1,6 @@
-// src/pages/Bookings/Bookings.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SectionTitle from "../../components/SectionTitle/SectionTitle";
+import Skeleton from "../../components/Skeleton/Skeleton";
 import styles from "./Booking.module.css";
 import { FaCalendarAlt, FaUser, FaBed, FaCalendarTimes } from "react-icons/fa";
 
@@ -44,7 +44,18 @@ const dummyBookings = {
 
 export default function Bookings() {
   const [tab, setTab] = useState("upcoming");
-  const list = dummyBookings[tab];
+  const [loading, setLoading] = useState(true);
+  const [list, setList] = useState([]);
+
+  useEffect(() => {
+    const simulateLoading = async () => {
+      setLoading(true);
+      await new Promise((res) => setTimeout(res, 1200)); // Simulate delay
+      setList(dummyBookings[tab]);
+      setLoading(false);
+    };
+    simulateLoading();
+  }, [tab]);
 
   return (
     <div className={styles.page}>
@@ -64,7 +75,15 @@ export default function Bookings() {
         ))}
       </div>
 
-      {list.length === 0 ? (
+      {loading ? (
+        <div className={styles.list}>
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className={styles.cardWrapper}>
+              <Skeleton height="260px" radius="18px" />
+            </div>
+          ))}
+        </div>
+      ) : list.length === 0 ? (
         <div className={styles.empty}>
           <FaCalendarTimes className={styles.emptyIcon} />
           <h3>No {tab.charAt(0).toUpperCase() + tab.slice(1)} Bookings</h3>
