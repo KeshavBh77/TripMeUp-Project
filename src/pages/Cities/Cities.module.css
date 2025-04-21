@@ -55,3 +55,246 @@
     flex: 1 1 100%;
   }
 }
+
+
+/* src/pages/Cities/Cities.module.css */
+.cardWrapper {
+  transition: all 0.3s ease;
+}
+
+.cardWrapper.highlight {
+  animation: highlight 2s ease;
+}
+
+@keyframes highlight {
+  0% {
+    transform: scale(1);
+    box-shadow: none;
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.5);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: none;
+  }
+}
+
+
+.hero {
+  position: relative;
+  height: 60vh;
+
+
+
+
+
+
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+}
+
+
+
+.container {
+  padding: 4rem 2rem;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.cardWrapper {
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.cardWrapper.highlight {
+  animation: highlight 1.5s ease;
+}
+
+@keyframes highlight {
+  0% { transform: scale(1); box-shadow: none; }
+  50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(0,0,0,0.2); }
+  100% { transform: scale(1); box-shadow: none; }
+}
+/* src/pages/Cities/Cities.module.css */
+.container {
+  padding: 4rem 2rem;
+  scroll-margin-top: 30px; /* Add this line */
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+  padding-top: 20px; /* Add this line */
+}
+
+/* src/components/SearchBar/SearchBar.module.css */
+.searchBar {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 800px;
+  background: var(--bg-light);
+  border-radius: 50px;
+  overflow: hidden;
+  box-shadow: 
+    5px 5px 15px var(--shadow-light),
+    -5px -5px 15px var(--shadow-dark);
+  transition: all 0.3s ease;
+}
+
+.searchBar:hover {
+  box-shadow: 
+    7px 7px 20px var(--shadow-light),
+    -7px -7px 20px var(--shadow-dark);
+}
+
+.form {
+  display: flex;
+  width: 100%;
+}
+
+.form input {
+  flex: 1;
+  padding: 1.2rem 2rem;
+  border: none;
+  outline: none;
+  font-size: 1.1rem;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+}
+
+.form input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+.form button {
+  padding: 0 2.5rem;
+  background: var(--bg-light);
+  color: var(--primary);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 0 50px 50px 0;
+  box-shadow: 
+    5px 5px 10px var(--shadow-light),
+    -5px -5px 10px var(--shadow-dark);
+  transition: all 0.3s ease;
+}
+
+.form button:hover {
+  box-shadow: 
+    inset 5px 5px 10px var(--shadow-light),
+    inset -5px -5px 10px var(--shadow-dark);
+}
+
+/* Dropdown Modal Styling */
+.dropdownModal {
+  position: absolute;
+  top: calc(100% + 1rem);
+  left: 0;
+  right: 0;
+  background: var(--bg-light);
+  border-radius: 25px;
+  box-shadow: 
+    10px 10px 20px var(--shadow-light),
+    -10px -10px 20px var(--shadow-dark);
+  z-index: 1000;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.suggestions {
+  list-style: none;
+  margin: 0;
+  padding: 1rem 0;
+}
+
+.suggestion {
+  padding: 1rem 2rem;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.2s ease;
+}
+
+.suggestion:hover,
+.highlighted {
+  background: rgba(var(--primary-rgb), 0.05);
+  color: var(--primary);
+}
+
+.suggestionIcon {
+  opacity: 0.6;
+  font-size: 0.9em;
+}
+
+/* src/pages/Cities/Cities.module.css */
+.hero {
+  /* change this… */
+  /* overflow: hidden; */
+  /* …to this: */
+  overflow: visible;
+}
+
+
+/* Cities.module.css */
+.loading {
+  padding: 2rem;
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+}
+
+.error {
+  padding: 2rem;
+  text-align: center;
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.cardWrapper {
+  flex: 0 1 350px;
+}
+
+
+
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+
+
+.cardWrapper {
+  flex: 0 1 350px;
+}
+@media (max-width: 768px) {
+  .list {
+    flex-direction: column;
+    align-items: center;
+  }
+  .cardWrapper {
+    flex: 1 1 100%;
+  }
+}
