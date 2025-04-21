@@ -18,6 +18,8 @@ import Bookings from "./pages/Bookings/Bookings";
 import Favorites from "./pages/Favorites/Favorites";
 import Auth from "./pages/Auth/Auth";
 import ScrollToTop from "./components/ScrollToTop";
+import NotFound from "./pages/NotFound404/404NotFound"; 
+
 
 import styles from "./App.module.css";
 
@@ -46,9 +48,16 @@ function AppContent() {
           <Route path="/register" element={<Auth />} />
 
           <Route path="/" element={<Home />} />
-          <Route path="/cities" element={<Cities />} />
-          <Route path="/cities/:title" element={<CityDetail />} />
-          <Route path="/restaurants" element={<Restaurants />} />
+
+          <Route path="/cities" element={
+            
+            <PrivateRoute><Cities /></PrivateRoute>} />
+          
+          <Route path="/cities/:title" element={
+            
+            <PrivateRoute><CityDetail /></PrivateRoute>}/>
+          <Route path="/restaurants" element={
+            <PrivateRoute><Restaurants /></PrivateRoute>}  />
           <Route
             path="/accommodations"
             element={
@@ -73,6 +82,9 @@ function AppContent() {
               </PrivateRoute>
             }
           />
+
+        <Route path="*" element={<NotFound />} />
+
         </Routes>
       </main>
 

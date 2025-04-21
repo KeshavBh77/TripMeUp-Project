@@ -107,7 +107,7 @@ export default function Home() {
         {showLoginModal && (
           <div className={styles.modalOverlay}>
             <div className={styles.loginModal}>
-              <p>Please login to view city details. Redirecting automatically...</p>
+              <p>Please login to view city details. Redirecting to login.....</p>
             </div>
           </div>
         )}
@@ -120,27 +120,23 @@ export default function Home() {
                 </div>
               ))
             : cities.map((city, i) => (
-                <div
-                  key={i}
-                  className={styles.cardWrapper}
-                  onClick={() => {
-                    if (!user) {
-                      setShowLoginModal(true);
-                      setTimeout(() => {
-                        setShowLoginModal(false);
-                        navigate("/login");
-                      }, 1500);
-                      return;
-                    }
-                    navigate(`/cities/${city.name}`);
-                  }}
-                >
+                <div key={i} className={styles.cardWrapper}>
                   <CityCard
                     image={"https://via.placeholder.com/300"}
                     title={city.name}
                     description={city.location}
                     types={["Restaurants", "Hotels", "Landmarks"]}
-                    onExplore={() => {}}
+                    onExplore={() => {
+                      if (!user) {
+                        setShowLoginModal(true);
+                        setTimeout(() => {
+                          setShowLoginModal(false);
+                          navigate("/login");
+                        }, 1500);
+                      } else {
+                        navigate(`/cities/${city.name}`);
+                      }
+                    }}
                   />
                 </div>
               ))}
