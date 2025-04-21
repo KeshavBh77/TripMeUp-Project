@@ -1,0 +1,119 @@
+.heroDetail {
+    position: relative;
+    height: 60vh;
+    margin: 2rem;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 10px 10px 20px var(--shadow-light), -10px -10px 20px var(--shadow-dark);
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=2070') !important;
+    background-size: cover;
+    background-position: center;
+  }
+  .overlayDetail {
+    position: absolute;
+    inset: 0;
+
+    z-index: -1;
+  }
+  .contentDetail {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+    padding: 0 2rem;
+  }
+  .contentDetail h1 {
+    font-size: 3.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    margin-bottom: 1rem;
+  }
+  .contentDetail p {
+    font-size: 1.2rem;
+  }
+  .containerDetail {
+    padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .detailGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  .textBlock p {
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .fact {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-light);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    box-shadow: 3px 3px 6px var(--shadow-light), -3px -3px 6px var(--shadow-dark);
+  }
+  .attractionBlock h3 {
+    margin-bottom: 1rem;
+  }
+  .attractionBlock ul {
+    list-style: none;
+    padding: 0;
+  }
+  .attractionItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    color: var(--dark);
+  }
+  .attractionIcon {
+    margin-right: 0.5rem;
+    color: var(--primary);
+  }
+  
+  /* Toggle Buttons */
+  .buttonGroup {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  .toggleBtn {
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: #666;
+    border: none;
+    background: var(--bg-light);
+    border-radius: 25px;
+    box-shadow: 5px 5px 10px var(--shadow-light), -5px -5px 10px var(--shadow-dark);
+    transition: all 0.3s ease;
+  }
+  .toggleBtn:hover {
+    box-shadow: inset 5px 5px 10px var(--shadow-light), inset -5px -5px 10px var(--shadow-dark);
+  }
+  .active {
+    color: var(--primary);
+    box-shadow: inset 5px 5px 10px var(--shadow-light), inset -5px -5px 10px var(--shadow-dark);
+  }
+  
+
+.placeGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+.cardWrapper {
+  flex: 0 1 350px;
+}

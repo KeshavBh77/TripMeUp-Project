@@ -1,0 +1,28 @@
+.reviewCard {
+  background: var(--bg-light);
+  padding: 1.5rem;
+  border-radius: 15px;
+  margin-bottom: 1rem;
+  box-shadow:
+    10px 10px 20px var(--shadow-dark),
+    -10px -10px 20px var(--shadow-light);
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+.author {
+  font-weight: 600;
+}
+.rating i {
+  color: var(--warning);
+}
+.date {
+  color: #666;
+  font-size: 0.8rem;
+}
+.content {
+  color: #333;
+  line-height: 1.6;
+}

@@ -1,0 +1,261 @@
+/* src/components/SearchBar/SearchBar.module.css */
+:root {
+  --shadow-light: #ffffff;
+  --shadow-dark:  #b8b9be;
+  --bg-light:     #e6e7ee;
+  --primary:      #4a6fa5;
+  --text-primary: #343a40;
+}
+
+.searchBar {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+}
+.form {
+  display: flex;
+  width: 100%;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+.form input {
+  flex: 1;
+  padding: 1.2rem 2rem;
+  font-size: 1.1rem;
+  background: transparent;
+  color: #1a1a1a; /* ✅ Darker font color for better contrast */
+  border: none;
+  outline: none;
+}
+
+
+.form button {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-left: none;
+  transition: all 0.3s ease;
+}
+
+.form button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.form:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transform: scale(1.01);
+}
+
+
+.dropdownModal {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  background: var(--bg-light);
+  border-radius: 12px;
+  box-shadow:
+    5px 5px 15px var(--shadow-dark),
+    -5px -5px 15px var(--shadow-light);
+  z-index: 9999;
+  padding: 0.5rem 0;
+  max-height: 300px; /* Enables vertical scrolling */
+  overflow-y: auto;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+
+.suggestions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.noResults {
+  padding: 1rem 1.5rem;
+  text-align: center;
+  font-style: italic;
+  color: #777;
+  font-size: 0.95rem;
+}
+
+
+.suggestion {
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.suggestion:hover,
+.highlighted {
+  background: rgba(var(--primary-rgb), 0.1);
+  color: var(--primary);
+}
+
+.suggestion:hover:before,
+.highlighted:before {
+  opacity: 1;
+}
+
+.suggestion:before {
+  content: "→";
+  margin-right: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.suggestionIcon {
+  margin-right: 0.5rem;
+}
+
+/* at the bottom of src/components/SearchBar/SearchBar.module.css */
+
+.noResults {
+  padding: 0.75rem 1.5rem;
+  color: #666;
+  font-style: italic;
+  text-align: center;
+}
+
+
+/* avatar next to each suggestion */
+.suggestion {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+}
+
+.suggestionAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.75rem;
+}
+
+.suggestionText {
+  flex: 1;
+}
+
+/* make each suggestion a bit taller, flex‑aligned */
+.suggestion {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.suggestion:hover,
+.highlighted {
+  background: rgba(var(--primary-rgb, 74,111,165), 0.1);
+}
+
+/* square, bigger avatar */
+.suggestionAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-right: 1rem;
+  flex-shrink: 0;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+.suggestion:hover .suggestionAvatar,
+.highlighted .suggestionAvatar {
+  transform: scale(1.05);
+}
+
+.suggestionText {
+  font-size: 1rem;
+  color: #1a1a1a; /* darker text for better contrast */
+  font-weight: 500;
+}
+
+
+/* src/components/SearchBar/SearchBar.module.css */
+.dropdownModal {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  background: var(--bg-light);
+  border-radius: 12px;
+  box-shadow:
+    5px 5px 15px var(--shadow-dark),
+    -5px -5px 15px var(--shadow-light);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 9999;   /* ← make sure it sits on top */
+  padding: 0.5rem 0;
+}
+
+
+
+.dropdownModal {
+  z-index: 9999; 
+  margin-top: 0.5rem;
+}
+
+
+.container {
+  scroll-margin-top: 120px; 
+}
+
+.cardWrapper {
+  scroll-margin-top: 80px; 
+}
+
+
+.dropdownModal {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    5px 5px 15px rgba(0, 0, 0, 0.1),
+    -5px -5px 15px rgba(255, 255, 255, 0.2);
+  z-index: 1000;
+  padding: 0.75rem 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+
+
+.noResults {
+  padding: 1rem 1.5rem;
+  text-align: center;
+  font-style: italic;
+  color: #333; /* darker gray */
+  font-size: 0.95rem;
+}
+
+.highlighted {
+  background: rgba(var(--primary-rgb, 74, 111, 165), 0.15);
+  color: #000; /* makes text pop on highlight */
+}
+
