@@ -22,7 +22,7 @@ class AmenitiesSerializer(serializers.ModelSerializer):
 
 class AccommodationSerializer(serializers.ModelSerializer):
     amenities = AmenitiesSerializer(many=True, read_only=True)
-
+    place = PlaceSerializer(read_only=True)
     class Meta:
         model = Accommodation
         fields = '__all__'

@@ -37,24 +37,26 @@ const CityDetail = () => {
         const fetchCityData = async () => {
             try {
                 setLoading(true);
-                // Replace the API URL with the Django backend URL
-                const res = await fetch(`http://localhost:8000/TripMeUpApp/city/${cityKey}`);
-                // Check if the response is successful (status code 200-299)
+                const res = await fetch(`http://localhost:8000/TripMeUpApp/city/`);
                 if (!res.ok) {
                     throw new Error(`HTTP error! Status: ${res.status}`);
                 }
-                const result = await res.json();
-                console.log("Fetched data:", result);
-                setData(result);
+                const cities = await res.json();
+                console.log("Fetched cities:", cities);
+
+                // Find the city matching the title param
+                const matchedCity = cities.find(
+                    (c) => c.name.toLowerCase() === cityKey.toLowerCase()
+                );
+
+                if (!matchedCity) {
+                    throw new Error("City not found");
+                }
+
+                setData(matchedCity);
             } catch (error) {
-                console.error("you Failed to fetch city data:", error);
-                setData({
-                    about: "City data could not be loaded.",
-                    attractions: [],
-                    facts: [],
-                    restaurants: [],
-                    accommodations: [],
-                });
+                console.error("Failed to fetch city data:", error);
+                setData(null);
             } finally {
                 setLoading(false);
             }
@@ -62,7 +64,6 @@ const CityDetail = () => {
 
         fetchCityData();
     }, [title]);
-
 
     if (loading) return <div className={styles.loading}>Loading...</div>;
     if (!data) return <div className={styles.error}>No data found for {cityKey}</div>;
@@ -75,43 +76,32 @@ const CityDetail = () => {
             <section className={styles.heroDetail}>
                 <div className={styles.overlayDetail} />
                 <div className={styles.contentDetail}>
-                    <h1>
-                        {cityKey}, {cityKey.location}
-                    </h1>
-
-                    <p>Dummy one liner intro for this city</p>
+                    <h1>{cityKey}</h1><h2>{data.location}</h2>
+                    <p>{data.intro}</p>
                 </div>
             </section>
 
+            
             <div className={styles.containerDetail}>
                 <SectionTitle title={`About ${cityKey}`} />
                 <div className={styles.detailGrid}>
                     <div className={styles.textBlock}>
-                        <p>{data.about}</p>
-                        <div className={styles.facts}>
-                            {data.facts.map((f, i) => {
-                                const Icon = getFactIcon(f.icon); // Dynamically resolve icon
-                                return (
-                                    <div key={i} className={styles.fact}>
-                                        <Icon /> {f.label}
-                                    </div>
-                                );
-                            })}
-                        </div>
+                        <p>{data.description}</p>
                     </div>
-                    <div className={styles.attractionBlock}>
-                        <h3>Top Attractions</h3>
-                        <ul>
-                            {data.attractions.map((a, i) => (
-                                <li key={i} className={styles.attractionItem}>
-                                    <FaLandmark className={styles.attractionIcon} /> {a}
+                    <div className={styles.factsBlock}>
+                        <h3>Interesting Facts</h3>
+                        <ul className={styles.factsList}>
+                            {data.facts.split('.').filter(fact => fact.trim().length > 0).map((fact, index) => (
+                                <li key={index} className={styles.factItem}>
+                                    {fact.trim() + '.'}
                                 </li>
                             ))}
                         </ul>
                     </div>
                 </div>
-
-                <div className={styles.buttonGroup}>
+                
+                {/* TODO: After wards */}
+                {/* <div className={styles.buttonGroup}>
                     <button
                         className={`${styles.toggleBtn} ${view === "restaurants" ? styles.active : ""}`}
                         onClick={() => setView("restaurants")}
@@ -136,7 +126,7 @@ const CityDetail = () => {
                             />
                         </div>
                     ))}
-                </div>
+                </div> */}
 
                 <BookingModal
                     show={bookingOpen}
