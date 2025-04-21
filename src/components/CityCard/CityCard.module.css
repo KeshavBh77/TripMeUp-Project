@@ -82,9 +82,24 @@
   }
   
 
-  .bookNow {
-  }
-  
-  .bookNow:hover {
-  }
-  
+/* PlaceCard.module.css */
+
+.bookNow {
+  margin-left: auto;                          /* push it to the right of the actions row */
+  padding: 0.6rem 1.2rem;                     /* comfortable click area */
+  border: none;
+  border-radius: 12px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 5px 5px 10px var(--shadow-dark),
+             -5px -5px 10px var(--shadow-light);
+  transition: all 0.3s ease;
+}
+
+.bookNow:hover {
+  box-shadow: inset 5px 5px 10px var(--shadow-dark),
+             inset -5px -5px 10px var(--shadow-light);
+}
