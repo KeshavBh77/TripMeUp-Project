@@ -1,4 +1,3 @@
-
 from django.http import HttpResponse
 from django.shortcuts import render
 from .models import *
@@ -8,6 +7,10 @@ from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateAPIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import NotFound
+from rest_framework import viewsets
+from .models import City
+from .serializers import CitySerializer
+
 # Create your views here.
 class HomeListView(ModelViewSet):
    queryset = City.objects.all()
