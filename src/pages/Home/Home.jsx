@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Hero from "../../components/Hero/Hero";
 import SectionTitle from "../../components/SectionTitle/SectionTitle";
@@ -8,6 +8,7 @@ import PlaceCard from "../../components/PlaceCard/PlaceCard";
 import ReviewCard from "../../components/ReviewCard/ReviewCard";
 import Skeleton from "../../components/Skeleton/Skeleton";
 import styles from "./Home.module.css";
+import { AuthContext } from "../../context/AuthContext";
 
 import restaurant from "../../assets/images/restaurant.png";
 import hotel1 from "../../assets/images/hotel1.png";
@@ -18,7 +19,9 @@ export default function Home() {
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const loadCities = async () => {
@@ -96,11 +99,18 @@ export default function Home() {
       <Hero cities={cities} />
 
       <div className={styles.container}>
-        {/* Popular Cities Section */}
         <SectionTitle
           title="Popular Destinations"
           subtitle="Explore our most popular cities"
         />
+
+        {showLoginModal && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.loginModal}>
+              <p>Please login to view city details. Redirecting automatically...</p>
+            </div>
+          </div>
+        )}
 
         <div className={styles.list}>
           {loading
@@ -110,19 +120,32 @@ export default function Home() {
                 </div>
               ))
             : cities.map((city, i) => (
-                <div key={i} className={styles.cardWrapper}>
+                <div
+                  key={i}
+                  className={styles.cardWrapper}
+                  onClick={() => {
+                    if (!user) {
+                      setShowLoginModal(true);
+                      setTimeout(() => {
+                        setShowLoginModal(false);
+                        navigate("/login");
+                      }, 1500);
+                      return;
+                    }
+                    navigate(`/cities/${city.name}`);
+                  }}
+                >
                   <CityCard
                     image={"https://via.placeholder.com/300"}
                     title={city.name}
                     description={city.location}
                     types={["Restaurants", "Hotels", "Landmarks"]}
-                    onExplore={() => navigate(`/cities/${city.name}`)}
+                    onExplore={() => {}}
                   />
                 </div>
               ))}
         </div>
 
-        {/* Featured Places Section */}
         <SectionTitle
           title="Featured Places"
           subtitle="Discover top-rated options"
@@ -155,7 +178,6 @@ export default function Home() {
               ))}
         </div>
 
-        {/* Reviews Section */}
         <SectionTitle title="Recent Reviews" subtitle="" />
         <div className={styles.list}>
           {loading
