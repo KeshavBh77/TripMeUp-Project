@@ -4,6 +4,9 @@ class City(models.Model):
     city_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=200)
+    intro = models.TextField(blank=True)
+    description = models.TextField(blank=True)  # New field added
+    facts = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
@@ -11,12 +14,15 @@ class City(models.Model):
 class Place(models.Model):
     place_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    contact = models.CharField(max_length=15)
+    contact = models.CharField(max_length=20)
     address = models.CharField(max_length=200)
     street = models.CharField(max_length=100)
     postal_code = models.CharField(max_length=10)
     email = models.EmailField()
-    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='places')
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="places")
+    rating = models.FloatField(default=0.0)
+    description = models.TextField(blank=True)
+    
 
     def __str__(self):
         return self.name
@@ -114,4 +120,3 @@ class Writes(models.Model):
 class Serves(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     cuisine = models.ForeignKey(Cuisine, on_delete=models.CASCADE)
-

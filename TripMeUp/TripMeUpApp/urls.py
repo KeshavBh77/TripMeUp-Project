@@ -15,11 +15,11 @@ router = DefaultRouter()
 # Register viewsets with appropriate base names
 # router.register(r"cities", CityListView, basename="city-list")
 router.register(r"city", CityDetailView, basename="city-detail")
+router.register(r"places", PlaceDetailView, basename="place-detail")
+router.register(r"accommodation", AccommodationDetailView, basename="accommodation-detail")
+router.register(r"restaurants", RestaurantDetailView, basename="restaurant-detail")
 router.register(r"", HomeListView, basename="home")
 
 urlpatterns = [
-    path("", include(router.urls)),
-
-
-path("city/<str:name>/", CityDetailView.as_view({'get': 'retrieve'}), name="city-detail"),
+    path("", include(router.urls))
 ]
