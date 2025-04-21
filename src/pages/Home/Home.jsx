@@ -45,12 +45,18 @@ export default function Home() {
                 // Fetch restaurants
                 const restaurantRes = await fetch("http://localhost:8000/TripMeUpApp/restaurants/");
                 const restaurantData = await restaurantRes.json();
-                setRestaurants(restaurantData);
+                const topRestaurants = restaurantData
+                    .sort((a, b) => b.place.rating - a.place.rating)
+                    .slice(0, 5);
+                setRestaurants(topRestaurants);
 
                 // Fetch accommodations
                 const accommodationRes = await fetch("http://localhost:8000/TripMeUpApp/accommodation/");
                 const accommodationData = await accommodationRes.json();
-                setAccommodations(accommodationData);
+                const topAccommodations = accommodationData
+                    .sort((a, b) => b.place.rating - a.place.rating)
+                    .slice(0, 5);
+                setAccommodations(topAccommodations);
 
             } catch (err) {
                 console.error("Fetch error:", err);
