@@ -11,6 +11,7 @@ const PlaceCard = ({
     email,
     rating,
     description,
+    working_hours, // Added working_hours for restaurants
     isAccommodation = false,
     type,
     charge,
@@ -22,7 +23,7 @@ const PlaceCard = ({
         style={{ cursor: isAccommodation ? "pointer" : "default" }}
     >
         <img
-            src={`https://source.unsplash.com/random/400x300/?hotel,${name}`}
+            src={`https://source.unsplash.com/random/400x300/?restaurant,${name}`} // placeholder image
             alt={name}
             className={styles.image}
         />
@@ -40,6 +41,12 @@ const PlaceCard = ({
 
             <p className={styles.description}>{description}</p>
 
+            {working_hours && (
+                <div className={styles.feature}>
+                    🕰 <strong>Working Hours:</strong> {working_hours}
+                </div>
+            )}
+
             <div className={styles.features}>
                 <div className={styles.feature}>
                     📞 <span>{contact}</span>
@@ -49,12 +56,13 @@ const PlaceCard = ({
                 </div>
                 {type && (
                     <div className={styles.feature}>
-                        🏨 <strong>Type:</strong> {type}
+                        🍽 <strong>Type:</strong> {type}
                     </div>
                 )}
                 {charge && (
                     <div className={styles.feature}>
-                        💰 <strong>Charge:</strong> ${charge}
+                        💰 <strong>Charge:</strong> ${charge}{" "}
+                        {isAccommodation ? "per night" : "per person"}
                     </div>
                 )}
             </div>
@@ -74,7 +82,7 @@ const PlaceCard = ({
 
             <div className={styles.actions}>
                 <div className={styles.price}>
-                    ${charge || rating * 20} <span>per night</span>
+                    ${charge || rating * 20} <span>{isAccommodation ? "per night" : "per person"}</span>
                 </div>
                 <button className={styles.favorite}>
                     <FaHeart />

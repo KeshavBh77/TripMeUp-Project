@@ -17,7 +17,7 @@ router = DefaultRouter()
 router.register(r"city", CityDetailView, basename="city-detail")
 router.register(r"places", PlaceDetailView, basename="place-detail")
 router.register(r"accommodation", AccommodationDetailView, basename="accommodation-detail")
-router.register(r"restaurant", RestaurantDetailView, basename="restaurant-detail")
+router.register(r"restaurants", RestaurantDetailView, basename="restaurant-detail")
 router.register(r"", HomeListView, basename="home")
 
 urlpatterns = [
