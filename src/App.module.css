@@ -1,11 +1,3 @@
-/* App.module.css */
-
-/* Entire app uses grid to define header / content / footer rows */
-.app {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  min-height: 100vh;
-}
 
 /* Routed content area scrolls if needed */
 .content {

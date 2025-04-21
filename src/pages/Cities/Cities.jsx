@@ -4,7 +4,7 @@ import styles from './Cities.module.css';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import SectionTitle from '../../components/SectionTitle/SectionTitle';
 import CityCard from '../../components/CityCard/CityCard';
-import Footer from '../../components/Footer/Footer';
+
 
 export default function Cities() {
   const [filter, setFilter] = useState("");

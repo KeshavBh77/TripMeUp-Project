@@ -1,50 +1,75 @@
-import React, { createContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+// src/context/AuthContext.jsx
+import React, { createContext, useState, useEffect } from 'react';
+
+// Key under which we’ll keep our “database” of users
+const USERS_KEY = 'app_users';
+// Key for the currently logged‑in user
+const CURRENT_KEY = 'app_currentUser';
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const navigate = useNavigate();
 
-  // Load persisted user
+  // On mount, rehydrate from localStorage
   useEffect(() => {
-    const stored = localStorage.getItem("user");
+    const stored = localStorage.getItem(CURRENT_KEY);
     if (stored) setUser(JSON.parse(stored));
   }, []);
 
-  // Register new user locally
-  const register = (username, password) => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    if (users.some((u) => u.username === username)) {
-      throw new Error("Username already exists");
+  // Helper to read/write our local “DB”
+  const getUsers = () => {
+    try {
+      return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+    } catch {
+      return [];
     }
-    const newUser = { username, password };
-    users.push(newUser);
-    localStorage.setItem("users", JSON.stringify(users));
-    // Auto‑login after register
-    login(username, password);
+  };
+  const saveUsers = (users) =>
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+
+  // REGISTER: simulate async, then add to localStorage
+  const register = (userData) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const users = getUsers();
+        if (users.find((u) => u.email === userData.email)) {
+          return reject(new Error('Email already in use'));
+        }
+        // you might hash passwords here in prod
+        users.push(userData);
+        saveUsers(users);
+
+        // auto‑login after register
+        localStorage.setItem(CURRENT_KEY, JSON.stringify(userData));
+        setUser(userData);
+
+        resolve(userData);
+      }, 300);
+    });
   };
 
-  // Login existing user
-  const login = (username, password) => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    const found = users.find(
-      (u) => u.username === username && u.password === password,
-    );
-    if (!found) {
-      throw new Error("Invalid credentials");
-    }
-    localStorage.setItem("user", JSON.stringify(found));
-    setUser(found);
-    navigate("/");
+  // LOGIN: simulate async, check against localStorage users
+  const login = (email, password) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const users = getUsers();
+        const found = users.find(
+          (u) => u.email === email && u.password === password
+        );
+        if (!found) {
+          return reject(new Error('Invalid email or password'));
+        }
+        localStorage.setItem(CURRENT_KEY, JSON.stringify(found));
+        setUser(found);
+        resolve(found);
+      }, 300);
+    });
   };
 
-  // Logout
   const logout = () => {
-    localStorage.removeItem("user");
+    localStorage.removeItem(CURRENT_KEY);
     setUser(null);
-    navigate("/login");
   };
 
   return (
@@ -52,4 +77,4 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
+}
