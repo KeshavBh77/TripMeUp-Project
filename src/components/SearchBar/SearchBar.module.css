@@ -70,12 +70,14 @@
   border-radius: 12px;
   box-shadow:
     5px 5px 15px var(--shadow-dark),
-   -5px -5px 15px var(--shadow-light);
-  max-height: 300px;
-  overflow-y: auto;
-  z-index: 1000;
+    -5px -5px 15px var(--shadow-light);
+  z-index: 9999;
   padding: 0.5rem 0;
+  max-height: 300px; /* Enables vertical scrolling */
+  overflow-y: auto;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
+
 
 .suggestions {
   list-style: none;
