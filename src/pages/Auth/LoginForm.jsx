@@ -14,7 +14,7 @@ export default function LoginForm({ switchTab }) {
     e.preventDefault();
     try {
       await login(email, password);
-      navigate("/cities");
+      navigate("/");
     } catch (err) {
       setError(err.message);
     }

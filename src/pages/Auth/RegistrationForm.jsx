@@ -56,7 +56,7 @@ export default function RegisterForm({ switchTab }) {
         email,
         password,
       });
-      navigate('/cities');
+      navigate('/login');
     } catch (err) {
       setErrors({ submit: err.message });
     }
