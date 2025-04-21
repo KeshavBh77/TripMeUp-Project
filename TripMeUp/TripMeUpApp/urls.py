@@ -19,5 +19,7 @@ router.register(r"", HomeListView, basename="home")
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("city/<str:name>/", CityDetailView.as_view(), name="city-detail"),
+
+
+path("city/<str:name>/", CityDetailView.as_view({'get': 'retrieve'}), name="city-detail"),
 ]
