@@ -138,13 +138,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all().order_by("-review_id")
     serializer_class = ReviewSerializer
 
-# TripMeUpApp/views.py
-from rest_framework import viewsets, status
-from rest_framework.response import Response
-from .models import Booking
-from .serializers import BookingSerializer
-
-
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
@@ -201,7 +194,12 @@ class PlaceViewSet(viewsets.ViewSet):
         serializer = PlaceSerializer(places, many=True)
         return Response(serializer.data)
 
+class CheckAdmin(viewsets.ViewSet):
+    def get(self,request):
+        user = request.user
+        admin = Admin.objects.filter(user=user).exists()
+        if admin:
+            return Response({"admin": True}, status=status.HTTP_200_OK)
+        else:
+            return Response({"admin": False}, status=status.HTTP_403_FORBIDDEN)
 
-class AdminViewSet(viewsets.ModelViewSet):
-    queryset = Admin.objects.select_related("user").all()
-    serializer_class = AdminSerializer
