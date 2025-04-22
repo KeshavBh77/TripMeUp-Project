@@ -8,135 +8,136 @@
     --dark: #343a40;
     --text-secondary: #6c757d;
     --danger: #dc3545;
-  }
-  
-  /* Container */
-  .page {
+}
+
+/* Container */
+.page {
     max-width: 900px;
     margin: 2rem auto;
     padding: 0 1rem;
-  }
-  
-  /* Error message */
-  .error {
+}
+
+/* Error message */
+.error {
     color: var(--danger);
     text-align: center;
     margin-bottom: 1rem;
-  }
-  
-  /* Existing reviews list */
-  .list {
+}
+
+/* Existing reviews list */
+.list {
     list-style: none;
     padding: 0;
     margin: 0 0 2rem;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
-  }
-  
-  .reviewCard {
+}
+
+.reviewCard {
     background: var(--bg-light);
     border-radius: 12px;
     padding: 1rem;
-    box-shadow:
-      5px 5px 12px var(--shadow-dark),
-      -5px -5px 12px var(--shadow-light);
+    box-shadow: 5px 5px 12px var(--shadow-dark),
+        -5px -5px 12px var(--shadow-light);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-  }
-  
-  .header {
+    overflow: hidden;
+}
+
+.header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0.75rem;
-  }
-  
-  .header strong {
+}
+
+.header strong {
     font-size: 1rem;
     color: var(--dark);
-  }
-  
-  .rating {
+}
+
+.rating {
     display: inline-flex;
     align-items: center;
     color: var(--primary);
     font-weight: 500;
-  }
-  
-  .rating span {
+}
+
+.rating span {
     margin-left: 0.25rem;
     color: var(--dark);
     font-size: 0.9rem;
-  }
-  
-  .comment {
+}
+
+.comment {
     flex: 1;
     margin: 0.5rem 0;
     color: var(--dark);
     line-height: 1.4;
-  }
-  
-  .date {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    padding-right: 1rem;
+}
+
+.date {
     font-size: 0.8rem;
     color: var(--text-secondary);
     text-align: right;
-  }
-  
-  /* Review submission form */
-  .form {
+    white-space: nowrap;
+}
+
+/* Review submission form */
+.form {
     background: var(--bg-light);
     padding: 1.5rem;
     border-radius: 12px;
-    box-shadow:
-      inset 3px 3px 6px var(--shadow-dark),
-      inset -3px -3px 6px var(--shadow-light);
+    box-shadow: inset 3px 3px 6px var(--shadow-dark),
+        inset -3px -3px 6px var(--shadow-light);
     margin-bottom: 2rem;
-  }
-  
-  .form h3 {
+}
+
+.form h3 {
     margin-top: 0;
     color: var(--dark);
     font-size: 1.2rem;
     margin-bottom: 1rem;
-  }
-  
-  .formGroup {
+}
+
+.formGroup {
     margin-bottom: 1rem;
-  }
-  
-  .formGroup label {
+}
+
+.formGroup label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
     color: var(--dark);
-  }
-  
-  .formGroup select,
-  .formGroup textarea {
+}
+
+.formGroup select,
+.formGroup textarea {
     width: 100%;
     padding: 0.75rem;
     border: none;
     border-radius: 10px;
     background: var(--bg-light);
-    box-shadow:
-      inset 2px 2px 4px var(--shadow-dark),
-      inset -2px -2px 4px var(--shadow-light);
+    box-shadow: inset 2px 2px 4px var(--shadow-dark),
+        inset -2px -2px 4px var(--shadow-light);
     font-size: 1rem;
     transition: box-shadow 0.2s;
-  }
-  
-  .formGroup select:focus,
-  .formGroup textarea:focus {
+}
+
+.formGroup select:focus,
+.formGroup textarea:focus {
     outline: none;
-    box-shadow:
-      inset 1px 1px 3px var(--shadow-dark),
-      inset -1px -1px 3px var(--shadow-light);
-  }
-  
-  /* Submit button */
-  .submitBtn {
+    box-shadow: inset 1px 1px 3px var(--shadow-dark),
+        inset -1px -1px 3px var(--shadow-light);
+}
+
+/* Submit button */
+.submitBtn {
     background: var(--primary);
     color: white;
     padding: 0.75rem 1.5rem;
@@ -144,21 +145,18 @@
     border-radius: 10px;
     font-weight: 600;
     cursor: pointer;
-    box-shadow:
-      4px 4px 8px var(--shadow-dark),
-      -4px -4px 8px var(--shadow-light);
+    box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
     transition: all 0.2s ease;
-  }
-  
-  .submitBtn:disabled {
+}
+
+.submitBtn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-  }
-  
-  /* Prompt when not logged in */
-  .loginPrompt {
+}
+
+/* Prompt when not logged in */
+.loginPrompt {
     text-align: center;
     color: var(--text-secondary);
     font-style: italic;
-  }
-  
+}

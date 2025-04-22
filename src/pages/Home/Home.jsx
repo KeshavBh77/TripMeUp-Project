@@ -59,12 +59,28 @@ export default function Home() {
                     .slice(0, 5);
                 setAccommodations(topAccommodations);
 
+                // Fetch reviews
                 const reviewsRes = await fetch("http://localhost:8000/TripMeUpApp/reviews/");
                 const reviewsData = await reviewsRes.json();
-                const topReviews = reviewsData
+                const topReviewsRaw = reviewsData
                     .sort((a, b) => b.rating - a.rating)
                     .slice(0, 5);
+
+                // Add usernames to reviews
+                const topReviews = await Promise.all(
+                    topReviewsRaw.map(async (review) => {
+                        try {
+                            const userRes = await fetch(`http://localhost:8000/TripMeUpApp/users/${review.user}/`);
+                            const userData = await userRes.json();
+                            return { ...review, username: userData.username };
+                        } catch {
+                            return { ...review, username: 'Anonymous' };
+                        }
+                    })
+                );
+
                 setReviews(topReviews);
+
 
             } catch (err) {
                 console.error("Fetch error:", err);
@@ -190,8 +206,9 @@ export default function Home() {
                         : reviews.map((rev, i) => (
                             <div key={i} className={styles.cardWrapper}>
                                 <ReviewCard
-                                    author={rev.user || "Anonymous"}
+                                    author={rev.username || "Anonymous"}
                                     rating={rev.rating}
+                                    date={new Date(rev.created_at || rev.date).toLocaleDateString()}
                                     content={rev.comment}
                                 />
                             </div>

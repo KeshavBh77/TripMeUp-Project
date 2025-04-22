@@ -3,7 +3,6 @@ import styles from "./PlaceCard.module.css";
 import {
   FaStar,
   FaMapMarkerAlt,
-  FaHeart,
   FaBed,
   FaHotel,
   FaHome,
@@ -57,15 +56,6 @@ const PlaceCard = ({
           alt={name}
           className={styles.image}
         />
-        {isAccommodation && (
-          <button
-            className={styles.heart}
-            onClick={(e) => e.stopPropagation()}
-            aria-label="Favorite"
-          >
-            <FaHeart />
-          </button>
-        )}
       </div>
 
       <div className={styles.details}>
@@ -147,7 +137,7 @@ const PlaceCard = ({
                 onReview && onReview(place_id);
               }}
             >
-              <FaComments /> Reviews
+              <FaComments /> Read Reviews
             </button>
           )}
         </div>
