@@ -46,7 +46,6 @@ const Navbar = () => {
             ["Restaurants", "/restaurants"],
             ["Accommodations", "/accommodations"],
             ["My Bookings", "/bookings"],
-            ["Favorites", "/favorites"],
           ].map(([label, path]) => (
             <NavLink
               key={path}
