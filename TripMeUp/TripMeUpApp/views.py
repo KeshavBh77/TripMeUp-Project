@@ -125,9 +125,20 @@ class RestaurantDetailView(ModelViewSet):
         return Response(serializer.data)
 
 
+# views.py
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from .models import User, Client
+from .serializers import UserSerializer
+
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().order_by("user_id")
+    queryset = User.objects.all().order_by('user_id')
     serializer_class = UserSerializer
+    lookup_field = 'user_id'
+
+    def perform_create(self, serializer):
+        user = serializer.save()
+        Client.objects.create(user=user)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
