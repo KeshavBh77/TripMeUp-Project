@@ -52,7 +52,7 @@ function AppContent() {
           <Route path="/login" element={<Auth />} />
           <Route path="/register" element={<Auth />} />
           <Route path="/admin-login" element={<Auth />} />
-          <Route path="/admin/bookings" element={<AdminBookings />} />
+          <Route path="/admin/dashboard" element={<AdminBookings />} />
 
                     <Route path="/" element={<Home />} />
                     <Route path="/cities" element={
