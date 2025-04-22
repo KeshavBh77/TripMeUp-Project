@@ -114,6 +114,7 @@ height: 100%;
   background: var(--primary);
   color: #fff;
   border: none;
+  padding: 0.6rem 1.2rem;                     
 
   border-radius: 12px;
   cursor: pointer;
