@@ -31,3 +31,18 @@
   justify-content: center;
   align-items: center;
 }
+
+:root {
+  /* make sure you have these in your global styles */
+  --primary: #4a6fa5;
+  --secondary: #166088;
+  --accent: #4fc3f7;
+  --bg-light: #e6e7ee;
+  --shadow-light: #ffffff;
+  --shadow-dark: #b8b9be;
+  --dark: #343a40;
+  --text-primary: #4a5568;
+  --text-secondary: #718096;
+  --warning: #ffc107;
+  --danger: #dc3545;
+}

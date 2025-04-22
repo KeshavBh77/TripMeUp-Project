@@ -165,9 +165,10 @@
 }
 
 .actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: auto;
+  display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      margin-top: auto;
 }
 
 .bookNow,
@@ -179,16 +180,15 @@
 }
 
 .bookNow {
-    background: var(--primary);
-    color: #fff;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 25px;
-    cursor: pointer;
-    font-weight: 900;
-    box-shadow: 5px 5px 10px #93949a, -5px -5px 10px #ffffff;
-    transition: transform 0.2s, box-shadow 0.2s;
-    margin-right: 1rem;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 5px 5px 10px #93949a, -5px -5px 10px #ffffff;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .bookNow:hover {
@@ -222,6 +222,9 @@
         -5px -5px 10px var(--shadow-light);
     transition: all 0.2s;
 }
+
+
+
 
 .reviewBtn:hover {
     transform: translateY(-2px);

@@ -105,7 +105,10 @@ const Navbar = () => {
               <NavLink to="/login" className={`${styles.btn} ${styles.outline}`}>
                 Login
               </NavLink>
-              <NavLink to="/register" className={`${styles.btn} ${styles.primary}`}>
+              <NavLink
+                to="/register"
+                className={`${styles.btn} ${styles.primary}`}
+              >
                 Sign Up
               </NavLink>
             </>

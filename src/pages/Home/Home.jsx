@@ -1,3 +1,4 @@
+// src/pages/Home/Home.jsx
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Hero from "../../components/Hero/Hero";
@@ -11,53 +12,56 @@ import BookingModal from "../../components/BookingModal/BookingModal";
 import styles from "./Home.module.css";
 import { AuthContext } from "../../context/AuthContext";
 
-import restaurant from "../../assets/images/restaurant.png";
-import hotel1 from "../../assets/images/hotel1.png";
-
 export default function Home() {
-    const [activeTab, setActiveTab] = useState("restaurants");
-    const [favorites, setFavorites] = useState({});
-    const [cities, setCities] = useState([]);
-    const [restaurants, setRestaurants] = useState([]);
-    const [accommodations, setAccommodations] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [showLoginModal, setShowLoginModal] = useState(false);
-    const [bookingOpen, setBookingOpen] = useState(false);
-    const [selectedPlace, setSelectedPlace] = useState(null);
-    const [bookingDetails, setBookingDetails] = useState({ guests: 1, from: '', to: '', guestNames: [''] });
-    const [reviews, setReviews] = useState([]);
+  const [activeTab, setActiveTab] = useState("restaurants");
+  const [favorites, setFavorites] = useState({});
+  const [cities, setCities] = useState([]);
+  const [restaurants, setRestaurants] = useState([]);
+  const [accommodations, setAccommodations] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [selectedPlace, setSelectedPlace] = useState(null);
+  const [bookingDetails, setBookingDetails] = useState({
+    guests: 1,
+    from: "",
+    to: ""
+  });
 
-    const navigate = useNavigate();
-    const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
 
-    // Fetch cities, restaurants, and accommodations data
-    useEffect(() => {
-        const loadData = async () => {
-            try {
-                // Simulate loading delay
-                await new Promise(resolve => setTimeout(resolve, 1500));
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        await new Promise((r) => setTimeout(r, 1500));
 
-                // Fetch cities
-                const cityRes = await fetch("http://localhost:8000/TripMeUpApp/city/");
-                const cityData = await cityRes.json();
-                setCities(cityData);
+        // cities
+        const cityRes = await fetch("http://localhost:8000/TripMeUpApp/city/");
+        const cityData = await cityRes.json();
+        setCities(cityData);
 
-                // Fetch restaurants
-                const restaurantRes = await fetch("http://localhost:8000/TripMeUpApp/restaurants/");
-                const restaurantData = await restaurantRes.json();
-                const topRestaurants = restaurantData
-                    .sort((a, b) => b.place.rating - a.place.rating)
-                    .slice(0, 5);
-                setRestaurants(topRestaurants);
+        // restaurants (API returns [{ place: {...}, working_hours, ... }, ...])
+        const resRes = await fetch("http://localhost:8000/TripMeUpApp/restaurants/");
+        const resData = await resRes.json();
+        const topR = Array.isArray(resData)
+          ? resData
+              .sort((a, b) => b.place.rating - a.place.rating)
+              .slice(0, 5)
+          : [];
+        setRestaurants(topR);
 
-                // Fetch accommodations
-                const accommodationRes = await fetch("http://localhost:8000/TripMeUpApp/accommodation/");
-                const accommodationData = await accommodationRes.json();
-                const topAccommodations = accommodationData
-                    .sort((a, b) => b.place.rating - a.place.rating)
-                    .slice(0, 5);
-                setAccommodations(topAccommodations);
+        // accommodations
+        const accRes = await fetch("http://localhost:8000/TripMeUpApp/accommodation/");
+        const accData = await accRes.json();
+        const topA = Array.isArray(accData)
+          ? accData
+              .sort((a, b) => b.place.rating - a.place.rating)
+              .slice(0, 5)
+          : [];
+        setAccommodations(topA);
 
                 // Fetch reviews
                 const reviewsRes = await fetch("http://localhost:8000/TripMeUpApp/reviews/");
@@ -93,107 +97,135 @@ export default function Home() {
         loadData();
     }, []);
 
-    const toggleFavorite = (id) => {
-        setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
-    };
+  // favorites toggle
+  const toggleFavorite = (id) =>
+    setFavorites((f) => ({ ...f, [id]: !f[id] }));
 
-    const handleBook = (place) => {
-        setSelectedPlace(place);
-        setBookingDetails({ guests: 1, from: '', to: '', guestNames: [''] });
-        setBookingOpen(true);
-    };
+  // open booking modal with real Place object
+  const handleBook = (place) => {
+    setSelectedPlace(place);
+    setBookingDetails({ guests: 1, from: "", to: "" });
+    setBookingOpen(true);
+  };
 
-    const handleBookingSubmit = ({ place, dates, guests, guestNames }) => {
-        console.log("Booking confirmed:", {
-            place,
-            dates,
-            guests,
-            guestNames
-        });
-    };
+  // submits booking to backend
+  const handleBookingSubmit = async ({ place, dates, guests }) => {
+    try {
+      const res = await fetch("http://localhost:8000/TripMeUpApp/booking/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client: user.user_id,
+          place: place.place_id,
+          starting_date: dates.from,
+          ending_date: dates.to,
+          no_of_guests: guests
+        })
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || "Booking creation failed");
+      }
+      // optional: you can refresh “my bookings” or show a toast
+      setBookingOpen(false);
+    } catch (err) {
+      console.error("Booking failed:", err);
+      alert(err.message);
+    }
+  };
 
-    return (
-        <div className={styles.home}>
-            <Hero cities={cities} />
+  return (
+    <div className={styles.home}>
+      <Hero cities={cities} />
 
-            <div className={styles.container}>
-                <SectionTitle
-                    title="Popular Destinations"
-                    subtitle="Explore our most popular cities"
-                />
+      <div className={styles.container}>
+        <SectionTitle
+          title="Popular Destinations"
+          subtitle="Explore our most popular cities"
+        />
 
-                {showLoginModal && (
-                    <div className={styles.modalOverlay}>
-                        <div className={styles.loginModal}>
-                            <p>Please login to view city details.</p>
-                        </div>
-                    </div>
-                )}
+        {/* login prompt */}
+        {showLoginModal && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.loginModal}>
+              <p>Please log in to view city details.</p>
+            </div>
+          </div>
+        )}
 
-                <div className={styles.list}>
-                    {loading
-                        ? Array.from({ length: 4 }).map((_, i) => (
-                            <div key={i} className={styles.cardWrapper}>
-                                <Skeleton height="260px" radius="16px" />
-                            </div>
-                        ))
-                        : cities.map((city, i) => (
-                            <div key={i} className={styles.cardWrapper}>
-                                <CityCard
-                                    image={"https://via.placeholder.com/300"}
-                                    title={city.name}
-                                    description={city.location}
-                                    types={["Restaurants", "Hotels", "Landmarks"]}
-                                    onExplore={() => {
-                                        if (!user) {
-                                            setShowLoginModal(true);
-                                            setTimeout(() => {
-                                                setShowLoginModal(false);
-                                                navigate("/login");
-                                            }, 1500);
-                                        } else {
-                                            navigate(`/cities/${city.name}`);
-                                        }
-                                    }}
-                                />
-                            </div>
-                        ))}
+        {/* city cards */}
+        <div className={styles.list}>
+          {loading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className={styles.cardWrapper}>
+                  <Skeleton height="260px" radius="16px" />
                 </div>
-
-                <SectionTitle
-                    title="Featured Places"
-                    subtitle="Discover top-rated options"
-                />
-                <Tabs
-                    tabs={[
-                        { id: "restaurants", label: "Restaurants" },
-                        { id: "accommodations", label: "Accommodations" },
-                    ]}
-                    activeTab={activeTab}
-                    onTabChange={setActiveTab}
-                />
-
-                <div className={styles.list}>
-                    {loading
-                        ? Array.from({ length: 2 }).map((_, i) => (
-                            <div key={i} className={styles.cardWrapper}>
-                                <Skeleton height="320px" radius="20px" />
-                            </div>
-                        ))
-                        : (activeTab === "restaurants" ? restaurants : accommodations).map((place, i) => (
-                            <div key={i} className={styles.cardWrapper}>
-                                <PlaceCard
-                                    {...place.place}
-                                    isAccommodation={activeTab === "accommodations"}
-                                    isFavorite={favorites[i]}
-                                    onToggleFavorite={() => toggleFavorite(i)}
-                                    onBook={() => handleBook(place)}
-                                    onReview={(id) => navigate(`/places/${id}/reviews`)}
-
-                                />
-                            </div>
-                        ))}
+              ))
+            : cities.map((city) => (
+                <div
+                  key={city.city_id}
+                  className={styles.cardWrapper}
+                  onClick={() => {
+                    if (!user) {
+                      setShowLoginModal(true);
+                      setTimeout(() => {
+                        setShowLoginModal(false);
+                        navigate("/login");
+                      }, 1500);
+                    } else {
+                      navigate(`/cities/${city.name}`);
+                    }
+                  }}
+                >
+                  <CityCard
+                    image="https://via.placeholder.com/300"
+                    title={city.name}
+                    description={city.location}
+                    types={["Restaurants", "Hotels", "Landmarks"]}
+                    onExplore={() => navigate(`/cities/${city.name}`)}
+                  />
                 </div>
+              ))}
+        </div>
+
+        {/* featured restaurants / accommodations */}
+        <SectionTitle
+          title="Featured Places"
+          subtitle="Discover top-rated options"
+        />
+        <Tabs
+          tabs={[
+            { id: "restaurants", label: "Restaurants" },
+            { id: "accommodations", label: "Accommodations" }
+          ]}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+        <div className={styles.list}>
+          {loading
+            ? Array.from({ length: 2 }).map((_, i) => (
+                <div key={i} className={styles.cardWrapper}>
+                  <Skeleton height="320px" radius="20px" />
+                </div>
+              ))
+            : (activeTab === "restaurants"
+                ? restaurants
+                : accommodations
+              ).map((rec, i) => (
+                <div key={i} className={styles.cardWrapper}>
+                  <PlaceCard
+                    {...rec.place}
+                    isAccommodation={activeTab === "accommodations"}
+                    isFavorite={favorites[i]}
+                    onToggleFavorite={() => toggleFavorite(i)}
+                    onBook={() => handleBook(rec.place)}
+                    onReview={() =>
+                      navigate(`/places/${rec.place.place_id}/reviews`)
+                    }
+                  />
+                </div>
+              ))}
+        </div>
 
                 <SectionTitle title="Top Rated Reviews" subtitle="" />
                 <div className={styles.list}>
@@ -216,18 +248,19 @@ export default function Home() {
                 </div>
             </div>
 
-            <BookingModal
-                user={user}
-                show={bookingOpen}
-                place={selectedPlace}
-                guests={bookingDetails.guests}
-                from={bookingDetails.from}
-                to={bookingDetails.to}
-                guestNames={bookingDetails.guestNames}
-                onClose={() => setBookingOpen(false)}
-                onSubmit={handleBookingSubmit}
-                onChange={(key, value) => setBookingDetails(prev => ({ ...prev, [key]: value }))}
-            />
-        </div>
-    );
+      <BookingModal
+        user={user}
+        show={bookingOpen}
+        place={selectedPlace}
+        guests={bookingDetails.guests}
+        from={bookingDetails.from}
+        to={bookingDetails.to}
+        onClose={() => setBookingOpen(false)}
+        onSubmit={handleBookingSubmit}
+        onChange={(k, v) =>
+          setBookingDetails((b) => ({ ...b, [k]: v }))
+        }
+      />
+    </div>
+  );
 }

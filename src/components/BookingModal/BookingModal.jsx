@@ -5,28 +5,27 @@ import styles from "./BookingModal.module.css";
 import Spinner from "../Loading/Spinner";
 
 export default function BookingModal({
-  user,
+  user,       // from AuthContext, passed in by the parent
   show,
-  place,
+  place,      // the selected place object, must have place_id
   guests,
   from,
   to,
   onClose,
-  onSubmit,
-  onChange
+  onChange   // callback to update { from, to, guests } in parent
 }) {
-  const [step, setStep] = useState(0);
+  const [step, setStep]     = useState(0);
   const [errors, setErrors] = useState({});
-  const today = new Date().toISOString().split("T")[0];
-  const navigate = useNavigate();
+  const today               = new Date().toISOString().split("T")[0];
+  const navigate            = useNavigate();
 
-  // lock body scroll when modal open
+  // prevent background scroll
   useEffect(() => {
     document.body.style.overflow = show ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [show]);
 
-  // reset on open
+  // reset form whenever modal opens
   useEffect(() => {
     if (show) {
       setStep(0);
@@ -34,31 +33,54 @@ export default function BookingModal({
     }
   }, [show]);
 
+  // simple validation
   const validate = () => {
     const e = {};
     if (!from) e.from = "Check‑in date required";
     if (!to)   e.to   = "Check‑out date required";
     if (from && to && new Date(to) < new Date(from))
       e.dateRange = "Check‑out can’t be before check‑in";
-    if (guests < 1 || guests > 10)
-      e.guests = "Guests must be 1–10";
+    if (guests < 1) e.guests = "Must have at least 1 guest";
     setErrors(e);
     return !Object.keys(e).length;
   };
 
-  const handleNext = () => { if (validate()) setStep(1); };
+  // go to review step
+  const handleNext = () => {
+    if (validate()) setStep(1);
+  };
+
+  // POST to backend, show loading then success
   const handleConfirm = async () => {
     setStep(2);
     try {
-      await new Promise(r => setTimeout(r, 1500));
-      onSubmit({ place, dates: { from, to }, guests });
+      const res = await fetch("http://localhost:8000/TripMeUpApp/booking/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id:        user.user_id,
+          place_id:       place.place_id,
+          starting_date:  from,
+          ending_date:    to,
+          no_of_guests:   guests
+        })
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || "Booking failed");
+      }
+      await res.json();
       setStep(3);
-    } catch {
+    } catch (err) {
+      console.error(err);
+      // back to review so user can retry
       setStep(1);
+      setErrors({ submit: err.message });
     }
   };
+
   const calculateNights = () =>
-    Math.ceil((new Date(to) - new Date(from)) / (1000*60*60*24));
+    Math.ceil((new Date(to) - new Date(from)) / (1000 * 60 * 60 * 24));
 
   if (!show || !place) return null;
 
@@ -66,11 +88,13 @@ export default function BookingModal({
     <div className={styles.overlay} role="dialog" aria-modal="true">
       <div className={styles.modal}>
         <header className={styles.header}>
-          <h2>Book {place.title || place.name}</h2>
-          <button onClick={onClose} className={styles.closeBtn} aria-label="Close">×</button>
+          <h2>Book {place.name}</h2>
+          <button onClick={onClose} className={styles.closeBtn} aria-label="Close">
+            ×
+          </button>
         </header>
-        <div className={styles.modalContent}>
 
+        <div className={styles.modalContent}>
           {/* Step 0: form */}
           {step === 0 && (
             <div className={styles.formSection}>
@@ -84,6 +108,7 @@ export default function BookingModal({
                 />
                 {errors.from && <div className={styles.error}>{errors.from}</div>}
               </div>
+
               <div className={styles.formGroup}>
                 <label>Check‑out</label>
                 <input
@@ -94,22 +119,24 @@ export default function BookingModal({
                 />
                 {errors.to && <div className={styles.error}>{errors.to}</div>}
               </div>
-              {errors.dateRange && <div className={styles.error}>{errors.dateRange}</div>}
+
+              {errors.dateRange && (
+                <div className={styles.error}>{errors.dateRange}</div>
+              )}
+
               <div className={styles.formGroup}>
                 <label>Guests</label>
                 <input
                   type="number"
                   min="1"
-                  max="10"
                   value={guests}
                   onChange={e =>
-                    onChange("guests",
-                      Math.max(1, Math.min(10, parseInt(e.target.value) || 1))
-                    )
+                    onChange("guests", Math.max(1, parseInt(e.target.value) || 1))
                   }
                 />
                 {errors.guests && <div className={styles.error}>{errors.guests}</div>}
               </div>
+
               <button className={styles.primaryBtn} onClick={handleNext}>
                 Review Booking
               </button>
@@ -120,33 +147,17 @@ export default function BookingModal({
           {step === 1 && (
             <div className={styles.reviewSection}>
               <h3 className={styles.reviewTitle}>Booking Summary</h3>
+
               <div className={styles.placePreview}>
                 <img
                   src={place.image || place.imageUrl}
-                  alt={place.title || place.name}
+                  alt={place.name}
                   className={styles.placeImage}
                 />
                 <div className={styles.placeInfo}>
-                  <h4>{place.title || place.name}</h4>
-                  <div className={styles.rating}>
-                    ★ {place.rating} ({place.reviews || "--"} reviews)
-                  </div>
+                  <h4>{place.name}</h4>
                 </div>
               </div>
-
-              {user && (
-                <div className={styles.userDetails}>
-                  <h4>Your Information</h4>
-                  <div className={styles.detailItem}>
-                    <dt>Name</dt>
-                    <dd>{user.username || `${user.first} ${user.last}`}</dd>
-                  </div>
-                  <div className={styles.detailItem}>
-                    <dt>Email</dt>
-                    <dd>{user.email}</dd>
-                  </div>
-                </div>
-              )}
 
               <dl className={styles.detailGrid}>
                 <div className={styles.detailItem}>
@@ -163,31 +174,24 @@ export default function BookingModal({
                 </div>
                 <div className={styles.detailItem}>
                   <dt>Guests</dt>
-                  <dd>{guests} {guests>1 ? "people":"person"}</dd>
+                  <dd>{guests}</dd>
                 </div>
               </dl>
 
-              <div className={styles.priceSummary}>
-                <div className={styles.priceRow}>
-                  <span>${place.price} × {calculateNights()} nights</span>
-                  <span>${place.price * calculateNights()}</span>
-                </div>
-                <div className={styles.priceRow}>
-                  <span>Service fee</span>
-                  <span>${(place.price * calculateNights() * 0.12).toFixed(2)}</span>
-                </div>
-                <div className={styles.totalPrice}>
-                  <span>Total</span>
-                  <span>${(place.price * calculateNights() * 1.12).toFixed(2)}</span>
-                </div>
-              </div>
+              {errors.submit && <div className={styles.error}>{errors.submit}</div>}
 
               <div className={styles.buttonGroup}>
-                <button className={styles.secondaryBtn} onClick={() => setStep(0)}>
+                <button
+                  className={styles.secondaryBtn}
+                  onClick={() => setStep(0)}
+                >
                   Edit
                 </button>
-                <button className={styles.primaryBtn} onClick={handleConfirm}>
-                  Confirm
+                <button
+                  className={styles.primaryBtn}
+                  onClick={handleConfirm}
+                >
+                  Confirm & Create
                 </button>
               </div>
             </div>
@@ -206,13 +210,16 @@ export default function BookingModal({
             <div className={styles.successSection}>
               <div className={styles.successIcon}>✓</div>
               <h3>Booking Confirmed!</h3>
-              <p className={styles.successText}>
-                Your stay at {place.title||place.name} from{" "}
+              <p>
+                Your stay at <strong>{place.name}</strong> from{" "}
                 {new Date(from).toLocaleDateString()} to{" "}
-                {new Date(to).toLocaleDateString()} is confirmed.
+                {new Date(to).toLocaleDateString()} has been booked.
               </p>
               <div className={styles.buttonGroupConfirm}>
-                <button className={styles.secondaryBtn} onClick={onClose}>
+                <button
+                  className={styles.secondaryBtn}
+                  onClick={onClose}
+                >
                   Close
                 </button>
                 <button
@@ -227,7 +234,6 @@ export default function BookingModal({
               </div>
             </div>
           )}
-
         </div>
       </div>
     </div>

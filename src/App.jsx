@@ -23,7 +23,7 @@ import NotFound from "./pages/NotFound404/404NotFound";
 import styles from "./App.module.css";
 import AdminBookings from './pages/Admin/AdminBookings';
 import Reviews from "./pages/Review/Reviews";
-
+import AllReviews from "./pages/AllReviews/AllReviews";
 
 const PrivateRoute = ({ children }) => {
     const { user } = React.useContext(AuthContext);
@@ -53,8 +53,9 @@ function AppContent() {
           <Route path="/register" element={<Auth />} />
           <Route path="/admin-login" element={<Auth />} />
           <Route path="/admin/dashboard" element={<AdminBookings />} />
-          <Route path="/places/:placeId/reviews"element={<Reviews />}
-/>
+          <Route path="/places/:placeId/reviews"element={<Reviews />}/>
+          <Route path="/reviews" element={<AllReviews />} />
+
 
                     <Route path="/" element={<Home />} />
                     <Route path="/cities" element={

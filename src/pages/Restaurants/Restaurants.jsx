@@ -4,10 +4,12 @@ import PlaceCard from "../../components/PlaceCard/PlaceCard";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import Skeleton from "../../components/Skeleton/Skeleton";
 import styles from "./Restaurants.module.css";
+import {useNavigate}  from "react-router-dom";
 
 export default function Restaurants() {
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate=useNavigate();
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -67,6 +69,8 @@ export default function Restaurants() {
                   rating={item.place.rating}
                   description={item.place.description}
                   working_hours={item.working_hours}
+                  onReview={(id) => navigate(`/places/${id}/reviews`)}
+
                 />
               </div>
             ))

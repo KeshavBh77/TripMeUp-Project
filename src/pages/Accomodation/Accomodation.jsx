@@ -1,4 +1,6 @@
+// src/pages/Accomodation/Accomodation.jsx
 import React, { useEffect, useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import SectionTitle from "../../components/SectionTitle/SectionTitle";
 import PlaceCard from "../../components/PlaceCard/PlaceCard";
 import SearchBar from "../../components/SearchBar/SearchBar";
@@ -11,21 +13,25 @@ export default function Accommodations() {
   const { user } = useContext(AuthContext);
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
+  // Booking modal state
   const [bookingOpen, setBookingOpen] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [bookingDetails, setBookingDetails] = useState({
     guests: 1,
     from: "",
     to: "",
-    guestNames: [""]
+    guestNames: [""],
   });
 
   useEffect(() => {
     const fetchAccommodations = async () => {
       try {
         await new Promise((res) => setTimeout(res, 1500)); // simulate delay
-        const response = await fetch("http://localhost:8000/TripMeUpApp/accommodation/");
+        const response = await fetch(
+          "http://localhost:8000/TripMeUpApp/accommodation/"
+        );
         const data = await response.json();
         setPlaces(data);
       } catch (error) {
@@ -38,20 +44,21 @@ export default function Accommodations() {
     fetchAccommodations();
   }, []);
 
-  const handleBook = (place) => {
-    setSelectedPlace(place);
+  const handleBook = (item) => {
+    if (!user) {
+      // redirect to login if not authenticated
+      navigate("/login");
+      return;
+    }
+    setSelectedPlace(item.place);
     setBookingDetails({ guests: 1, from: "", to: "", guestNames: [""] });
     setBookingOpen(true);
   };
 
-  const handleBookingSubmit = ({ place, dates, guests, guestNames }) => {
-    console.log("Booking confirmed:", {
-      place,
-      dates,
-      guests,
-      guestNames
-    });
+  const handleBookingSubmit = ({ place, dates, guests }) => {
+    console.log("Booking confirmed:", { place, dates, guests });
     setBookingOpen(false);
+    // you can also POST to backend here...
   };
 
   return (
@@ -102,6 +109,9 @@ export default function Accommodations() {
                   charge={item.charge}
                   amenities={item.amenities}
                   isAccommodation={true}
+                  onReview={() =>
+                    navigate(`/places/${item.place.place_id}/reviews`)
+                  }
                   onBook={() => handleBook(item)}
                 />
               </div>
@@ -118,11 +128,10 @@ export default function Accommodations() {
         guests={bookingDetails.guests}
         from={bookingDetails.from}
         to={bookingDetails.to}
-        guestNames={bookingDetails.guestNames}
         onClose={() => setBookingOpen(false)}
         onSubmit={handleBookingSubmit}
         onChange={(key, value) =>
-          setBookingDetails((prev) => ({ ...prev, [key]: value }))
+          setBookingDetails((b) => ({ ...b, [key]: value }))
         }
       />
     </div>
