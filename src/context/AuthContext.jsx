@@ -1,80 +1,58 @@
 // src/context/AuthContext.jsx
-import React, { createContext, useState, useEffect } from 'react';
-
-// Key under which we’ll keep our “database” of users
-const USERS_KEY = 'app_users';
-// Key for the currently logged‑in user
-const CURRENT_KEY = 'app_currentUser';
+import { createContext, useState, useEffect } from "react";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  // On mount, rehydrate from localStorage
   useEffect(() => {
-    const stored = localStorage.getItem(CURRENT_KEY);
-    if (stored) setUser(JSON.parse(stored));
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
   }, []);
 
-  // Helper to read/write our local “DB”
-  const getUsers = () => {
-    try {
-      return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
-    } catch {
-      return [];
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
     }
-  };
-  const saveUsers = (users) =>
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  }, [user]);
 
-  // REGISTER: simulate async, then add to localStorage
-  const register = (userData) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const users = getUsers();
-        if (users.find((u) => u.email === userData.email)) {
-          return reject(new Error('Email already in use'));
-        }
-        // you might hash passwords here in prod
-        users.push(userData);
-        saveUsers(users);
-
-        // auto‑login after register
-        localStorage.setItem(CURRENT_KEY, JSON.stringify(userData));
-        setUser(userData);
-
-        resolve(userData);
-      }, 300);
+  const login = async (username, password) => {
+    const response = await fetch('http://localhost:8000/TripMeUpApp/login/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password
+      }),
     });
-  };
 
-  // LOGIN: simulate async, check against localStorage users
-  const login = (email, password) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const users = getUsers();
-        const found = users.find(
-          (u) => u.email === email && u.password === password
-        );
-        if (!found) {
-          return reject(new Error('Invalid email or password'));
-        }
-        localStorage.setItem(CURRENT_KEY, JSON.stringify(found));
-        setUser(found);
-        resolve(found);
-      }, 300);
-    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Login failed");
+    }
+
+    setUser(data);
+    return data;
   };
 
   const logout = () => {
-    localStorage.removeItem(CURRENT_KEY);
     setUser(null);
+    localStorage.removeItem('user');
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 }
+
+export default AuthProvider;

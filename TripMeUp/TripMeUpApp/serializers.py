@@ -122,3 +122,10 @@ class ServesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Serves
         fields = "__all__"
+
+class LoginSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'password']  # only username and password
+
+

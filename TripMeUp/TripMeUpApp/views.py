@@ -12,13 +12,13 @@ from rest_framework.generics import (
 )
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import NotFound
-from rest_framework import viewsets
 from .models import City
 from .serializers import CitySerializer
-from rest_framework.reverse import reverse
-from rest_framework.decorators import action
-
-
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from .models import User
+from .serializers import LoginSerializer
+from django.contrib.auth.hashers import check_password
 # Create your views here.
 class HomeViewSet(viewsets.ViewSet):
     """
@@ -32,7 +32,7 @@ class HomeViewSet(viewsets.ViewSet):
                 "endpoints": {
                     "cities": "/api/cities/",
                     "places": "/api/places/",
-                    # Add all your other endpoints
+
                 },
             }
         )
@@ -130,3 +130,27 @@ class RestaurantDetailView(ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+class LoginView(viewsets.ViewSet):
+    def create(self, request):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            username = serializer.validated_data['username']
+            password = serializer.validated_data['password']
+
+            try:
+                user = User.objects.get(username=username)
+                if user.password == password:
+                    return Response({
+                        "message": "Login successful",
+                        "user_id": user.user_id,
+                        "username": user.username,
+                        "email": user.email,
+                    }, status=status.HTTP_200_OK)
+                else:
+                    return Response({"error": "Incorrect password"}, status=status.HTTP_400_BAD_REQUEST)
+            except User.DoesNotExist:
+                return Response({"error": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

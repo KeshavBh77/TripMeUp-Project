@@ -61,7 +61,7 @@ class User(models.Model):
     postal_code = models.CharField(max_length=10)
     email = models.EmailField()
     username = models.CharField(max_length=100)
-
+    password = models.CharField(max_length=100)
     def __str__(self):
         return f"{self.first} {self.last}"
 
