@@ -1,70 +1,126 @@
-# Getting Started with Create React App
+# TripMeUp
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+TripMeUp is a full‑stack travel application built with **React** on the frontend and **Django REST** on the backend. Users can browse cities, view top restaurants and accommodations, make bookings, and manage their profile.
 
-## Available Scripts
+## 🌟 Features
 
-In the project directory, you can run:
+- **Authentication**: Register, login, and persistent sessions via `AuthContext` and localStorage  
+- **City Listings**: Explore world cities, search & autocomplete, smooth scrolling and highlights  
+- **City Details**: View in‑depth info, interesting facts, restaurants and accommodations per city  
+- **Featured Places**: Top‑rated restaurants & hotels with ratings, descriptions, amenities  
+- **Booking Modal**: Select dates, guest count, and submit bookings  
+- **Profile Page**: View and manage your user details, logout functionality  
 
-### `npm start`
+## 💻 Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Frontend**: React, React Router, Context API, CSS Modules, `fetch` API  
+- **Backend**: Django REST Framework (DRF), SQLite (development)  
+- **Styling**: Neomorphic UI with CSS variables for shadows and colors  
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🚀 Getting Started
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js v16+ & npm  
+- Python 3.10+ & pip  
 
-### `npm run build`
+### Backend Setup (Django)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Navigate to the Django project:
+   ```bash
+   cd TripMeUp
+   ```
+2. (Optional) Create and activate a virtual environment:
+   ```bash
+   python3 -m venv venv  
+   source venv/bin/activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Apply migrations:
+   ```bash
+   python manage.py makemigrations  
+   python manage.py migrate
+   ```
+5. Create a superuser (optional):
+   ```bash
+   python manage.py createsuperuser
+   ```
+6. Run the development server:
+   ```bash
+   python manage.py runserver
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Frontend Setup (React)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. In a separate terminal, navigate to the React app:
+   ```bash
+   cd cpsc-471-project  # or your React folder
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the React development server:
+   ```bash
+   npm start
+   ```
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### `npm run eject`
+## 🗂 Project Structure
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```
+TripMeUp/            # Django backend
+  ├─ TripMeUpApp/    # Django app with models, views, serializers
+  ├─ staticfiles/    # Compiled frontend assets (for production)
+  └─ ...
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+cpsc-471-project/    # React frontend
+  ├─ src/
+  │   ├─ components/ # Reusable UI components (PlaceCard, CityCard, Navbar, etc.)
+  │   ├─ context/    # AuthContext for user state
+  │   ├─ pages/      # Route views (Home, Cities, CityDetail, Accommodations, Profile, AllReviews)
+  │   ├─ App.jsx     # Main router & layout
+  │   └─ index.js    # React entry point
+  ├─ public/         # Static HTML
+  └─ package.json    # Frontend dependencies & scripts
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 📡 API Endpoints
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- **Cities**: `GET /TripMeUpApp/city/`  
+- **Restaurants**: `GET /TripMeUpApp/restaurants/`  
+- **Accommodations**: `GET /TripMeUpApp/accommodation/`  
+- **Reviews**: `GET /TripMeUpApp/reviews/`  
+- **User Profile**: `GET /TripMeUpApp/users/{user_id}/`  
+- **Bookings**: `GET/POST /TripMeUpApp/booking/?user_id={user_id}`  
 
-## Learn More
+## 🤝 Contributing
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. Fork the repo  
+2. Create a feature branch (`git checkout -b feature/my-feature`)  
+3. Commit your changes (`git commit -am 'Add new feature'`)  
+4. Push to the branch (`git push origin feature/my-feature`)  
+5. Open a Pull Request  
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 📄 License
 
-### Code Splitting
+This project is MIT licensed. See the [LICENSE](LICENSE) file for details.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+> **Note:** The frontend uses various npm packages beyond the core Create React App setup (e.g. `react-router-dom`, `react-icons`, `react-datepicker`, `axios`, etc.). If you encounter missing modules, install them via:
+>
+> ```bash
+> npm install react-router-dom react-icons react-datepicker axios
+> ```
+>
+> Similarly, the backend may require additional Python packages like `djangorestframework` or `django-cors-headers`. Always run:
+>
+> ```bash
+> pip install -r requirements.txt
+> ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Happy travels with TripMeUp! 🚀
