@@ -1,24 +1,21 @@
 import React, { createContext, useState, useEffect } from 'react';
 
 export const AuthContext = createContext();
-
-// API Base URLs for Users and Admins
-const API_USER_BASE = 'http://localhost:8000/TripMeUpApp/users/';
-const API_ADMIN_BASE = 'http://localhost:8000/TripMeUpApp/admins/';
+const API_BASE = 'http://localhost:8000/TripMeUpApp/users/';
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('app_currentUser');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
+        const stored = localStorage.getItem('app_currentUser');
+        if (stored) {
+            setUser(JSON.parse(stored));
         }
     }, []);
 
     const register = async (userData) => {
         try {
-            const res = await fetch(API_USER_BASE, {
+            const res = await fetch(API_BASE, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(userData),
@@ -38,19 +35,17 @@ export function AuthProvider({ children }) {
         }
     };
 
-    // Generalized login function for user or admin
-    const login = async (username, password, isAdmin = false) => {
+    const login = async (username, password) => {
         try {
-            const apiBase = isAdmin ? API_ADMIN_BASE : API_USER_BASE;
-            const res = await fetch(apiBase);
+            const res = await fetch(API_BASE);
             const users = await res.json();
 
             const found = users.find(
-                (u) => u.user.username === username && u.user.password === password
+                (u) => u.username === username && u.password === password
             );
 
             if (!found) {
-                throw new Error(isAdmin ? 'Invalid admin credentials' : 'Invalid email or password');
+                throw new Error('Invalid email or password');
             }
 
             localStorage.setItem('app_currentUser', JSON.stringify(found));

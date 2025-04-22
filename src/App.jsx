@@ -43,19 +43,16 @@ function AppContent() {
         <div className={styles.app}>
             <Navbar />
 
-            <main
-                className={`${styles.content} ${onAuthPage ? styles.centerContent : ""
-                    }`}
-            >
-                <Routes>
-                    <Route path="/login" element={<Auth />} />
-                    <Route path="/register" element={<Auth />} />
-                    <Route path="/admin-login" element={<AdminLoginForm />} />
-                    <Route path="/admin/dashboard" element={
-                        <AdminPrivateRoute>
-                            <AdminBookings />
-                        </AdminPrivateRoute>
-                    } />
+      <main
+        className={`${styles.content} ${
+          onAuthPage ? styles.centerContent : ""
+        }`}
+      >
+        <Routes>
+          <Route path="/login" element={<Auth />} />
+          <Route path="/register" element={<Auth />} />
+          <Route path="/admin-login" element={<Auth />} />
+          <Route path="/admin/bookings" element={<AdminBookings />} />
 
                     <Route path="/" element={<Home />} />
                     <Route path="/cities" element={
