@@ -45,8 +45,7 @@ const Navbar = () => {
             ["Cities", "/cities"],
             ["Restaurants", "/restaurants"],
             ["Accommodations", "/accommodations"],
-
-
+            ["My Bookings", "/bookings"],
           ].map(([label, path]) => (
             <NavLink
               key={path}
