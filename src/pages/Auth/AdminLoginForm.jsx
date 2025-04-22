@@ -32,11 +32,8 @@ export default function AdminLoginForm({ switchTab }) {
       if (!response.ok) {
         throw new Error(data.error || "Admin login failed.");
       }
-
-
       await login(data.username, password);
       navigate('/');
-
     } catch (err) {
       console.error("Admin login error:", err);
       setError(err.message || "Admin login failed.");

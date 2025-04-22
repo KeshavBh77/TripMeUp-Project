@@ -128,10 +128,14 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('user_id')
     serializer_class = UserSerializer
     lookup_field = 'user_id'
-
     def perform_create(self, serializer):
         user = serializer.save()
         Client.objects.create(user=user)
+        self.request.session['user_id'] = user.user_id
+        self.request.session['username'] = user.username
+        self.request.session['is_authenticated'] = True
+        self.request.session['is_admin'] = False
+
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -196,8 +200,23 @@ class PlaceViewSet(viewsets.ViewSet):
 
 class CheckAdmin(viewsets.ViewSet):
     def list(self, request):
-        is_admin = request.session.get('is_admin')
-        return Response({"admin": is_admin}, status=status.HTTP_200_OK)
+        global my_user
+        username = request.query_params.get('username')
+
+        if not username:
+            return Response({"admin": False}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            my_user = User.objects.get(username=username)
+        except my_user.DoesNotExist:
+            return Response({"admin": False}, status=status.HTTP_200_OK)
+
+        is_admin = Admin.objects.filter(user=my_user).exists()
+        if is_admin:
+            return Response({"admin": True}, status=status.HTTP_200_OK)
+        else:
+            return Response({"admin": False}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class AdminLoginSet(viewsets.ViewSet):
     def create(self, request):
@@ -215,11 +234,11 @@ class AdminLoginSet(viewsets.ViewSet):
         is_admin = Admin.objects.filter(user=my_user).exists()
         if not is_admin:
             return Response({'error': 'Not an admin.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        request.session['user_id'] = my_user.user_id
-        request.session['username'] = my_user.username
-        request.session['is_authenticated'] = True
-        request.session['is_admin'] = True
+        if is_admin:
+            request.session['user_id'] = my_user.user_id
+            request.session['username'] = my_user.username
+            request.session['is_authenticated'] = True
+            request.session['is_admin'] = True
 
         return Response({
             'message': 'Admin login successful',

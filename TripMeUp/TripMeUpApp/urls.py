@@ -13,7 +13,7 @@ router.register(r'home', HomeViewSet, basename='home')
 router.register(r"reviews", ReviewViewSet, basename="review")
 router.register(r"users", UserViewSet, basename="user")
 router.register(r'place-list',PlaceViewSet, basename='place-list')
-router.register(r"check-admin", CheckAdmin, basename="admin")
+router.register(r"checkadmin", CheckAdmin, basename="checkadmin")
 
 router.register(r'booking',BookingViewSet, basename='booking')
 router.register(r'admin-login',AdminLoginSet, basename='admin-login')

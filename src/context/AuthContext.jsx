@@ -18,6 +18,7 @@ export function AuthProvider({ children }) {
             const res = await fetch(API_BASE, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: "include",
                 body: JSON.stringify(userData),
             });
 
@@ -37,7 +38,10 @@ export function AuthProvider({ children }) {
 
     const login = async (username, password) => {
         try {
-            const res = await fetch(API_BASE);
+            const res = await fetch(API_BASE, {
+                credentials: "include",
+            });
+
             const users = await res.json();
 
             const found = users.find(
