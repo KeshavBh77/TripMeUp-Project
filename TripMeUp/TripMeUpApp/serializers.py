@@ -92,6 +92,9 @@ class BookingSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    place = PlaceSerializer(read_only=True)
+    client = ClientSerializer(read_only=True)
     class Meta:
         model = Review
         fields = "__all__"
