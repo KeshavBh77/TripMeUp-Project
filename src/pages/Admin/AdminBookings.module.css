@@ -1,0 +1,74 @@
+/* src/pages/AdminBookings/AdminBookings.module.css */
+.page {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+  
+  .list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+  
+  .cardWrapper {
+    flex: 1 1 300px;
+  }
+  
+  .card {
+    background: var(--bg-light);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow:
+      5px 5px 15px var(--shadow-dark),
+      -5px -5px 15px var(--shadow-light);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+  
+  .info h3 {
+    margin: 0 0 0.5rem;
+    color: var(--dark);
+  }
+  
+  .meta {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+  }
+  
+  .client {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+  
+  .modifyBtn {
+    align-self: flex-end;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow:
+      3px 3px 8px var(--shadow-dark),
+      -3px -3px 8px var(--shadow-light);
+  }
+  
+  .modifyBtn:hover {
+    box-shadow:
+      inset 3px 3px 8px var(--shadow-dark),
+      inset -3px -3px 8px var(--shadow-light);
+  }
+  

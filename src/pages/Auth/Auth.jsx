@@ -5,44 +5,67 @@ import { FaGlobeAmericas, FaUtensils, FaHotel } from "react-icons/fa";
 import styles from "./Auth.module.css";
 import { AuthContext } from "../../context/AuthContext";
 import LoginForm from "./LoginForm";
-import RegisterForm from "./RegistrationForm"; // (optional if you add register later)
+import RegisterForm from "./RegistrationForm";
+import AdminLoginForm from "./AdminLoginForm";
 
 export default function Auth() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [view, setView] = useState("login");
   const { user } = useContext(AuthContext);
+  const [view, setView] = useState("login");
 
+  // Redirect away if already logged in as user or admin
   useEffect(() => {
     if (user) {
       navigate("/");
     }
   }, [user, navigate]);
 
+  // Sync tab with URL
   useEffect(() => {
-    if (location.pathname === "/register") {
-      setView("register");
-    } else {
-      setView("login");
+    switch (location.pathname) {
+      case "/register":
+        setView("register");
+        break;
+      case "/admin-login":
+        setView("admin");
+        break;
+      default:
+        setView("login");
     }
   }, [location.pathname]);
 
   const handleTabClick = (tab) => {
-    if (tab === "login") {
-      navigate("/login");
-    } else {
-      navigate("/register");
+    switch (tab) {
+      case "login":
+        navigate("/login");
+        break;
+      case "register":
+        navigate("/register");
+        break;
+      case "admin":
+        navigate("/admin-login");
+        break;
+      default:
     }
   };
 
   return (
     <div className={styles.authContainer}>
       <div className={styles.authHero}>
-        <h1>{view === "login" ? "Welcome Back!" : "Join Us!"}</h1>
+        <h1>
+          {view === "login"
+            ? "Welcome Back!"
+            : view === "register"
+            ? "Join Us!"
+            : "Admin Login"}
+        </h1>
         <p>
           {view === "login"
             ? "Login to your account and continue exploring amazing destinations."
-            : "Create an account to discover and book restaurants and stays around the world."}
+            : view === "register"
+            ? "Create an account to discover and book restaurants and stays around the world."
+            : "Administrators, please sign in below."}
         </p>
         <div className={styles.authFeatures}>
           <div className={styles.authFeature}>
@@ -72,6 +95,14 @@ export default function Auth() {
           </div>
           <div
             className={`${styles.authTab} ${
+              view === "admin" ? styles.active : ""
+            }`}
+            onClick={() => handleTabClick("admin")}
+          >
+            Admin
+          </div>
+          <div
+            className={`${styles.authTab} ${
               view === "register" ? styles.active : ""
             }`}
             onClick={() => handleTabClick("register")}
@@ -80,11 +111,9 @@ export default function Auth() {
           </div>
         </div>
 
-        {view === "login" ? (
-          <LoginForm switchTab={handleTabClick} />
-        ) : (
-          <RegisterForm switchTab={handleTabClick} />
-        )}
+        {view === "login" && <LoginForm switchTab={handleTabClick} />}
+        {view === "admin" && <AdminLoginForm switchTab={handleTabClick} />}
+        {view === "register" && <RegisterForm switchTab={handleTabClick} />}
       </div>
     </div>
   );
