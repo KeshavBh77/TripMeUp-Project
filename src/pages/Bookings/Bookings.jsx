@@ -80,7 +80,7 @@ export default function Bookings() {
                   className={styles.image}
                 />
                 <div className={styles.info}>
-                  <h3>{b.place?.name ? b.place.name : "Unknown Place"}</h3>
+                  <h3>{b.place.name ? b.place.name : "Unknown Place"}</h3>
                   <div className={styles.meta}>
                     <span>
                       <FaCalendarAlt /> {b.starting_date} - {b.ending_date}
