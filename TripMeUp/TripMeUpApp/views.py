@@ -12,11 +12,13 @@ from rest_framework.generics import (
 )
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import NotFound
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from .models import City
 from .serializers import CitySerializer
 from rest_framework.reverse import reverse
 from rest_framework.decorators import action
+from django.contrib.auth import authenticate
+from django.db.models import Q
 
 
 # Create your views here.
