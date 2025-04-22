@@ -124,13 +124,6 @@ class RestaurantDetailView(ModelViewSet):
         serializer = RestaurantSerializer(restaurant)
         return Response(serializer.data)
 
-
-# views.py
-from rest_framework import viewsets, status
-from rest_framework.response import Response
-from .models import User, Client
-from .serializers import UserSerializer
-
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('user_id')
     serializer_class = UserSerializer
