@@ -194,12 +194,40 @@ class PlaceViewSet(viewsets.ViewSet):
         serializer = PlaceSerializer(places, many=True)
         return Response(serializer.data)
 
-class CheckAdmin(viewsets.ViewSet):
-    def get(self,request):
-        user = request.user
-        admin = Admin.objects.filter(user=user).exists()
-        if admin:
-            return Response({"admin": True}, status=status.HTTP_200_OK)
-        else:
-            return Response({"admin": False}, status=status.HTTP_403_FORBIDDEN)
+class CheckAdmin(viewsets.ModelViewSet):
+    queryset = Admin.objects.all()
+    lookup_field = 'pk'
+    http_method_names = ['get']
 
+    def list(self, request, *args, **kwargs):
+        user = request.user
+        if not user.is_authenticated:
+            return Response({"admin": False}, status=status.HTTP_200_OK)
+        try:
+            my_user = User.objects.get(username=user.username)
+        except User.DoesNotExist:
+            return Response({"admin": False}, status=status.HTTP_200_OK)
+        is_admin = Admin.objects.filter(user=my_user).exists()
+        return Response({"admin": is_admin}, status=status.HTTP_200_OK)
+
+class AdminLoginSet(viewsets.ViewSet):
+    def create(self, request):
+        global my_user
+        username = request.data.get('username')
+        password = request.data.get('password')
+        try:
+            my_user = User.objects.get(username=username)
+        except my_user.DoesNotExist:
+            return Response({'error': 'Invalid credentials.'},status=status.HTTP_400_BAD_REQUEST)
+
+        if my_user.password != password:
+            return Response({'error': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        is_admin = Admin.objects.filter(user=my_user).exists()
+        if not is_admin:
+            return Response({'error': 'Not an admin.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            'message': 'Admin login successful',
+            'username': my_user.username,
+        }, status=status.HTTP_200_OK)
