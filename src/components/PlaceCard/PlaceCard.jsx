@@ -1,35 +1,37 @@
+// src/components/PlaceCard/PlaceCard.jsx
 import React from "react";
 import styles from "./PlaceCard.module.css";
 import {
   FaStar,
   FaMapMarkerAlt,
+  FaHome,
+  FaPhone,
+  FaMailBulk,
   FaBed,
   FaHotel,
-  FaHome,
   FaUtensils,
   FaClock,
   FaWifi,
-  FaSwimmingPool,
-  FaComments
+  FaSwimmingPool
 } from "react-icons/fa";
+import useUnsplash from "../../hooks/useUnsplash";
 
 const typeIconMap = {
-  hostel: FaHome,
+  hostel: FaBed,
   hotel: FaHotel,
-  bed: FaBed,
   apartment: FaHome,
-  restaurant: FaUtensils,
+  restaurant: FaUtensils
 };
 
-const PlaceCard = ({
-  place_id,            // id for routing / reviews
+export default function PlaceCard({
+  place_id,
   name,
   contact,
   address,
   street,
   postal_code,
   email,
-  rating = 0,
+  rating,
   description,
   working_hours,
   isAccommodation = false,
@@ -37,25 +39,24 @@ const PlaceCard = ({
   charge,
   amenities = [],
   onBook,
-  onReview,            // ← new callback
-}) => {
-  const TypeIcon = type
-    ? (typeIconMap[type.toLowerCase()] || FaHome)
-    : null;
+  onToggleFavorite,
+  isFavorite,
+  onReview,
+  imageDescription = name
+}) {
+  const src = useUnsplash(imageDescription);
+
+  const TypeIcon = type ? typeIconMap[type.toLowerCase()] || FaUtensils : null;
 
   return (
-    <div
-      className={styles.card}
-      onClick={isAccommodation ? onBook : undefined}
-    >
+    <div className={styles.card}>
       <div className={styles.imageWrapper}>
         <img
-          src={`https://source.unsplash.com/400x300/?${
-            isAccommodation ? "hotel" : "restaurant"
-          }`}
+          src={src || `https://via.placeholder.com/400x300?text=${encodeURIComponent(name)}`}
           alt={name}
           className={styles.image}
         />
+       
       </div>
 
       <div className={styles.details}>
@@ -67,8 +68,7 @@ const PlaceCard = ({
         </div>
 
         <div className={styles.location}>
-          <FaMapMarkerAlt />
-          <span>{`${address}, ${street}, ${postal_code}`}</span>
+          <FaMapMarkerAlt /> {address}, {street}, {postal_code}
         </div>
 
         <p className={styles.description}>{description}</p>
@@ -81,23 +81,22 @@ const PlaceCard = ({
 
         <div className={styles.meta}>
           <div className={styles.metaItem}>
-            <FaUtensils /> <span>{contact}</span>
+            <FaPhone /> {contact}
           </div>
           <div className={styles.metaItem}>
-            <FaWifi /> <span>{email}</span>
+            <FaMailBulk /> {email}
           </div>
         </div>
 
         {TypeIcon && (
           <span className={styles.typeBadge}>
-            <TypeIcon className={styles.typeIcon} /> {type}
+            <TypeIcon /> {type}
           </span>
         )}
 
         {charge && (
           <div className={styles.feature}>
-            💰 <strong>Price:</strong> ${charge}{" "}
-            {isAccommodation ? "/ night" : "/ person"}
+            💰 <strong>Price:</strong> ${charge} {isAccommodation ? "/ night" : "/ person"}
           </div>
         )}
 
@@ -107,10 +106,7 @@ const PlaceCard = ({
             <ul>
               {amenities.map((a, i) => (
                 <li key={i} className={styles.amenityItem}>
-                  {a.name}{" "}
-                  <span className={styles.amenityCharge}>
-                    (${a.charge})
-                  </span>
+                  {a.name} (${a.charge})
                 </li>
               ))}
             </ul>
@@ -118,32 +114,18 @@ const PlaceCard = ({
         )}
 
         <div className={styles.actions}>
-          {isAccommodation && (
-            <button
-              className={styles.bookNow}
-              onClick={(e) => {
-                e.stopPropagation();
-                onBook && onBook(place_id);
-              }}
-            >
-              Book Now
+          {onReview && (
+            <button className={styles.reviewBtn} onClick={onReview}>
+              Reviews
             </button>
           )}
-          { onReview && (
-            <button
-              className={styles.reviewBtn}
-              onClick={(e) => {
-                e.stopPropagation();
-                onReview && onReview(place_id);
-              }}
-            >
-              <FaComments /> Read Reviews
+          {isAccommodation && (
+            <button className={styles.bookNow} onClick={onBook}>
+              Book Now
             </button>
           )}
         </div>
       </div>
     </div>
-  );
-};
-
-export default PlaceCard;
+);
+}

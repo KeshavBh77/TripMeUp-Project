@@ -36,79 +36,85 @@ export default function Home() {
     useEffect(() => {
         const loadData = async () => {
             try {
-                await new Promise((r) => setTimeout(r, 1500));
+                await new Promise(r => setTimeout(r, 1500));
 
-                // cities
-                const cityRes = await fetch("http://localhost:8000/TripMeUpApp/city/");
-                const cityData = await cityRes.json();
-                setCities(cityData);
+        // cities
+        const cityRes = await fetch("http://localhost:8000/TripMeUpApp/city/");
+        const cityData = await cityRes.json();
+        setCities(cityData);
 
-                const resRes = await fetch("http://localhost:8000/TripMeUpApp/restaurants/");
-                const resData = await resRes.json();
-                const topR = Array.isArray(resData)
-                    ? resData.sort((a, b) => b.place.rating - a.place.rating).slice(0, 5)
-                    : [];
-                setRestaurants(topR);
+        // Restaurants
+        const resData = await fetch("http://localhost:8000/TripMeUpApp/restaurants/").then(r => r.json());
+        setRestaurants(
+          Array.isArray(resData)
+            ? resData
+                .sort((a, b) => b.place.rating - a.place.rating)
+                .slice(0, 5)
+                .map(r => ({ ...r.place, imageDescription: r.place.imageDescription || r.place.name }))
+            : []
+        );
 
-                // accommodations
-                const accRes = await fetch("http://localhost:8000/TripMeUpApp/accommodation/");
-                const accData = await accRes.json();
-                const topA = Array.isArray(accData)
-                    ? accData.sort((a, b) => b.place.rating - a.place.rating).slice(0, 5)
-                    : [];
-                setAccommodations(topA);
+          // Accommodations
+          const accData = await fetch("http://localhost:8000/TripMeUpApp/accommodation/").then(r => r.json());
+          setAccommodations(
+              Array.isArray(accData)
+                  ? accData
+                      .sort((a, b) => b.place.rating - a.place.rating)
+                      .slice(0, 5)
+                      .map(a => ({ ...a.place, imageDescription: a.place.imageDescription || a.place.name }))
+                  : []
+          );
+              // Fetch reviews
+              const reviewsRes = await fetch("http://localhost:8000/TripMeUpApp/reviews/");
+              const reviewsData = await reviewsRes.json();
+              const topReviewsRaw = reviewsData.sort((a, b) => b.rating - a.rating).slice(0, 5);
 
-                // Fetch reviews
-                const reviewsRes = await fetch("http://localhost:8000/TripMeUpApp/reviews/");
-                const reviewsData = await reviewsRes.json();
-                const topReviewsRaw = reviewsData.sort((a, b) => b.rating - a.rating).slice(0, 5);
+              const allPlaces = [...topR, ...topA].map((p) => p.place);
+              const placeMap = new Map();
+              allPlaces.forEach((p) => placeMap.set(p.place_id, p.name));
 
-                const allPlaces = [...topR, ...topA].map((p) => p.place);
-                const placeMap = new Map();
-                allPlaces.forEach((p) => placeMap.set(p.place_id, p.name));
+              const topReviews = await Promise.all(
+                  topReviewsRaw.map(async (review) => {
+                      let placeName = placeMap.get(review.place);
+                      if (!placeName) {
+                          try {
+                              const placeRes = await fetch(`http://localhost:8000/TripMeUpApp/places/${review.place}/`);
+                              const placeData = await placeRes.json();
+                              placeName = placeData.name;
+                          } catch {
+                              placeName = "Unknown Place";
+                          }
+                      }
 
-                const topReviews = await Promise.all(
-                    topReviewsRaw.map(async (review) => {
-                        let placeName = placeMap.get(review.place);
-                        if (!placeName) {
-                            try {
-                                const placeRes = await fetch(`http://localhost:8000/TripMeUpApp/places/${review.place}/`);
-                                const placeData = await placeRes.json();
-                                placeName = placeData.name;
-                            } catch {
-                                placeName = "Unknown Place";
-                            }
-                        }
+                      try {
+                          const userRes = await fetch(`http://localhost:8000/TripMeUpApp/users/${review.user}/`);
+                          const userData = await userRes.json();
+                          return {
+                              ...review,
+                              username: userData.username,
+                              placeName
+                          };
+                      } catch {
+                          return {
+                              ...review,
+                              username: "Anonymous",
+                              placeName
+                          };
+                      }
+                  })
+              );
 
-                        try {
-                            const userRes = await fetch(`http://localhost:8000/TripMeUpApp/users/${review.user}/`);
-                            const userData = await userRes.json();
-                            return {
-                                ...review,
-                                username: userData.username,
-                                placeName
-                            };
-                        } catch {
-                            return {
-                                ...review,
-                                username: "Anonymous",
-                                placeName
-                            };
-                        }
-                    })
-                );
+              setReviews(topReviews);
+          } catch (err) {
+              console.error("Fetch error:", err);
+              setError("Failed to fetch data.");
+          } finally {
+              setLoading(false);
+          }
+      };
 
-                setReviews(topReviews);
-            } catch (err) {
-                console.error("Fetch error:", err);
-                setError("Failed to fetch data.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadData();
-    }, []);
+      loadData();
+  }, []);
 
     // favorites toggle
     const toggleFavorite = (id) =>
