@@ -49,7 +49,9 @@ function AppContent() {
           <Route path="/cities/:title" element={
             <PrivateRoute><CityDetail /></PrivateRoute>} />
           <Route path="/restaurants" element={
-            <PrivateRoute></PrivateRoute>} />
+            <PrivateRoute>
+              <Restaurants />
+            </PrivateRoute>} />
           <Route
             path="/accommodations"
             element={
