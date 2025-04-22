@@ -1,10 +1,43 @@
+// src/pages/Bookings/Bookings.jsx
 import React, { useState, useEffect, useContext } from "react";
 import SectionTitle from "../../components/SectionTitle/SectionTitle";
 import Skeleton from "../../components/Skeleton/Skeleton";
 import { AuthContext } from "../../context/AuthContext";
 import BookingModal from "../../components/BookingModal/BookingModal";
-import styles from "./Booking.module.css";
 import { FaCalendarTimes, FaPlus } from "react-icons/fa";
+import useUnsplash from "../../hooks/useUnsplash";
+import styles from "./Booking.module.css";
+
+function BookingCard({ booking, onReload }) {
+  // try Unsplash on the place name
+  const unsplashUrl = useUnsplash(booking.place?.name);
+  const imageUrl =
+    unsplashUrl ||
+    booking.place?.image ||
+    "https://via.placeholder.com/300x200?text=No+Image";
+
+  return (
+    <div className={styles.cardWrapper}>
+      <div className={`${styles.card} neo-embed`}>
+        <img
+          src={imageUrl}
+          alt={booking.place?.name || "Place"}
+          className={styles.image}
+        />
+        <div className={styles.info}>
+          <h3>{booking.place?.name || "Unknown Place"}</h3>
+          <div className={styles.meta}>
+            <span>{booking.starting_date} → {booking.ending_date}</span>
+            <span>{booking.no_of_guests} Guests</span>
+          </div>
+        </div>
+        <div className={styles.footer}>
+          <div className={styles.price}>${booking.charge || 0}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Bookings() {
   const { user } = useContext(AuthContext);
@@ -19,18 +52,20 @@ export default function Bookings() {
     guests:  1
   });
 
+  const reloadBookings = async () => {
+    if (!user) return;
+    setLoading(true);
+    const res  = await fetch(
+      `http://localhost:8000/TripMeUpApp/booking/?user_id=${user.user_id}`
+    );
+    const data = await res.json().catch(() => []);
+    setBookings(Array.isArray(data) ? data : []);
+    setLoading(false);
+  };
+
   // load existing bookings
   useEffect(() => {
-    if (!user) return;
-    (async () => {
-      setLoading(true);
-      const res  = await fetch(
-        `http://localhost:8000/TripMeUpApp/booking/?user_id=${user.user_id}`
-      );
-      const data = await res.json().catch(() => []);
-      setBookings(Array.isArray(data) ? data : []);
-      setLoading(false);
-    })();
+    reloadBookings();
   }, [user]);
 
   // load place-list for creation
@@ -48,7 +83,6 @@ export default function Bookings() {
   };
 
   const handleSubmit = async ({ place, dates, guests }) => {
-    // POST new booking
     await fetch("http://localhost:8000/TripMeUpApp/booking/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -60,15 +94,8 @@ export default function Bookings() {
         no_of_guests:  guests
       })
     });
-    // reload
-    setLoading(true);
-    const res  = await fetch(
-      `http://localhost:8000/TripMeUpApp/booking/?user_id=${user.user_id}`
-    );
-    const data = await res.json().catch(() => []);
-    setBookings(Array.isArray(data) ? data : []);
-    setLoading(false);
     setModalOpen(false);
+    await reloadBookings();
   };
 
   return (
@@ -101,30 +128,15 @@ export default function Bookings() {
       ) : (
         <div className={styles.list}>
           {bookings.map(b => (
-            <div key={b.booking_id} className={styles.cardWrapper}>
-              <div className={`${styles.card} neo-embed`}>
-                <img
-                  src={b.place?.image || "https://via.placeholder.com/300"}
-                  alt={b.place?.name || "Place"}
-                  className={styles.image}
-                />
-                <div className={styles.info}>
-                  <h3>{b.place?.name || "Unknown Place"}</h3>
-                  <div className={styles.meta}>
-                    <span>{b.starting_date} → {b.ending_date}</span>
-                    <span>{b.no_of_guests} Guests</span>
-                  </div>
-                </div>
-                <div className={styles.footer}>
-                  <div className={styles.price}>${b.charge || 0}</div>
-                </div>
-              </div>
-            </div>
+            <BookingCard
+              key={b.booking_id}
+              booking={b}
+              onReload={reloadBookings}
+            />
           ))}
         </div>
       )}
 
-      {/* Create/Edit modal */}
       <BookingModal
         user={user}
         show={modalOpen}
@@ -133,23 +145,22 @@ export default function Bookings() {
         from={details.from}
         to={details.to}
         onClose={() => setModalOpen(false)}
-        onChange={(key, val) =>
-          setDetails(d => ({ ...d, [key]: val }))
-        }
+        onChange={(k, v) => setDetails(d => ({ ...d, [k]: v }))}
         onSubmit={handleSubmit}
       >
-        {/* Step 0 extra: place selector */}
+        {/* extra place selector for step 0 */}
         <div className={styles.formGroup}>
           <label>Select Place</label>
           <select
             value={details.placeId || ""}
             onChange={e => setDetails(d => ({
-              ...d, placeId: e.target.value
+              ...d,
+              placeId: e.target.value
             }))}
             required
           >
             <option value="">— pick a place —</option>
-            {places.map(p=>(
+            {places.map(p => (
               <option key={p.place_id} value={p.place_id}>
                 {p.name}
               </option>

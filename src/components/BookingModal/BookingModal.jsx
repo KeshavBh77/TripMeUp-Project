@@ -3,29 +3,38 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./BookingModal.module.css";
 import Spinner from "../Loading/Spinner";
+import useUnsplash from "../../hooks/useUnsplash";
 
 export default function BookingModal({
-  user,       // from AuthContext, passed in by the parent
+  user,       // from AuthContext
   show,
-  place,      // the selected place object, must have place_id
+  place,      // selected place object, must have place_id and name
   guests,
   from,
   to,
   onClose,
-  onChange   // callback to update { from, to, guests } in parent
+  onChange    // callback to update { from, to, guests } in parent
 }) {
   const [step, setStep]     = useState(0);
   const [errors, setErrors] = useState({});
   const today               = new Date().toISOString().split("T")[0];
   const navigate            = useNavigate();
 
-  // prevent background scroll
+  // fetch an image based on place.name
+  const unsplashUrl = useUnsplash(place?.name);
+  const imageUrl =
+    unsplashUrl ||
+    place?.image ||
+    place?.imageUrl ||
+    "https://via.placeholder.com/400x300?text=No+Image";
+
+  // lock scroll when modal open
   useEffect(() => {
     document.body.style.overflow = show ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [show]);
 
-  // reset form whenever modal opens
+  // reset on open
   useEffect(() => {
     if (show) {
       setStep(0);
@@ -33,7 +42,6 @@ export default function BookingModal({
     }
   }, [show]);
 
-  // simple validation
   const validate = () => {
     const e = {};
     if (!from) e.from = "Check‑in date required";
@@ -45,12 +53,10 @@ export default function BookingModal({
     return !Object.keys(e).length;
   };
 
-  // go to review step
   const handleNext = () => {
     if (validate()) setStep(1);
   };
 
-  // POST to backend, show loading then success
   const handleConfirm = async () => {
     setStep(2);
     try {
@@ -73,9 +79,8 @@ export default function BookingModal({
       setStep(3);
     } catch (err) {
       console.error(err);
-      // back to review so user can retry
-      setStep(1);
       setErrors({ submit: err.message });
+      setStep(1);
     }
   };
 
@@ -119,10 +124,7 @@ export default function BookingModal({
                 />
                 {errors.to && <div className={styles.error}>{errors.to}</div>}
               </div>
-
-              {errors.dateRange && (
-                <div className={styles.error}>{errors.dateRange}</div>
-              )}
+              {errors.dateRange && <div className={styles.error}>{errors.dateRange}</div>}
 
               <div className={styles.formGroup}>
                 <label>Guests</label>
@@ -150,7 +152,7 @@ export default function BookingModal({
 
               <div className={styles.placePreview}>
                 <img
-                  src={place.image || place.imageUrl}
+                  src={imageUrl}
                   alt={place.name}
                   className={styles.placeImage}
                 />
@@ -181,16 +183,10 @@ export default function BookingModal({
               {errors.submit && <div className={styles.error}>{errors.submit}</div>}
 
               <div className={styles.buttonGroup}>
-                <button
-                  className={styles.secondaryBtn}
-                  onClick={() => setStep(0)}
-                >
+                <button className={styles.secondaryBtn} onClick={() => setStep(0)}>
                   Edit
                 </button>
-                <button
-                  className={styles.primaryBtn}
-                  onClick={handleConfirm}
-                >
+                <button className={styles.primaryBtn} onClick={handleConfirm}>
                   Confirm & Create
                 </button>
               </div>
@@ -216,10 +212,7 @@ export default function BookingModal({
                 {new Date(to).toLocaleDateString()} has been booked.
               </p>
               <div className={styles.buttonGroupConfirm}>
-                <button
-                  className={styles.secondaryBtn}
-                  onClick={onClose}
-                >
+                <button className={styles.secondaryBtn} onClick={onClose}>
                   Close
                 </button>
                 <button
