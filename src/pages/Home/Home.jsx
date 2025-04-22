@@ -14,13 +14,11 @@ import { AuthContext } from "../../context/AuthContext";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("restaurants");
-  const [favorites, setFavorites] = useState({});
   const [cities, setCities] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
   const [accommodations, setAccommodations] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState(null);
@@ -29,7 +27,6 @@ export default function Home() {
     from: "",
     to: ""
   });
-  
 
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
@@ -37,79 +34,63 @@ export default function Home() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        await new Promise((r) => setTimeout(r, 1500));
+        await new Promise(r => setTimeout(r, 1500));
 
-        // cities
-        const cityRes = await fetch("http://localhost:8000/TripMeUpApp/city/");
-        const cityData = await cityRes.json();
+        // Cities
+        const cityData = await fetch("http://localhost:8000/TripMeUpApp/city/").then(r => r.json());
         setCities(cityData);
 
-        // restaurants (API returns [{ place: {...}, working_hours, ... }, ...])
-        const resRes = await fetch("http://localhost:8000/TripMeUpApp/restaurants/");
-        const resData = await resRes.json();
-        const topR = Array.isArray(resData)
-          ? resData
-              .sort((a, b) => b.place.rating - a.place.rating)
-              .slice(0, 5)
-          : [];
-        setRestaurants(topR);
+        // Restaurants
+        const resData = await fetch("http://localhost:8000/TripMeUpApp/restaurants/").then(r => r.json());
+        setRestaurants(
+          Array.isArray(resData)
+            ? resData
+                .sort((a, b) => b.place.rating - a.place.rating)
+                .slice(0, 5)
+                .map(r => ({ ...r.place, imageDescription: r.place.imageDescription || r.place.name }))
+            : []
+        );
 
-        // accommodations
-        const accRes = await fetch("http://localhost:8000/TripMeUpApp/accommodation/");
-        const accData = await accRes.json();
-        const topA = Array.isArray(accData)
-          ? accData
-              .sort((a, b) => b.place.rating - a.place.rating)
-              .slice(0, 5)
-          : [];
-        setAccommodations(topA);
+        // Accommodations
+        const accData = await fetch("http://localhost:8000/TripMeUpApp/accommodation/").then(r => r.json());
+        setAccommodations(
+          Array.isArray(accData)
+            ? accData
+                .sort((a, b) => b.place.rating - a.place.rating)
+                .slice(0, 5)
+                .map(a => ({ ...a.place, imageDescription: a.place.imageDescription || a.place.name }))
+            : []
+        );
 
-                // Fetch reviews
-                const reviewsRes = await fetch("http://localhost:8000/TripMeUpApp/reviews/");
-                const reviewsData = await reviewsRes.json();
-                const topReviewsRaw = reviewsData
-                    .sort((a, b) => b.rating - a.rating)
-                    .slice(0, 5);
-
-                // Add usernames to reviews
-                const topReviews = await Promise.all(
-                    topReviewsRaw.map(async (review) => {
-                        try {
-                            const userRes = await fetch(`http://localhost:8000/TripMeUpApp/users/${review.user}/`);
-                            const userData = await userRes.json();
-                            return { ...review, username: userData.username };
-                        } catch {
-                            return { ...review, username: 'Anonymous' };
-                        }
-                    })
-                );
-
-                setReviews(topReviews);
-
-
-            } catch (err) {
-                console.error("Fetch error:", err);
-                setError("Failed to fetch data.");
-            } finally {
-                setLoading(false);
+        // Reviews
+        const revData = await fetch("http://localhost:8000/TripMeUpApp/reviews/").then(r => r.json());
+        const topRaw = revData.sort((a, b) => b.rating - a.rating).slice(0, 5);
+        const topWithUser = await Promise.all(
+          topRaw.map(async rev => {
+            try {
+              const u = await fetch(`http://localhost:8000/TripMeUpApp/users/${rev.user}/`).then(r => r.json());
+              return { ...rev, username: u.username };
+            } catch {
+              return { ...rev, username: "Anonymous" };
             }
-        };
+          })
+        );
+        setReviews(topWithUser);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
 
-        loadData();
-    }, []);
-
-  // favorites toggle
-  const toggleFavorite = (id) =>
-    setFavorites((f) => ({ ...f, [id]: !f[id] }));
-
-  // open booking modal with real Place object
-  const handleBook = (place) => {
+  const handleBook = place => {
     setSelectedPlace(place);
     setBookingDetails({ guests: 1, from: "", to: "" });
     setBookingOpen(true);
   };
 
-  // submits booking to backend
   const handleBookingSubmit = async ({ place, dates, guests }) => {
     try {
       const res = await fetch("http://localhost:8000/TripMeUpApp/booking/", {
@@ -123,14 +104,9 @@ export default function Home() {
           no_of_guests: guests
         })
       });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail || "Booking creation failed");
-      }
-      // optional: you can refresh “my bookings” or show a toast
+      if (!res.ok) throw new Error((await res.json()).detail || "Booking failed");
       setBookingOpen(false);
     } catch (err) {
-      console.error("Booking failed:", err);
       alert(err.message);
     }
   };
@@ -140,12 +116,8 @@ export default function Home() {
       <Hero cities={cities} />
 
       <div className={styles.container}>
-        <SectionTitle
-          title="Popular Destinations"
-          subtitle="Explore our most popular cities"
-        />
+        <SectionTitle title="Popular Destinations" subtitle="Explore our most popular cities" />
 
-        {/* login prompt */}
         {showLoginModal && (
           <div className={styles.modalOverlay}>
             <div className={styles.loginModal}>
@@ -154,7 +126,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* city cards */}
         <div className={styles.list}>
           {loading
             ? Array.from({ length: 4 }).map((_, i) => (
@@ -162,7 +133,7 @@ export default function Home() {
                   <Skeleton height="260px" radius="16px" />
                 </div>
               ))
-            : cities.map((city) => (
+            : cities.map(city => (
                 <div
                   key={city.city_id}
                   className={styles.cardWrapper}
@@ -173,13 +144,11 @@ export default function Home() {
                         setShowLoginModal(false);
                         navigate("/login");
                       }, 1500);
-                    } else {
-                      navigate(`/cities/${city.name}`);
-                    }
+                    } else navigate(`/cities/${city.name}`);
                   }}
                 >
                   <CityCard
-                    image="https://via.placeholder.com/300"
+                    image={city.image_url}
                     title={city.name}
                     description={city.location}
                     types={["Restaurants", "Hotels", "Landmarks"]}
@@ -189,11 +158,7 @@ export default function Home() {
               ))}
         </div>
 
-        {/* featured restaurants / accommodations */}
-        <SectionTitle
-          title="Featured Places"
-          subtitle="Discover top-rated options"
-        />
+        <SectionTitle title="Featured Places" subtitle="Discover top-rated options" />
         <Tabs
           tabs={[
             { id: "restaurants", label: "Restaurants" },
@@ -209,45 +174,42 @@ export default function Home() {
                   <Skeleton height="320px" radius="20px" />
                 </div>
               ))
-            : (activeTab === "restaurants"
-                ? restaurants
-                : accommodations
-              ).map((rec, i) => (
+            : (activeTab === "restaurants" ? restaurants : accommodations).map((place, i) => (
                 <div key={i} className={styles.cardWrapper}>
                   <PlaceCard
-                    {...rec.place}
+                    {...place}
                     isAccommodation={activeTab === "accommodations"}
-                    isFavorite={favorites[i]}
-                    onToggleFavorite={() => toggleFavorite(i)}
-                    onBook={() => handleBook(rec.place)}
-                    onReview={() =>
-                      navigate(`/places/${rec.place.place_id}/reviews`)
-                    }
+                    onBook={() => handleBook(place)}
+                    onReview={() => navigate(`/places/${place.place_id}/reviews`)}
                   />
                 </div>
               ))}
         </div>
 
-                <SectionTitle title="Top Rated Reviews" subtitle="" />
-                <div className={styles.list}>
-                    {loading
-                        ? Array.from({ length: 2 }).map((_, i) => (
-                            <div key={i} className={styles.cardWrapper}>
-                                <Skeleton height="180px" radius="16px" />
-                            </div>
-                        ))
-                        : reviews.map((rev, i) => (
-                            <div key={i} className={styles.cardWrapper}>
-                                <ReviewCard
-                                    author={rev.username || "Anonymous"}
-                                    rating={rev.rating}
-                                    date={new Date(rev.created_at || rev.date).toLocaleDateString()}
-                                    content={rev.comment}
-                                />
-                            </div>
-                        ))}
-                </div>
-            </div>
+        <SectionTitle title="Top Rated Reviews" subtitle="" />
+        <div className={styles.list}>
+          {loading ? (
+            Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className={styles.cardWrapper}>
+                <Skeleton height="180px" radius="16px" />
+              </div>
+            ))
+          ) : reviews.length ? (
+            reviews.map((rev, i) => (
+              <div key={i} className={styles.cardWrapper}>
+                <ReviewCard
+                  author={rev.username}
+                  rating={rev.rating}
+                  date={new Date(rev.created_at || rev.date).toLocaleDateString()}
+                  content={rev.comment}
+                />
+              </div>
+            ))
+          ) : (
+            <p className={styles.noReviews}>No reviews available.</p>
+          )}
+        </div>
+      </div>
 
       <BookingModal
         user={user}
@@ -258,9 +220,7 @@ export default function Home() {
         to={bookingDetails.to}
         onClose={() => setBookingOpen(false)}
         onSubmit={handleBookingSubmit}
-        onChange={(k, v) =>
-          setBookingDetails((b) => ({ ...b, [k]: v }))
-        }
+        onChange={(k, v) => setBookingDetails(b => ({ ...b, [k]: v }))}
       />
     </div>
   );
