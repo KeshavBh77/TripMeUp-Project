@@ -2,14 +2,6 @@ from django.urls import path, include
 from .views import *
 from rest_framework.routers import DefaultRouter
 
-# old code
-# router = DefaultRouter()
-# router.register(r'city', CityDetailView, basename='city')
-# router.register(r'', HomeListView, basename='home')
-# urlpatterns = [
-# path('', include(router.urls)),
-# ]
-
 router = DefaultRouter()
 
 # Register viewsets with appropriate base names
@@ -20,6 +12,10 @@ router.register(r"restaurants", RestaurantDetailView, basename="restaurant-detai
 router.register(r'home', HomeViewSet, basename='home') 
 router.register(r"reviews", ReviewViewSet, basename="review")
 router.register(r"users", UserViewSet, basename="user")
+router.register(r'place-list',PlaceViewSet, basename='place-list')
+
+router.register(r'booking',BookingViewSet, basename='booking')
+
 
 urlpatterns = [
     path("", include(router.urls))

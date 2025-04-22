@@ -16,10 +16,6 @@ from rest_framework import viewsets, status
 from .models import City
 from .serializers import CitySerializer
 from rest_framework.reverse import reverse
-from rest_framework.decorators import action
-from django.contrib.auth import authenticate
-from django.db.models import Q
-
 
 # Create your views here.
 class HomeViewSet(viewsets.ViewSet):
@@ -70,7 +66,7 @@ class CreateBookingView(ModelViewSet):
     serializer_class = BookingSerializer
 
 
-class CreateReviewView(ModelViewSet):
+class ReviewView(ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
@@ -137,3 +133,66 @@ class UserViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all().order_by("-review_id")
     serializer_class = ReviewSerializer
+
+# TripMeUpApp/views.py
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from .models import Booking
+from .serializers import BookingSerializer
+
+
+class BookingViewSet(viewsets.ModelViewSet):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
+
+    def list(self, request, *args, **kwargs):
+        user_id = request.query_params.get('user_id')
+
+        if user_id:
+            bookings = Booking.objects.filter(client__user__user_id=user_id)
+        else:
+            bookings = Booking.objects.none()
+
+        if not bookings.exists():
+            return Response([], status=status.HTTP_200_OK)
+
+        serializer = BookingSerializer(bookings, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def create(self, request, *args, **kwargs):
+        user_id = request.data.get('user_id')
+        place_id = request.data.get('place_id')
+        starting_date = request.data.get('starting_date')
+        ending_date = request.data.get('ending_date')
+        no_of_guests = request.data.get('no_of_guests')
+
+        if not all([user_id, place_id, starting_date, ending_date, no_of_guests]):
+            return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            client = Client.objects.get(user__user_id=user_id)
+            place = Place.objects.get(place_id=place_id)
+
+            booking = Booking.objects.create(
+                client=client,
+                place=place,
+                starting_date=starting_date,
+                ending_date=ending_date,
+                no_of_guests=no_of_guests
+            )
+
+            serializer = BookingSerializer(booking)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        except Client.DoesNotExist:
+            return Response({"error": "Client not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Place.DoesNotExist:
+            return Response({"error": "Place not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class PlaceViewSet(viewsets.ViewSet):
+    def list(self, request):
+        places = Place.objects.all()
+        serializer = PlaceSerializer(places, many=True)
+        return Response(serializer.data)
