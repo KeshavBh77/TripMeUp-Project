@@ -73,6 +73,8 @@ const Navbar = () => {
           <NavLink to="/restaurants" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>Restaurants</NavLink>
           <NavLink to="/accommodations" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>Accommodations</NavLink>
           <NavLink to="/bookings" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>My Bookings</NavLink>
+          <NavLink to="/reviews" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>Reviews</NavLink>
+
 
           {/* Only show if Admin */}
           {isAdmin && (
@@ -105,10 +107,7 @@ const Navbar = () => {
               <NavLink to="/login" className={`${styles.btn} ${styles.outline}`}>
                 Login
               </NavLink>
-              <NavLink
-                to="/register"
-                className={`${styles.btn} ${styles.primary}`}
-              >
+              <NavLink to="/register" className={`${styles.btn} ${styles.primary}`}>
                 Sign Up
               </NavLink>
             </>

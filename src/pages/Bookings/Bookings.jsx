@@ -1,78 +1,107 @@
-// src/pages/Booking/Bookings.jsx
 import React, { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
 import SectionTitle from "../../components/SectionTitle/SectionTitle";
 import Skeleton from "../../components/Skeleton/Skeleton";
+import { AuthContext } from "../../context/AuthContext";
+import BookingModal from "../../components/BookingModal/BookingModal";
 import styles from "./Booking.module.css";
-import { FaCalendarAlt, FaUser, FaBed, FaCalendarTimes } from "react-icons/fa";
+import { FaCalendarTimes, FaPlus } from "react-icons/fa";
 
 export default function Bookings() {
-  const [loading, setLoading] = useState(true);
-  const [list, setList] = useState([]);
   const { user } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const [loading, setLoading]     = useState(true);
+  const [bookings, setBookings]   = useState([]);
+  const [places, setPlaces]       = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [details, setDetails]     = useState({
+    placeId: null,
+    from:    "",
+    to:      "",
+    guests:  1
+  });
 
+  // load existing bookings
   useEffect(() => {
-    const loadBookings = async () => {
-      if (!user) return;
-
+    if (!user) return;
+    (async () => {
       setLoading(true);
-      try {
-        const res = await fetch(`http://localhost:8000/TripMeUpApp/booking/?user_id=${user.user_id}`);
-        const data = await res.json();
-        console.log("Fetched bookings:", data);
-
-        if (Array.isArray(data)) {
-          setList(data);
-        } else {
-          setList([]);
-        }
-      } catch (err) {
-        console.error("Fetch bookings error:", err);
-        setList([]);
-      }
+      const res  = await fetch(
+        `http://localhost:8000/TripMeUpApp/booking/?user_id=${user.user_id}`
+      );
+      const data = await res.json().catch(() => []);
+      setBookings(Array.isArray(data) ? data : []);
       setLoading(false);
-    };
-
-    loadBookings();
+    })();
   }, [user]);
+
+  // load place-list for creation
+  useEffect(() => {
+    (async () => {
+      const res  = await fetch("http://localhost:8000/TripMeUpApp/place-list/");
+      const data = await res.json().catch(() => []);
+      setPlaces(Array.isArray(data) ? data : []);
+    })();
+  }, []);
+
+  const handleCreate = () => {
+    setDetails({ placeId: null, from: "", to: "", guests: 1 });
+    setModalOpen(true);
+  };
+
+  const handleSubmit = async ({ place, dates, guests }) => {
+    // POST new booking
+    await fetch("http://localhost:8000/TripMeUpApp/booking/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id:       user.user_id,
+        place_id:      place.place_id,
+        starting_date: dates.from,
+        ending_date:   dates.to,
+        no_of_guests:  guests
+      })
+    });
+    // reload
+    setLoading(true);
+    const res  = await fetch(
+      `http://localhost:8000/TripMeUpApp/booking/?user_id=${user.user_id}`
+    );
+    const data = await res.json().catch(() => []);
+    setBookings(Array.isArray(data) ? data : []);
+    setLoading(false);
+    setModalOpen(false);
+  };
 
   return (
     <div className={styles.page}>
-      <SectionTitle
-        title="My Bookings"
-        subtitle="Manage your reservations"
-      />
-
+      <SectionTitle title="My Bookings" subtitle="Manage your reservations" />
 
       <div className={styles.actions}>
         <button
           className={`${styles.actionBtn} ${styles.btnCreate}`}
-          onClick={() => navigate("/create-booking")}
+          onClick={handleCreate}
         >
-          Create Booking
+          <FaPlus /> Create Booking
         </button>
       </div>
 
       {loading ? (
         <div className={styles.list}>
-          {Array.from({ length: 2 }).map((_, i) => (
+          {[0,1].map(i => (
             <div key={i} className={styles.cardWrapper}>
               <Skeleton height="260px" radius="18px" />
             </div>
           ))}
         </div>
-      ) : list.length === 0 ? (
+      ) : bookings.length === 0 ? (
         <div className={styles.empty}>
           <FaCalendarTimes className={styles.emptyIcon} />
           <h3>No Bookings Found</h3>
-          <p>You don't have any bookings.</p>
+          <p>You don’t have any bookings yet.</p>
         </div>
       ) : (
         <div className={styles.list}>
-          {list.map((b, i) => (
-            <div key={i} className={styles.cardWrapper}>
+          {bookings.map(b => (
+            <div key={b.booking_id} className={styles.cardWrapper}>
               <div className={`${styles.card} neo-embed`}>
                 <img
                   src={b.place?.image || "https://via.placeholder.com/300"}
@@ -80,24 +109,54 @@ export default function Bookings() {
                   className={styles.image}
                 />
                 <div className={styles.info}>
-                  <h3>{b.place.name ? b.place.name : "Unknown Place"}</h3>
+                  <h3>{b.place?.name || "Unknown Place"}</h3>
                   <div className={styles.meta}>
-                    <span>
-                      <FaCalendarAlt /> {b.starting_date} - {b.ending_date}
-                    </span>
-                    <span>
-                      <FaUser /> {b.no_of_guests} Guests
-                    </span>
+                    <span>{b.starting_date} → {b.ending_date}</span>
+                    <span>{b.no_of_guests} Guests</span>
                   </div>
                 </div>
                 <div className={styles.footer}>
-                  <div className={styles.price}>${b.price || 0}</div>
+                  <div className={styles.price}>${b.charge || 0}</div>
                 </div>
               </div>
             </div>
           ))}
         </div>
       )}
+
+      {/* Create/Edit modal */}
+      <BookingModal
+        user={user}
+        show={modalOpen}
+        place={places.find(p => p.place_id === +details.placeId) || null}
+        guests={details.guests}
+        from={details.from}
+        to={details.to}
+        onClose={() => setModalOpen(false)}
+        onChange={(key, val) =>
+          setDetails(d => ({ ...d, [key]: val }))
+        }
+        onSubmit={handleSubmit}
+      >
+        {/* Step 0 extra: place selector */}
+        <div className={styles.formGroup}>
+          <label>Select Place</label>
+          <select
+            value={details.placeId || ""}
+            onChange={e => setDetails(d => ({
+              ...d, placeId: e.target.value
+            }))}
+            required
+          >
+            <option value="">— pick a place —</option>
+            {places.map(p=>(
+              <option key={p.place_id} value={p.place_id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </BookingModal>
     </div>
   );
 }
