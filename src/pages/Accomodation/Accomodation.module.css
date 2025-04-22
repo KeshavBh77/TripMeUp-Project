@@ -1,16 +1,19 @@
+/* src/pages/Accomodation/Accomodation.module.css */
+
 .hero {
   position: relative;
   height: 60vh;
   margin: 2rem;
   border-radius: 25px;
-  overflow: hidden;
-  background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1687308236938-4f32eba86837?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjZ8fGFjY29tb2RhdGlvbnxlbnwwfHwwfHx8MA%3D%3D');
-
+  overflow: visible; /* allow dropdown overflow */
+  background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)),
+    url('https://images.unsplash.com/photo-1687308236938-4f32eba86837?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjZ8fGFjY29tb2RhdGlvbnxlbnwwfHwwfHx8MA%3D%3D');
   background-size: cover;
   background-position: center;
-
-  box-shadow: 10px 10px 20px var(--shadow-light), -10px -10px 20px var(--shadow-dark);
+  box-shadow: 10px 10px 20px var(--shadow-light),
+              -10px -10px 20px var(--shadow-dark);
 }
+
 .overlay {
   position: absolute;
   inset: 0;
@@ -34,13 +37,16 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 4rem 2rem;
+  scroll-margin-top: 240px; /* to align scroll target below fixed headers */
 }
+
 .tabGroup {
   display: flex;
   justify-content: center;
   gap: 1rem;
   margin: 2rem 0;
 }
+
 .tab {
   padding: 0.8rem 1.5rem;
   cursor: pointer;
@@ -48,24 +54,57 @@
   color: #666;
   background: var(--bg-light);
   border-radius: 25px;
-  box-shadow: 5px 5px 10px var(--shadow-light), -5px -5px 10px var(--shadow-dark);
+  box-shadow: 5px 5px 10px var(--shadow-light),
+              -5px -5px 10px var(--shadow-dark);
   transition: all 0.3s ease;
-  border:none;
+  border: none;
 }
+
 .tab:hover {
-  box-shadow: inset 5px 5px 10px var(--shadow-light), inset -5px -5px 10px var(--shadow-dark);
+  box-shadow: inset 5px 5px 10px var(--shadow-light),
+              inset -5px -5px 10px var(--shadow-dark);
 }
+
 .active {
   color: var(--primary);
-  box-shadow: inset 5px 5px 10px var(--shadow-light), inset -5px -5px 10px var(--shadow-dark);
+  box-shadow: inset 5px 5px 10px var(--shadow-light),
+              inset -5px -5px 10px var(--shadow-dark);
 }
+
 .grid {
-  /* center cards just like Home */
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 2rem;
 }
+
 .cardWrapper {
   flex: 0 1 350px;
+  transition: transform 0.3s ease;
 }
+
+.cardWrapper.highlight {
+  animation: highlight 1.5s ease;
+}
+
+@keyframes highlight {
+  0% { transform: scale(1); box-shadow: none; }
+  50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(0,0,0,0.2); }
+  100% { transform: scale(1); box-shadow: none; }
+}
+
+/* Dropdown Modal overrides to ensure visibility */
+.dropdownModal {
+  position: absolute;
+  top: calc(100% + 1rem);
+  left: 0;
+  right: 0;
+  background: var(--bg-light);
+  border-radius: 25px;
+  box-shadow: 10px 10px 20px var(--shadow-light),
+              -10px -10px 20px var(--shadow-dark);
+  z-index: 1000;
+  max-height: 400px;
+  overflow-y: auto;
+}
+

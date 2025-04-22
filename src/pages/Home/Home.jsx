@@ -47,7 +47,7 @@ export default function Home() {
             ? resData
                 .sort((a, b) => b.place.rating - a.place.rating)
                 .slice(0, 5)
-                .map(r => ({ ...r.place, imageDescription: r.place.imageDescription || r.place.name }))
+                .map(r => ({ ...r.place || r.place.name }))
             : []
         );
 
