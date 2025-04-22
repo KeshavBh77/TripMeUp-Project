@@ -35,13 +35,13 @@ export function AuthProvider({ children }) {
         }
     };
 
-    const login = async (email, password) => {
+    const login = async (username, password) => {
         try {
             const res = await fetch(API_BASE);
             const users = await res.json();
 
             const found = users.find(
-                (u) => u.email === email && u.password === password
+                (u) => u.username === username && u.password === password
             );
 
             if (!found) {
