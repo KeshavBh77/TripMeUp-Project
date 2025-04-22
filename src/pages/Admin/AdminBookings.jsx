@@ -14,11 +14,8 @@ export default function AdminBookings() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Only admins should view this
-    if (!user?.isAdmin) {
-      navigate('/login');
-      return;
-    }
+
+
     const fetchAll = async () => {
       setLoading(true);
       try {
