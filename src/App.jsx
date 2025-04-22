@@ -21,6 +21,8 @@ import Auth from "./pages/Auth/Auth";
 import ScrollToTop from "./components/ScrollToTop"; 
 import  NotFound from "./pages/NotFound404/404NotFound";
 import styles from "./App.module.css";
+import AdminBookings from './pages/AdminBookings/AdminBookings';
+
 
 const PrivateRoute = ({ children }) => {
   const { user } = React.useContext(AuthContext);
@@ -44,6 +46,8 @@ function AppContent() {
         <Routes>
           <Route path="/login" element={<Auth />} />
           <Route path="/register" element={<Auth />} />
+          <Route path="/admin-login" element={<Auth />} />
+          <Route path="/admin/bookings" element={<AdminBookings />} />
 
           <Route path="/" element={<Home />} />
           <Route path="/cities" element={
