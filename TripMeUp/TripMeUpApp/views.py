@@ -28,7 +28,7 @@ class HomeViewSet(viewsets.ViewSet):
     def list(self, request):
         return Response(
             {
-                "api": "TripMeUp",
+                "api": "TripMeUpApp",
                 "endpoints": {
                     "cities": "/api/cities/",
                     "places": "/api/places/",

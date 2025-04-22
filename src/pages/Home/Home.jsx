@@ -38,7 +38,7 @@ export default function Home() {
                 await new Promise(resolve => setTimeout(resolve, 1500));
 
                 // Fetch cities
-                const cityRes = await fetch("http://localhost:8000/TripMeUpApp/");
+                const cityRes = await fetch("http://localhost:8000/TripMeUpApp/city/");
                 const cityData = await cityRes.json();
                 setCities(cityData);
 
@@ -87,39 +87,6 @@ export default function Home() {
       guestNames
     });
 
-  };
-
-  const featuredPlaces = {
-    restaurants: [
-      {
-        image: restaurant,
-        title: "La Belle Cuisine",
-        rating: 4.8,
-        location: "Paris, France • French, Italian",
-        description: "An exquisite dining experience...",
-        features: [
-          { icon: "fas fa-clock", text: "Open: 11 AM - 11 PM" },
-          { icon: "fas fa-utensils", text: "Fine Dining" },
-        ],
-        price: 50,
-        unit: "person",
-      },
-    ],
-    accommodations: [
-      {
-        image: hotel1,
-        title: "Grand Plaza Hotel",
-        rating: 4.7,
-        location: "New York, USA • 5-star Hotel",
-        description: "Luxury accommodations...",
-        features: [
-          { icon: "fas fa-wifi", text: "Free WiFi" },
-          { icon: "fas fa-swimming-pool", text: "Pool" },
-        ],
-        price: 250,
-        unit: "night",
-      },
-    ],
   };
 
     const reviews = [
