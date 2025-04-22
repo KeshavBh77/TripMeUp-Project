@@ -17,7 +17,7 @@ router.register(r"checkadmin", CheckAdmin, basename="checkadmin")
 
 router.register(r'booking',BookingViewSet, basename='booking')
 router.register(r'admin-login',AdminLoginSet, basename='admin-login')
-
+router.register(r'admin-booking',AdminBookingSet,basename='admin-booking')
 urlpatterns = [
     path("", include(router.urls))
 ]

@@ -26,10 +26,10 @@ class HomeViewSet(viewsets.ViewSet):
     def list(self, request):
         return Response(
             {
-                "api": "TripMeUpApp",
+
                 "endpoints": {
-                    "cities": "/api/cities/",
-                    "places": "/api/places/",
+                    "cities": "/TripMeUpApp/cities/",
+                    "places": "/TripMeUpApp/places/",
 
                 },
             }
@@ -244,3 +244,26 @@ class AdminLoginSet(viewsets.ViewSet):
             'message': 'Admin login successful',
             'username': my_user.username,
         }, status=status.HTTP_200_OK)
+
+
+class AdminBookingSet(ModelViewSet):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+    def update(self, request, *args, **kwargs):
+        booking = self.get_object()
+        serializer = BookingSerializer(booking, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        booking = self.get_object()
+        booking.delete()
+        return Response({"message": "Booking deleted"}, status=status.HTTP_204_NO_CONTENT)
