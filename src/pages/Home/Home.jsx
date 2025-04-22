@@ -1,4 +1,3 @@
-// src/pages/Home/Home.jsx
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Hero from "../../components/Hero/Hero";
@@ -44,13 +43,10 @@ export default function Home() {
                 const cityData = await cityRes.json();
                 setCities(cityData);
 
-                // restaurants (API returns [{ place: {...}, working_hours, ... }, ...])
                 const resRes = await fetch("http://localhost:8000/TripMeUpApp/restaurants/");
                 const resData = await resRes.json();
                 const topR = Array.isArray(resData)
-                    ? resData
-                        .sort((a, b) => b.place.rating - a.place.rating)
-                        .slice(0, 5)
+                    ? resData.sort((a, b) => b.place.rating - a.place.rating).slice(0, 5)
                     : [];
                 setRestaurants(topR);
 
@@ -58,35 +54,51 @@ export default function Home() {
                 const accRes = await fetch("http://localhost:8000/TripMeUpApp/accommodation/");
                 const accData = await accRes.json();
                 const topA = Array.isArray(accData)
-                    ? accData
-                        .sort((a, b) => b.place.rating - a.place.rating)
-                        .slice(0, 5)
+                    ? accData.sort((a, b) => b.place.rating - a.place.rating).slice(0, 5)
                     : [];
                 setAccommodations(topA);
 
                 // Fetch reviews
                 const reviewsRes = await fetch("http://localhost:8000/TripMeUpApp/reviews/");
                 const reviewsData = await reviewsRes.json();
-                const topReviewsRaw = reviewsData
-                    .sort((a, b) => b.rating - a.rating)
-                    .slice(0, 5);
+                const topReviewsRaw = reviewsData.sort((a, b) => b.rating - a.rating).slice(0, 5);
 
-                // Add usernames to reviews
+                const allPlaces = [...topR, ...topA].map((p) => p.place);
+                const placeMap = new Map();
+                allPlaces.forEach((p) => placeMap.set(p.place_id, p.name));
+
                 const topReviews = await Promise.all(
                     topReviewsRaw.map(async (review) => {
+                        let placeName = placeMap.get(review.place);
+                        if (!placeName) {
+                            try {
+                                const placeRes = await fetch(`http://localhost:8000/TripMeUpApp/places/${review.place}/`);
+                                const placeData = await placeRes.json();
+                                placeName = placeData.name;
+                            } catch {
+                                placeName = "Unknown Place";
+                            }
+                        }
+
                         try {
                             const userRes = await fetch(`http://localhost:8000/TripMeUpApp/users/${review.user}/`);
                             const userData = await userRes.json();
-                            return { ...review, username: userData.username };
+                            return {
+                                ...review,
+                                username: userData.username,
+                                placeName
+                            };
                         } catch {
-                            return { ...review, username: 'Anonymous' };
+                            return {
+                                ...review,
+                                username: "Anonymous",
+                                placeName
+                            };
                         }
                     })
                 );
 
                 setReviews(topReviews);
-
-
             } catch (err) {
                 console.error("Fetch error:", err);
                 setError("Failed to fetch data.");
@@ -109,7 +121,6 @@ export default function Home() {
         setBookingOpen(true);
     };
 
-    // submits booking to backend
     const handleBookingSubmit = async ({ place, dates, guests }) => {
         try {
             const res = await fetch("http://localhost:8000/TripMeUpApp/booking/", {
@@ -127,7 +138,6 @@ export default function Home() {
                 const err = await res.json();
                 throw new Error(err.detail || "Booking creation failed");
             }
-            // optional: you can refresh “my bookings” or show a toast
             setBookingOpen(false);
         } catch (err) {
             console.error("Booking failed:", err);
@@ -140,12 +150,8 @@ export default function Home() {
             <Hero cities={cities} />
 
             <div className={styles.container}>
-                <SectionTitle
-                    title="Popular Destinations"
-                    subtitle="Explore our most popular cities"
-                />
+                <SectionTitle title="Popular Destinations" subtitle="Explore our most popular cities" />
 
-                {/* login prompt */}
                 {showLoginModal && (
                     <div className={styles.modalOverlay}>
                         <div className={styles.loginModal}>
@@ -154,7 +160,6 @@ export default function Home() {
                     </div>
                 )}
 
-                {/* city cards */}
                 <div className={styles.list}>
                     {loading
                         ? Array.from({ length: 4 }).map((_, i) => (
@@ -189,11 +194,7 @@ export default function Home() {
                         ))}
                 </div>
 
-                {/* featured restaurants / accommodations */}
-                <SectionTitle
-                    title="Featured Places"
-                    subtitle="Discover top-rated options"
-                />
+                <SectionTitle title="Featured Places" subtitle="Discover top-rated options" />
                 <Tabs
                     tabs={[
                         { id: "restaurants", label: "Restaurants" },
@@ -209,10 +210,7 @@ export default function Home() {
                                 <Skeleton height="320px" radius="20px" />
                             </div>
                         ))
-                        : (activeTab === "restaurants"
-                            ? restaurants
-                            : accommodations
-                        ).map((rec, i) => (
+                        : (activeTab === "restaurants" ? restaurants : accommodations).map((rec, i) => (
                             <div key={i} className={styles.cardWrapper}>
                                 <PlaceCard
                                     {...rec.place}
@@ -220,9 +218,7 @@ export default function Home() {
                                     isFavorite={favorites[i]}
                                     onToggleFavorite={() => toggleFavorite(i)}
                                     onBook={() => handleBook(rec.place)}
-                                    onReview={() =>
-                                        navigate(`/places/${rec.place.place_id}/reviews`)
-                                    }
+                                    onReview={() => navigate(`/places/${rec.place.place_id}/reviews`)}
                                 />
                             </div>
                         ))}
@@ -243,6 +239,7 @@ export default function Home() {
                                     rating={rev.rating}
                                     date={new Date(rev.created_at || rev.date).toLocaleDateString()}
                                     content={rev.comment}
+                                    placeName={rev.placeName}
                                 />
                             </div>
                         ))}
@@ -258,9 +255,7 @@ export default function Home() {
                 to={bookingDetails.to}
                 onClose={() => setBookingOpen(false)}
                 onSubmit={handleBookingSubmit}
-                onChange={(k, v) =>
-                    setBookingDetails((b) => ({ ...b, [k]: v }))
-                }
+                onChange={(k, v) => setBookingDetails((b) => ({ ...b, [k]: v }))}
             />
         </div>
     );

@@ -36,127 +36,103 @@
 
 .reviewCard {
     background: var(--bg-light);
-    border-radius: 12px;
-    padding: 1rem;
-    box-shadow: 5px 5px 12px var(--shadow-dark),
-        -5px -5px 12px var(--shadow-light);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    overflow: hidden;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    border-radius: 1rem;
+    box-shadow: 10px 10px 20px var(--shadow-light), -10px -10px 20px var(--shadow-dark);
 }
 
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.75rem;
 }
 
-.header strong {
+.author {
+    font-weight: 600;
     font-size: 1rem;
-    color: var(--dark);
+    color: #333;
 }
 
 .rating {
-    display: inline-flex;
-    align-items: center;
-    color: var(--primary);
-    font-weight: 500;
-}
-
-.rating span {
-    margin-left: 0.25rem;
-    color: var(--dark);
-    font-size: 0.9rem;
+    font-size: 1rem;
+    color: #f4b400;
 }
 
 .comment {
-    flex: 1;
-    margin: 0.5rem 0;
-    color: var(--dark);
-    line-height: 1.4;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    padding-right: 1rem;
+    font-style: italic;
+    color: #444;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 8rem;
+    overflow-y: auto;
 }
 
 .date {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    text-align: right;
-    white-space: nowrap;
+    font-size: 0.85rem;
+    color: #999;
 }
 
-/* Review submission form */
+.error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+.loginPrompt {
+    font-size: 1rem;
+    margin-top: 1rem;
+    text-align: center;
+    color: #666;
+}
+
 .form {
+    margin-top: 2rem;
     background: var(--bg-light);
     padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: inset 3px 3px 6px var(--shadow-dark),
-        inset -3px -3px 6px var(--shadow-light);
-    margin-bottom: 2rem;
-}
-
-.form h3 {
-    margin-top: 0;
-    color: var(--dark);
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
+    border-radius: 1rem;
+    box-shadow: 10px 10px 20px var(--shadow-light), -10px -10px 20px var(--shadow-dark);
 }
 
 .formGroup {
     margin-bottom: 1rem;
 }
 
-.formGroup label {
+label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: var(--dark);
-}
-
-.formGroup select,
-.formGroup textarea {
-    width: 100%;
-    padding: 0.75rem;
-    border: none;
-    border-radius: 10px;
-    background: var(--bg-light);
-    box-shadow: inset 2px 2px 4px var(--shadow-dark),
-        inset -2px -2px 4px var(--shadow-light);
-    font-size: 1rem;
-    transition: box-shadow 0.2s;
-}
-
-.formGroup select:focus,
-.formGroup textarea:focus {
-    outline: none;
-    box-shadow: inset 1px 1px 3px var(--shadow-dark),
-        inset -1px -1px 3px var(--shadow-light);
-}
-
-/* Submit button */
-.submitBtn {
-    background: var(--primary);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 10px;
     font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+textarea {
+    width: 95%;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ddd;
+    resize: none;
+    font-size: 1rem;
+}
+
+select {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+}
+
+.submitBtn {
+    width: 100%;
+    padding: 1rem;
+    background-color: #4caf50;
+    color: white;
+    border-radius: 0.5rem;
+    border: none;
     cursor: pointer;
-    box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
-    transition: all 0.2s ease;
+    font-size: 1rem;
 }
 
 .submitBtn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* Prompt when not logged in */
-.loginPrompt {
-    text-align: center;
-    color: var(--text-secondary);
-    font-style: italic;
+    background-color: #ccc;
 }
