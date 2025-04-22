@@ -172,6 +172,8 @@ export default function Home() {
                                     isFavorite={favorites[i]}
                                     onToggleFavorite={() => toggleFavorite(i)}
                                     onBook={() => handleBook(place)}
+                                    onReview={(id) => navigate(`/places/${id}/reviews`)}
+
                                 />
                             </div>
                         ))}

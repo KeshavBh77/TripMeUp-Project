@@ -22,7 +22,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import NotFound from "./pages/NotFound404/404NotFound";
 import styles from "./App.module.css";
 import AdminBookings from './pages/Admin/AdminBookings';
-import AdminLoginForm from "./pages/Auth/AdminLoginForm";
+import Reviews from "./pages/Review/Reviews";
 
 
 const PrivateRoute = ({ children }) => {
@@ -53,6 +53,8 @@ function AppContent() {
           <Route path="/register" element={<Auth />} />
           <Route path="/admin-login" element={<Auth />} />
           <Route path="/admin/dashboard" element={<AdminBookings />} />
+          <Route path="/places/:placeId/reviews"element={<Reviews />}
+/>
 
                     <Route path="/" element={<Home />} />
                     <Route path="/cities" element={
