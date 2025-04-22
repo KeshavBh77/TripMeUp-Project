@@ -68,13 +68,9 @@ class User(models.Model):
 
 class Admin(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    salary = models.DecimalField(max_digits=10, decimal_places=2)
-    username = models.CharField(max_length=50)
 
 class Client(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    budget = models.DecimalField(max_digits=10, decimal_places=2)
-    tier = models.CharField(max_length=20)
 
 class Cuisine(models.Model):
     cuisine_id = models.AutoField(primary_key=True)
