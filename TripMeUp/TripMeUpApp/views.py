@@ -194,20 +194,9 @@ class PlaceViewSet(viewsets.ViewSet):
         serializer = PlaceSerializer(places, many=True)
         return Response(serializer.data)
 
-class CheckAdmin(viewsets.ModelViewSet):
-    queryset = Admin.objects.all()
-    lookup_field = 'pk'
-    http_method_names = ['get']
-
-    def list(self, request, *args, **kwargs):
-        user = request.user
-        if not user.is_authenticated:
-            return Response({"admin": False}, status=status.HTTP_200_OK)
-        try:
-            my_user = User.objects.get(username=user.username)
-        except User.DoesNotExist:
-            return Response({"admin": False}, status=status.HTTP_200_OK)
-        is_admin = Admin.objects.filter(user=my_user).exists()
+class CheckAdmin(viewsets.ViewSet):
+    def list(self, request):
+        is_admin = request.session.get('is_admin')
         return Response({"admin": is_admin}, status=status.HTTP_200_OK)
 
 class AdminLoginSet(viewsets.ViewSet):
@@ -226,6 +215,11 @@ class AdminLoginSet(viewsets.ViewSet):
         is_admin = Admin.objects.filter(user=my_user).exists()
         if not is_admin:
             return Response({'error': 'Not an admin.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        request.session['user_id'] = my_user.user_id
+        request.session['username'] = my_user.username
+        request.session['is_authenticated'] = True
+        request.session['is_admin'] = True
 
         return Response({
             'message': 'Admin login successful',

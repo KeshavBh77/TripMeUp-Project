@@ -1,14 +1,14 @@
-// src/components/Navbar/Navbar.jsx
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 import styles from "./Navbar.module.css";
 import logo from "../../assets/images/logo.png";
 import { FaHome } from "react-icons/fa";
-import { AuthContext } from "../../context/AuthContext";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const location = useLocation();
+  const [isAdmin, setIsAdmin] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -19,10 +19,40 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
 
-  const isAdmin=true;
+      try {
+        const res = await fetch("http://localhost:8000/TripMeUpApp/check-admin/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",  // Important: needed for session
+        });
 
-  // detect auth pages
+        const data = await res.json();
+        console.log("Admin check result:", data);
+
+        if (res.ok) {
+          setIsAdmin(data.admin);
+        } else {
+          setIsAdmin(false);
+        }
+      } catch (err) {
+        console.error("Error checking admin:", err);
+        setIsAdmin(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [user]);
+
+  // Detect if on login/register page
   const onAuthPage =
     location.pathname === "/login" || location.pathname === "/register";
 
@@ -35,29 +65,25 @@ const Navbar = () => {
         </NavLink>
       </div>
 
-      {/* Links shown only when logged in */}
+      {/* Navigation Links */}
       {user && (
         <div className={styles.links}>
-          {/* common user links */}
           <NavLink to="/" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>Home</NavLink>
           <NavLink to="/cities" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>Cities</NavLink>
           <NavLink to="/restaurants" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>Restaurants</NavLink>
           <NavLink to="/accommodations" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>Accommodations</NavLink>
           <NavLink to="/bookings" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>My Bookings</NavLink>
 
-          {/* only for admins */}
+          {/* Only show if Admin */}
           {isAdmin && (
-            <NavLink
-              to="/admin/dashboard"
-              className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}
-            >
+            <NavLink to="/admin/dashboard" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>
               Manage All Bookings
             </NavLink>
           )}
         </div>
       )}
 
-      {/* Right‑side actions */}
+      {/* Right Side Actions */}
       <div className={styles.actions}>
         <NavLink to="/" className={styles.homeIcon}>
           <FaHome />
@@ -87,10 +113,7 @@ const Navbar = () => {
         )}
       </div>
 
-      {/* logout toast */}
-      {showToast && <div className={styles.toast}>You’ve been logged out.</div>}
-
-      {/* Logout confirmation modal */}
+      {/* Logout Confirm */}
       {showConfirm && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
@@ -117,6 +140,9 @@ const Navbar = () => {
           </div>
         </div>
       )}
+
+      {/* Toast */}
+      {showToast && <div className={styles.toast}>You've been logged out.</div>}
     </nav>
   );
 };
