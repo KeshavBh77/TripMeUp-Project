@@ -84,6 +84,8 @@ class CuisineSerializer(serializers.ModelSerializer):
 
 class BookingSerializer(serializers.ModelSerializer):
     place = PlaceSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
+    client = ClientSerializer(read_only=True)
     class Meta:
         model = Booking
         fields = "__all__"

@@ -112,7 +112,7 @@ export default function AdminBookings() {
                     <span><FaUserFriends /> {b.no_of_guests} Guests</span>
                   </div>
                   <div className={styles.client}>
-                    Client: {b.client?.user?.first} {b.client?.user?.last}
+                    Client: {b.client.user.first} {b.client.user.last}
                   </div>
                 </div>
                 <div className={styles.actions}>
