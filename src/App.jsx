@@ -21,7 +21,7 @@ import Auth from "./pages/Auth/Auth";
 import ScrollToTop from "./components/ScrollToTop"; 
 import  NotFound from "./pages/NotFound404/404NotFound";
 import styles from "./App.module.css";
-import AdminBookings from './pages/AdminBookings/AdminBookings';
+import AdminBookings from './pages/Admin/AdminBookings';
 
 
 const PrivateRoute = ({ children }) => {
