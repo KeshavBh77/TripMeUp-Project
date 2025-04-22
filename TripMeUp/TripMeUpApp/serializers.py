@@ -89,6 +89,8 @@ class BookingSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()  # returns username
+    place = serializers.StringRelatedField()
     class Meta:
         model = Review
         fields = "__all__"

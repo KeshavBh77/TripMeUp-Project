@@ -18,6 +18,8 @@ router.register(r"places", PlaceDetailView, basename="place-detail")
 router.register(r"accommodation", AccommodationDetailView, basename="accommodation-detail")
 router.register(r"restaurants", RestaurantDetailView, basename="restaurant-detail")
 router.register(r'home', HomeViewSet, basename='home') 
+router.register(r"reviews", ReviewViewSet, basename="review")
+router.register(r"users", UserViewSet, basename="user")
 
 urlpatterns = [
     path("", include(router.urls))

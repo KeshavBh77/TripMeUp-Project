@@ -26,6 +26,7 @@ export default function Home() {
     const [bookingOpen, setBookingOpen] = useState(false);
     const [selectedPlace, setSelectedPlace] = useState(null);
     const [bookingDetails, setBookingDetails] = useState({ guests: 1, from: '', to: '', guestNames: [''] });
+    const [reviews, setReviews] = useState([]);
 
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
@@ -58,6 +59,13 @@ export default function Home() {
                     .slice(0, 5);
                 setAccommodations(topAccommodations);
 
+                const reviewsRes = await fetch("http://localhost:8000/TripMeUpApp/reviews/");
+                const reviewsData = await reviewsRes.json();
+                const topReviews = reviewsData
+                    .sort((a, b) => b.rating - a.rating)
+                    .slice(0, 5);
+                setReviews(topReviews);
+
             } catch (err) {
                 console.error("Fetch error:", err);
                 setError("Failed to fetch data.");
@@ -79,30 +87,14 @@ export default function Home() {
         setBookingOpen(true);
     };
 
-  const handleBookingSubmit = ({ place, dates, guests, guestNames }) => {
-    console.log("Booking confirmed:", {
-      place,
-      dates,
-      guests,
-      guestNames
-    });
-
-  };
-
-    const reviews = [
-        {
-            author: "Sarah Johnson",
-            rating: 5,
-            date: "May 15, 2023",
-            content: "Absolutely fantastic experience...",
-        },
-        {
-            author: "Michael Chen",
-            rating: 4,
-            date: "April 28, 2023",
-            content: "Authentic Japanese sushi experience...",
-        },
-    ];
+    const handleBookingSubmit = ({ place, dates, guests, guestNames }) => {
+        console.log("Booking confirmed:", {
+            place,
+            dates,
+            guests,
+            guestNames
+        });
+    };
 
     return (
         <div className={styles.home}>
@@ -195,24 +187,28 @@ export default function Home() {
                         ))
                         : reviews.map((rev, i) => (
                             <div key={i} className={styles.cardWrapper}>
-                                <ReviewCard {...rev} />
+                                <ReviewCard
+                                    author={rev.user || "Anonymous"}
+                                    rating={rev.rating}
+                                    content={rev.comment}
+                                />
                             </div>
                         ))}
                 </div>
             </div>
 
-      <BookingModal
-        user={user}
-        show={bookingOpen}
-        place={selectedPlace}
-        guests={bookingDetails.guests}
-        from={bookingDetails.from}
-        to={bookingDetails.to}
-        guestNames={bookingDetails.guestNames}
-        onClose={() => setBookingOpen(false)}
-        onSubmit={handleBookingSubmit}
-        onChange={(key, value) => setBookingDetails(prev => ({ ...prev, [key]: value }))}
-      />
-    </div>
-  );
+            <BookingModal
+                user={user}
+                show={bookingOpen}
+                place={selectedPlace}
+                guests={bookingDetails.guests}
+                from={bookingDetails.from}
+                to={bookingDetails.to}
+                guestNames={bookingDetails.guestNames}
+                onClose={() => setBookingOpen(false)}
+                onSubmit={handleBookingSubmit}
+                onChange={(key, value) => setBookingDetails(prev => ({ ...prev, [key]: value }))}
+            />
+        </div>
+    );
 }

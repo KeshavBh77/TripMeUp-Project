@@ -128,5 +128,10 @@ class RestaurantDetailView(ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.all().order_by("user_id")
     serializer_class = UserSerializer
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all().order_by("-review_id")
+    serializer_class = ReviewSerializer
