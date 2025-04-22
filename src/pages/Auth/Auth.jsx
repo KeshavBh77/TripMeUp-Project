@@ -1,17 +1,24 @@
 // src/pages/Auth/Auth.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaGlobeAmericas, FaUtensils, FaHotel } from "react-icons/fa";
 import styles from "./Auth.module.css";
+import { AuthContext } from "../../context/AuthContext";
 import LoginForm from "./LoginForm";
-import RegisterForm from "./RegistrationForm";
+import RegisterForm from "./RegistrationForm"; // (optional if you add register later)
 
 export default function Auth() {
   const location = useLocation();
   const navigate = useNavigate();
   const [view, setView] = useState("login");
+  const { user } = useContext(AuthContext);
 
-  // Sync view state with the current path
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
   useEffect(() => {
     if (location.pathname === "/register") {
       setView("register");
@@ -20,7 +27,6 @@ export default function Auth() {
     }
   }, [location.pathname]);
 
-  // Clicking the tabs actually changes the URL
   const handleTabClick = (tab) => {
     if (tab === "login") {
       navigate("/login");
@@ -75,9 +81,9 @@ export default function Auth() {
         </div>
 
         {view === "login" ? (
-          <LoginForm switchTab={(t) => handleTabClick(t)} />
+          <LoginForm switchTab={handleTabClick} />
         ) : (
-          <RegisterForm switchTab={(t) => handleTabClick(t)} />
+          <RegisterForm switchTab={handleTabClick} />
         )}
       </div>
     </div>

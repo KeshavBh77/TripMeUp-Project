@@ -34,7 +34,7 @@ class HomeViewSet(viewsets.ViewSet):
                 "endpoints": {
                     "cities": "/api/cities/",
                     "places": "/api/places/",
-                    # Add all your other endpoints
+
                 },
             }
         )
