@@ -84,9 +84,7 @@ const PlaceCard = ({
                 <div className={styles.price}>
                     ${charge || rating * 20} <span>{isAccommodation ? "per night" : "per person"}</span>
                 </div>
-                <button className={styles.favorite}>
-                    <FaHeart />
-                </button>
+                
                 {isAccommodation && (
                     <button
                         className={styles.bookNow}

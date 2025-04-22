@@ -117,3 +117,15 @@
 .cardWrapper {
   flex: 0 1 350px;
 }
+
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.cardWrapper {
+  flex: 0 1 350px;
+}

@@ -1,13 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import SectionTitle from "../../components/SectionTitle/SectionTitle";
 import PlaceCard from "../../components/PlaceCard/PlaceCard";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import Skeleton from "../../components/Skeleton/Skeleton";
+import BookingModal from "../../components/BookingModal/BookingModal";
+import { AuthContext } from "../../context/AuthContext";
 import styles from "./Accomodation.module.css";
 
 export default function Accommodations() {
+  const { user } = useContext(AuthContext);
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [selectedPlace, setSelectedPlace] = useState(null);
+  const [bookingDetails, setBookingDetails] = useState({
+    guests: 1,
+    from: "",
+    to: "",
+    guestNames: [""]
+  });
 
   useEffect(() => {
     const fetchAccommodations = async () => {
@@ -25,6 +37,22 @@ export default function Accommodations() {
 
     fetchAccommodations();
   }, []);
+
+  const handleBook = (place) => {
+    setSelectedPlace(place);
+    setBookingDetails({ guests: 1, from: "", to: "", guestNames: [""] });
+    setBookingOpen(true);
+  };
+
+  const handleBookingSubmit = ({ place, dates, guests, guestNames }) => {
+    console.log("Booking confirmed:", {
+      place,
+      dates,
+      guests,
+      guestNames
+    });
+    setBookingOpen(false);
+  };
 
   return (
     <div className={styles.page}>
@@ -74,12 +102,29 @@ export default function Accommodations() {
                   charge={item.charge}
                   amenities={item.amenities}
                   isAccommodation={true}
+                  onBook={() => handleBook(item)}
                 />
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Booking Modal */}
+      <BookingModal
+        user={user}
+        show={bookingOpen}
+        place={selectedPlace}
+        guests={bookingDetails.guests}
+        from={bookingDetails.from}
+        to={bookingDetails.to}
+        guestNames={bookingDetails.guestNames}
+        onClose={() => setBookingOpen(false)}
+        onSubmit={handleBookingSubmit}
+        onChange={(key, value) =>
+          setBookingDetails((prev) => ({ ...prev, [key]: value }))
+        }
+      />
     </div>
   );
 }
