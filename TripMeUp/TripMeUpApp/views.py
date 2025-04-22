@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from .models import *
 from rest_framework.views import APIView, HttpResponseBase
@@ -226,21 +226,16 @@ class AdminLoginSet(viewsets.ViewSet):
         try:
             my_user = User.objects.get(username=username)
         except my_user.DoesNotExist:
-            return Response({'error': 'Invalid credentials.'},status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({'error': 'Invalid credentials.'},status=status.HTTP_400_BAD_REQUEST)
 
         if my_user.password != password:
-            return Response({'error': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({'error': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST)
 
         is_admin = Admin.objects.filter(user=my_user).exists()
         if not is_admin:
-            return Response({'error': 'Not an admin.'}, status=status.HTTP_400_BAD_REQUEST)
-        if is_admin:
-            request.session['user_id'] = my_user.user_id
-            request.session['username'] = my_user.username
-            request.session['is_authenticated'] = True
-            request.session['is_admin'] = True
+            return JsonResponse({'error': 'Not an admin.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({
+        return JsonResponse({
             'message': 'Admin login successful',
             'username': my_user.username,
         }, status=status.HTTP_200_OK)
