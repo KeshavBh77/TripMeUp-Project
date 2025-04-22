@@ -74,6 +74,7 @@ const Navbar = () => {
           <NavLink to="/accommodations" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>Accommodations</NavLink>
           <NavLink to="/bookings" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>My Bookings</NavLink>
           <NavLink to="/reviews" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>Reviews</NavLink>
+          <NavLink to="/Profile" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>Profile</NavLink>
 
 
           {/* Only show if Admin */}

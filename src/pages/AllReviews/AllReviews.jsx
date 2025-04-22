@@ -125,40 +125,33 @@ export default function AllReviews() {
         </button>
       )}
 
-      {loading ? (
-        <p>Loading…</p>
-      ) : error ? (
-        <p className={styles.error}>{error}</p>
-      ) : reviews.length===0 ? (
-        <p>No reviews found.</p>
-      ) : (
-        <ul className={styles.list}>
+{!loading && !error && reviews.length > 0 && (
+        <div className={styles.grid}>
           {reviews.map(r => (
-            <li key={r.review_id} className={styles.reviewCard}>
-              <div className={styles.header}>
-                <span className={styles.placeName}>
-                  {r.place?.name}
-                </span>
-                <span className={styles.tag}>
-                  {r.place?.accommodation ? 'Accommodation' : 'Restaurant'}
-                </span>
+            <div key={r.review_id} className={styles.card}>
+              <div className={styles.cardContent}>
+                <div className={styles.header}>
+                  <h3 className={styles.placeName}>{r.place?.name}</h3>
+                  <span className={styles.tag}>
+                    {r.place?.accommodation ? 'Accommodation' : 'Restaurant'}
+                  </span>
+                </div>
+                <div className={styles.rating}>
+                  {'★'.repeat(r.rating).padEnd(5, '☆')}
+                </div>
+                <p className={styles.comment}>{r.comment}</p>
+                <div className={styles.userInfo}>
+                  <span className={styles.userName}>{r.user_name || r.user}</span>
+                  {user && r.user === user.user_id && (
+                    <button className={styles.editBtn} onClick={() => openEdit(r)}>
+                      <FaEdit /> Edit
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className={styles.header}>
-                <strong>{r.user_name || r.user}</strong>
-                <span className={styles.rating}>★ {r.rating}</span>
-              </div>
-              <p className={styles.comment}>{r.comment}</p>
-              {user && r.user === user.user_id && (
-                <button
-                  className={styles.editBtn}
-                  onClick={()=>openEdit(r)}
-                >
-                  <FaEdit /> Edit
-                </button>
-              )}
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
 
       {modalOpen && (

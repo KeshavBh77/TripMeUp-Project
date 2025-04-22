@@ -24,6 +24,7 @@ import styles from "./App.module.css";
 import AdminBookings from './pages/Admin/AdminBookings';
 import Reviews from "./pages/Review/Reviews";
 import AllReviews from "./pages/AllReviews/AllReviews";
+import Profile from "./pages/Profile/Profile";
 
 const PrivateRoute = ({ children }) => {
     const { user } = React.useContext(AuthContext);
@@ -80,6 +81,15 @@ function AppContent() {
                             <PrivateRoute>
                                 <Bookings />
                             </PrivateRoute>
+                        }
+                    />
+
+                        <Route
+                        path="/profile"
+                        element={
+
+                                <Profile />
+
                         }
                     />
 
