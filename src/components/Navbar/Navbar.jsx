@@ -27,12 +27,12 @@ const Navbar = () => {
       }
 
       try {
-        const res = await fetch("http://localhost:8000/TripMeUpApp/check-admin/", {
+        const res = await fetch(`http://localhost:8000/TripMeUpApp/checkadmin/?username=${user.username}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-          credentials: "include",  // Important: needed for session
+          credentials: "include",
         });
 
         const data = await res.json();
@@ -52,7 +52,6 @@ const Navbar = () => {
     checkAdminStatus();
   }, [user]);
 
-  // Detect if on login/register page
   const onAuthPage =
     location.pathname === "/login" || location.pathname === "/register";
 
