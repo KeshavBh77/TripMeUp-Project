@@ -1,12 +1,10 @@
-// src/pages/Auth/LoginForm.jsx
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import styles from "./Auth.module.css";
 
-
 export default function LoginForm({ switchTab }) {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -19,10 +17,11 @@ export default function LoginForm({ switchTab }) {
     setLoading(true);
 
     try {
-      await login(username, password);
+      await new Promise((r) => setTimeout(r, 1000)); // Simulate delay
+      await login(email, password);
       navigate("/");
     } catch (err) {
-      setError(err.message || "Login failed.");
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -35,14 +34,14 @@ export default function LoginForm({ switchTab }) {
       </div>
 
       <div className={styles.formGroup}>
-        <label htmlFor="loginUsername">Username</label>
+        <label htmlFor="loginEmail">Email Address</label>
         <input
-          id="loginUsername"
-          type="text"
+          id="loginEmail"
+          type="email"
           className={styles.formControl}
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Enter your username"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter your email"
           required
           disabled={loading}
         />

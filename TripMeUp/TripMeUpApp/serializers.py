@@ -61,11 +61,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class AdminSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = UserSerializer()
 
     class Meta:
         model = Admin
-        fields = "__all__"
+        fields = ["user"]
 
 
 class ClientSerializer(serializers.ModelSerializer):

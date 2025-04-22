@@ -196,3 +196,8 @@ class PlaceViewSet(viewsets.ViewSet):
         places = Place.objects.all()
         serializer = PlaceSerializer(places, many=True)
         return Response(serializer.data)
+
+
+class AdminViewSet(viewsets.ModelViewSet):
+    queryset = Admin.objects.select_related("user").all()
+    serializer_class = AdminSerializer
