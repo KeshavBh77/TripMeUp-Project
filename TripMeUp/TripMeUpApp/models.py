@@ -107,14 +107,14 @@ class Review(models.Model):
         return f"Review {self.review_id} for {self.place}"
 
 
-# Additional many-to-many helper models (if you want more control)
+
 class Browses(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
 
 
 class Curates(models.Model):
-    admin = models.ForeignKey(Admin, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
 
 

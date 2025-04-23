@@ -52,7 +52,6 @@ class CityDetailView(ModelViewSet):
         city = self.get_object()
         serializer_city = self.get_serializer(city)
 
-        # Get all Places that belong to this City
         places = Place.objects.filter(city=city)
         serializer_places = PlaceSerializer(places, many=True)
 
@@ -131,10 +130,6 @@ class UserViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         user = serializer.save()
         Client.objects.create(user=user)
-        self.request.session['user_id'] = user.user_id
-        self.request.session['username'] = user.username
-        self.request.session['is_authenticated'] = True
-        self.request.session['is_admin'] = False
 
 
 
@@ -156,7 +151,6 @@ class BookingViewSet(viewsets.ModelViewSet):
 
         if not bookings.exists():
             return Response([], status=status.HTTP_200_OK)
-
         serializer = BookingSerializer(bookings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
