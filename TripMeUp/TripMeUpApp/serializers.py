@@ -8,14 +8,11 @@ from .models import (
     User,
     Admin,
     Client,
-    Cuisine,
     Booking,
     Review,
-    ClientCuisine,
     Browses,
     Curates,
     Writes,
-    Serves,
 )
 
 
@@ -76,11 +73,6 @@ class ClientSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class CuisineSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Cuisine
-        fields = "__all__"
-
 
 class BookingSerializer(serializers.ModelSerializer):
     place = PlaceSerializer(read_only=True)
@@ -111,12 +103,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ClientCuisineSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ClientCuisine
-        fields = "__all__"
-
-
 class BrowsesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Browses
@@ -134,11 +120,6 @@ class WritesSerializer(serializers.ModelSerializer):
         model = Writes
         fields = "__all__"
 
-
-class ServesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Serves
-        fields = "__all__"
 
 class LoginSerializer(serializers.ModelSerializer):
     class Meta:
