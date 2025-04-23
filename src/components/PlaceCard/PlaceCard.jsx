@@ -1,5 +1,5 @@
 // src/components/PlaceCard/PlaceCard.jsx
-import React from "react";
+import React, { useState } from "react";
 import styles from "./PlaceCard.module.css";
 import {
   FaStar,
@@ -11,16 +11,15 @@ import {
   FaHotel,
   FaUtensils,
   FaClock,
-  FaWifi,
-  FaSwimmingPool
 } from "react-icons/fa";
 import useUnsplash from "../../hooks/useUnsplash";
+import Skeleton from "../Skeleton/Skeleton";
 
 const typeIconMap = {
   hostel: FaBed,
   hotel: FaHotel,
   apartment: FaHome,
-  restaurant: FaUtensils
+  restaurant: FaUtensils,
 };
 
 export default function PlaceCard({
@@ -42,21 +41,28 @@ export default function PlaceCard({
   onToggleFavorite,
   isFavorite,
   onReview,
-  imageDescription = name
+  imageDescription = name,
 }) {
   const src = useUnsplash(imageDescription);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const TypeIcon = type ? typeIconMap[type.toLowerCase()] || FaUtensils : null;
 
   return (
     <div className={styles.card}>
       <div className={styles.imageWrapper}>
+        {!imgLoaded && <Skeleton height="200px" radius="8px" />}
+
         <img
-          src={src || `https://via.placeholder.com/400x300?text=${encodeURIComponent(name)}`}
+          src={
+            src 
+          }
           alt={name}
           className={styles.image}
+          style={{ display: imgLoaded ? "block" : "none" }}
+          onLoad={() => setImgLoaded(true)}
+          onError={() => setImgLoaded(true)}
         />
-       
       </div>
 
       <div className={styles.details}>
@@ -96,7 +102,8 @@ export default function PlaceCard({
 
         {charge && (
           <div className={styles.feature}>
-            💰 <strong>Price:</strong> ${charge} {isAccommodation ? "/ night" : "/ person"}
+            💰 <strong>Price:</strong> ${charge}{" "}
+            {isAccommodation ? "/ night" : "/ person"}
           </div>
         )}
 
@@ -127,5 +134,5 @@ export default function PlaceCard({
         </div>
       </div>
     </div>
-);
+  );
 }

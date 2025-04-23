@@ -11,10 +11,7 @@ import styles from "./Booking.module.css";
 function BookingCard({ booking, onReload }) {
   // try Unsplash on the place name
   const unsplashUrl = useUnsplash(booking.place?.name);
-  const imageUrl =
-    unsplashUrl ||
-    booking.place?.image ||
-    "https://via.placeholder.com/300x200?text=No+Image";
+  const imageUrl =unsplashUrl;
 
   return (
     <div className={styles.cardWrapper}>
@@ -148,7 +145,7 @@ export default function Bookings() {
         onChange={(k, v) => setDetails(d => ({ ...d, [k]: v }))}
         onSubmit={handleSubmit}
       >
-        {/* extra place selector for step 0 */}
+
         <div className={styles.formGroup}>
           <label>Select Place</label>
           <select

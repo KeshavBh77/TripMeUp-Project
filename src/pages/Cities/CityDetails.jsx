@@ -1,11 +1,11 @@
 // src/pages/CityDetail/CityDetail.jsx
-
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SectionTitle from "../../components/SectionTitle/SectionTitle";
 import PlaceCard from "../../components/PlaceCard/PlaceCard";
 import BookingModal from "../../components/BookingModal/BookingModal";
 import Skeleton from "../../components/Skeleton/Skeleton";
+import useUnsplash from "../../hooks/useUnsplash";
 import styles from "./CityDetail.module.css";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -18,13 +18,16 @@ const CityDetail = () => {
     .replace(/-/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
 
+  // get a nice Unsplash image
+  const heroImage = useUnsplash(cityKey);
+
   const [data, setData] = useState(null);
   const [restaurants, setRestaurants] = useState([]);
   const [accommodations, setAccommodations] = useState([]);
   const [view, setView] = useState("restaurants");
   const [loading, setLoading] = useState(true);
 
-  // booking modal state
+  // Booking modal
   const [bookingOpen, setBookingOpen] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [bookingDetails, setBookingDetails] = useState({
@@ -34,7 +37,6 @@ const CityDetail = () => {
     guestNames: [""],
   });
 
-  // open booking modal
   const handleBook = (place) => {
     if (!user) {
       navigate("/login");
@@ -45,12 +47,11 @@ const CityDetail = () => {
     setBookingOpen(true);
   };
 
-  // after booking confirmed
   const handleBookingSubmit = ({ place, dates, guests }) => {
-
+    console.log("Booking confirmed:", { place, dates, guests });
+    setBookingOpen(false);
   };
 
-  // review button
   const handleReview = (place) => {
     if (!user) {
       navigate("/login");
@@ -63,15 +64,13 @@ const CityDetail = () => {
     const fetchCityData = async () => {
       setLoading(true);
       try {
-        // fetch all cities
         const cityRes = await fetch("http://localhost:8000/TripMeUpApp/city/");
         const citiesList = await cityRes.json();
         const matched = citiesList.find(
           (c) => c.name.toLowerCase() === cityKey.toLowerCase()
         );
-        setData(matched);
+        setData(matched || null);
 
-        // fetch places
         const [resRes, accRes] = await Promise.all([
           fetch("http://localhost:8000/TripMeUpApp/restaurants/"),
           fetch("http://localhost:8000/TripMeUpApp/accommodation/"),
@@ -80,11 +79,16 @@ const CityDetail = () => {
           resRes.json(),
           accRes.json(),
         ]);
+
         setRestaurants(
-          allRestaurants.filter((r) => r.place.city === matched.city_id)
+          matched
+            ? allRestaurants.filter((r) => r.place.city === matched.city_id)
+            : []
         );
         setAccommodations(
-          allAccommodations.filter((a) => a.place.city === matched.city_id)
+          matched
+            ? allAccommodations.filter((a) => a.place.city === matched.city_id)
+            : []
         );
       } catch (err) {
         console.error(err);
@@ -94,11 +98,24 @@ const CityDetail = () => {
       }
     };
     fetchCityData();
-  }, [title]);
+  }, [title, cityKey]);
 
   return (
     <div>
-      <section className={styles.heroDetail}>
+      {/* Hero */}
+      <section
+        className={styles.heroDetail}
+        style={{
+          backgroundImage: `linear-gradient(
+              135deg,
+              rgba(0,0,0,0.6) 0%,
+              rgba(0,0,0,0.3) 100%
+            ),
+            url(${heroImage}`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         <div className={styles.overlayDetail} />
         <div className={styles.contentDetail}>
           {loading ? (
@@ -119,6 +136,7 @@ const CityDetail = () => {
         </div>
       </section>
 
+      {/* Main */}
       <div className={styles.containerDetail}>
         <SectionTitle title={`About ${cityKey}`} />
 
@@ -129,11 +147,11 @@ const CityDetail = () => {
         ) : (
           <div className={styles.detailGrid}>
             <div className={styles.textBlock}>
-              <p>{data.description}</p>
+              <p>{data?.description}</p>
             </div>
             <div className={styles.factsBlock}>
               <h3>Interesting Facts</h3>
-              {data.facts ? (
+              {data?.facts ? (
                 <ul className={styles.factsList}>
                   {data.facts
                     .split(".")
@@ -151,6 +169,7 @@ const CityDetail = () => {
           </div>
         )}
 
+        {/* Tabs */}
         <div className={styles.buttonGroup}>
           <button
             className={`${styles.toggleBtn} ${
@@ -170,6 +189,7 @@ const CityDetail = () => {
           </button>
         </div>
 
+        {/* Listings */}
         <div className={styles.list}>
           {loading
             ? Array.from({ length: 4 }).map((_, i) => (
@@ -200,6 +220,7 @@ const CityDetail = () => {
               ))}
         </div>
 
+        {/* Booking */}
         <BookingModal
           user={user}
           show={bookingOpen}
@@ -208,9 +229,7 @@ const CityDetail = () => {
           from={bookingDetails.from}
           to={bookingDetails.to}
           onClose={() => setBookingOpen(false)}
-          onChange={(k, v) =>
-            setBookingDetails((b) => ({ ...b, [k]: v }))
-          }
+          onChange={(k, v) => setBookingDetails((b) => ({ ...b, [k]: v }))}
           onSubmit={handleBookingSubmit}
         />
       </div>
