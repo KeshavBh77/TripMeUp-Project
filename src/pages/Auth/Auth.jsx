@@ -93,14 +93,14 @@ export default function Auth() {
           >
             Login
           </div>
-          <div
+          {/* <div
             className={`${styles.authTab} ${
               view === "admin" ? styles.active : ""
             }`}
             onClick={() => handleTabClick("admin")}
           >
             Admin
-          </div>
+          </div> */}
           <div
             className={`${styles.authTab} ${
               view === "register" ? styles.active : ""
