@@ -214,7 +214,7 @@ export default function Home() {
                                     <div className={styles.header}>
                                         <div className={styles.left}>
                                             <FaUser className={styles.icon} />
-                                            <span className={styles.author}>{rev.user.username}</span>
+                                            <span className={styles.author}>{rev.user?.username || "Anonymous"}</span>
                                         </div>
                                         <div className={styles.right}>
                                             <HiLocationMarker className={styles.icon} />
