@@ -95,6 +95,17 @@ class ReviewSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     place = PlaceSerializer(read_only=True)
     client = ClientSerializer(read_only=True)
+
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), source="user", write_only=True
+    )
+    place_id = serializers.PrimaryKeyRelatedField(
+        queryset=Place.objects.all(), source="place", write_only=True
+    )
+    client_id = serializers.PrimaryKeyRelatedField(
+        queryset=Client.objects.all(), source="client", write_only=True, required=False
+    )
+
     class Meta:
         model = Review
         fields = "__all__"
@@ -133,5 +144,3 @@ class LoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'password']  # only username and password
-
-

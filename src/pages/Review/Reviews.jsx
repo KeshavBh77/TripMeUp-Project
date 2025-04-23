@@ -116,9 +116,10 @@ function AddReviewForm({ placeId, onNewReview }) {
                 body: JSON.stringify({
                     rating,
                     comment,
-                    user: user.user_id,
-                    place: parseInt(placeId, 10),
+                    user_id: user.user_id,      
+                    place_id: parseInt(placeId), 
                 }),
+
             });
             if (!res.ok) {
                 const errJson = await res.json();
