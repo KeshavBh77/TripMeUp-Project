@@ -1,4 +1,5 @@
 // src/pages/CityDetail/CityDetail.jsx
+
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SectionTitle from "../../components/SectionTitle/SectionTitle";
@@ -6,29 +7,24 @@ import PlaceCard from "../../components/PlaceCard/PlaceCard";
 import BookingModal from "../../components/BookingModal/BookingModal";
 import Skeleton from "../../components/Skeleton/Skeleton";
 import styles from "./CityDetail.module.css";
-import {
-  FaLandmark,
-  FaLanguage,
-  FaMoneyBillWave,
-  FaPlane,
-  FaSubway,
-} from "react-icons/fa";
 import { AuthContext } from "../../context/AuthContext";
 
-export default function CityDetail() {
+const CityDetail = () => {
   const { title } = useParams();
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+
   const cityKey = title
     .replace(/-/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
 
-  const { user } = useContext(AuthContext);
   const [data, setData] = useState(null);
   const [restaurants, setRestaurants] = useState([]);
   const [accommodations, setAccommodations] = useState([]);
   const [view, setView] = useState("restaurants");
   const [loading, setLoading] = useState(true);
 
+  // booking modal state
   const [bookingOpen, setBookingOpen] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [bookingDetails, setBookingDetails] = useState({
@@ -38,31 +34,47 @@ export default function CityDetail() {
     guestNames: [""],
   });
 
-  const handleBook = (item) => {
-    setSelectedPlace(item.place);
+  // open booking modal
+  const handleBook = (place) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    setSelectedPlace(place);
     setBookingDetails({ guests: 1, from: "", to: "", guestNames: [""] });
     setBookingOpen(true);
   };
 
+  // after booking confirmed
   const handleBookingSubmit = ({ place, dates, guests }) => {
-    console.log("Booking confirmed:", { place, dates, guests });
 
   };
 
+  // review button
+  const handleReview = (place) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    navigate(`/places/${place.place_id}/reviews`);
+  };
+
   useEffect(() => {
-    async function fetchCityData() {
+    const fetchCityData = async () => {
       setLoading(true);
       try {
-        const cityRes = await fetch(`http://localhost:8000/TripMeUpApp/city/`);
+        // fetch all cities
+        const cityRes = await fetch("http://localhost:8000/TripMeUpApp/city/");
         const citiesList = await cityRes.json();
         const matched = citiesList.find(
           (c) => c.name.toLowerCase() === cityKey.toLowerCase()
         );
-        setData(matched || null);
+        setData(matched);
 
+        // fetch places
         const [resRes, accRes] = await Promise.all([
-          fetch(`http://localhost:8000/TripMeUpApp/restaurants/`),
-          fetch(`http://localhost:8000/TripMeUpApp/accommodation/`),
+          fetch("http://localhost:8000/TripMeUpApp/restaurants/"),
+          fetch("http://localhost:8000/TripMeUpApp/accommodation/"),
         ]);
         const [allRestaurants, allAccommodations] = await Promise.all([
           resRes.json(),
@@ -80,9 +92,9 @@ export default function CityDetail() {
       } finally {
         setLoading(false);
       }
-    }
+    };
     fetchCityData();
-  }, [cityKey]);
+  }, [title]);
 
   return (
     <div>
@@ -110,15 +122,48 @@ export default function CityDetail() {
       <div className={styles.containerDetail}>
         <SectionTitle title={`About ${cityKey}`} />
 
+        {loading ? (
+          <div className={styles.spinnerWrap}>
+            <div className={styles.spinner} />
+          </div>
+        ) : (
+          <div className={styles.detailGrid}>
+            <div className={styles.textBlock}>
+              <p>{data.description}</p>
+            </div>
+            <div className={styles.factsBlock}>
+              <h3>Interesting Facts</h3>
+              {data.facts ? (
+                <ul className={styles.factsList}>
+                  {data.facts
+                    .split(".")
+                    .filter((f) => f.trim())
+                    .map((fact, i) => (
+                      <li key={i} className={styles.factItem}>
+                        {fact.trim()}.
+                      </li>
+                    ))}
+                </ul>
+              ) : (
+                <p>No interesting facts available.</p>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className={styles.buttonGroup}>
           <button
-            className={`${styles.toggleBtn} ${view === "restaurants" ? styles.active : ""}`}
+            className={`${styles.toggleBtn} ${
+              view === "restaurants" ? styles.active : ""
+            }`}
             onClick={() => setView("restaurants")}
           >
             Restaurants
           </button>
           <button
-            className={`${styles.toggleBtn} ${view === "accommodations" ? styles.active : ""}`}
+            className={`${styles.toggleBtn} ${
+              view === "accommodations" ? styles.active : ""
+            }`}
             onClick={() => setView("accommodations")}
           >
             Accommodations
@@ -138,10 +183,8 @@ export default function CityDetail() {
                   <PlaceCard
                     {...item.place}
                     isAccommodation={false}
-                    onBook={() => handleBook(item)}
-                    onReview={() =>
-                      navigate(`/places/${item.place.place_id}/reviews`)
-                    }
+                    onBook={() => handleBook(item.place)}
+                    onReview={() => handleReview(item.place)}
                   />
                 </div>
               ))
@@ -150,10 +193,8 @@ export default function CityDetail() {
                   <PlaceCard
                     {...item.place}
                     isAccommodation={true}
-                    onBook={() => handleBook(item)}
-                    onReview={() =>
-                      navigate(`/places/${item.place.place_id}/reviews`)
-                    }
+                    onBook={() => handleBook(item.place)}
+                    onReview={() => handleReview(item.place)}
                   />
                 </div>
               ))}
@@ -167,12 +208,14 @@ export default function CityDetail() {
           from={bookingDetails.from}
           to={bookingDetails.to}
           onClose={() => setBookingOpen(false)}
-          onSubmit={handleBookingSubmit}
           onChange={(k, v) =>
             setBookingDetails((b) => ({ ...b, [k]: v }))
           }
+          onSubmit={handleBookingSubmit}
         />
       </div>
     </div>
   );
-}
+};
+
+export default CityDetail;
