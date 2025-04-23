@@ -85,8 +85,8 @@ export default function AllReviews() {
                 : {
                     rating: form.rating,
                     comment: form.comment,
-                    user: user.user_id,
-                    place: parseInt(form.place, 10)
+                    user_id: user.user_id,
+                    place_id: parseInt(form.place, 10)
                 };
             const res = await fetch(url, {
                 method,
@@ -132,12 +132,9 @@ export default function AllReviews() {
                             <div className={styles.cardContent}>
                                 <div className={styles.header}>
                                     <h3 className={styles.placeName}>{r.place?.name}</h3>
-                                    <span className={styles.tag}>
-                                        {r.place?.accommodation ? 'Accommodation' : 'Restaurant'}
-                                    </span>
-                                </div>
-                                <div className={styles.rating}>
-                                    {'★'.repeat(r.rating).padEnd(5, '☆')}
+                                    <div className={styles.rating}>
+                                        {'★'.repeat(r.rating).padEnd(5, '☆')}
+                                    </div>
                                 </div>
                                 <p className={styles.comment}>{r.comment}</p>
                                 <div className={styles.userInfo}>

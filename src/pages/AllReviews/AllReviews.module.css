@@ -1,109 +1,126 @@
-/* src/pages/AllReviews/AllReviews.module.css */
+/* Base page styling */
 .page {
     padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
     background: var(--bg-light);
-  }
-  
-  .addBtn {
+}
+
+/* Add review button styling */
+.addBtn {
     display: inline-flex;
     align-items: center;
     gap: 0.8rem;
     padding: 1rem 2rem;
-    border: none;
+    border: 0.5px solid var(--primary);
     border-radius: 15px;
     background: var(--bg-light);
-    box-shadow: 8px 8px 16px var(--shadow-dark), 
-               -8px -8px 16px var(--shadow-light);
+    box-shadow: 8px 8px 16px var(--shadow-dark),
+        -8px -8px 16px var(--shadow-light);
     color: var(--text-primary);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     margin-bottom: 2rem;
-  }
-  
-  .addBtn:hover {
-    box-shadow: inset 6px 6px 12px var(--shadow-dark), 
-               inset -6px -6px 12px var(--shadow-light);
-  }
-  
-  .grid {
+}
+
+.addBtn:hover {
+    box-shadow: inset 6px 6px 12px var(--shadow-dark),
+        inset -6px -6px 12px var(--shadow-light);
+}
+
+/* Grid layout for cards */
+.grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 2rem;
     padding: 1rem;
-  }
-  
-  .card {
+}
+
+/* Card styling */
+.card {
     background: var(--bg-light);
     border-radius: 20px;
     padding: 1.5rem;
-    box-shadow: 10px 10px 20px var(--shadow-dark), 
-               -10px -10px 20px var(--shadow-light);
+    box-shadow: 10px 10px 20px var(--shadow-dark),
+        -10px -10px 20px var(--shadow-light);
     transition: all 0.3s ease;
-  }
-  
-  .card:hover {
+}
+
+.card:hover {
     transform: translateY(-5px);
-    box-shadow: 15px 15px 30px var(--shadow-dark), 
-               -15px -15px 30px var(--shadow-light);
-  }
-  
-  .cardContent {
+    box-shadow: 15px 15px 30px var(--shadow-dark),
+        -15px -15px 30px var(--shadow-light);
+}
+
+/* Card content structure */
+.cardContent {
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
-  }
-  
-  .header {
+    height: 100%;
+}
+
+/* Header with place name and tag */
+.header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
-  
-  .placeName {
+}
+
+.placeName {
     font-size: 1.2rem;
     color: var(--text-primary);
     font-weight: 700;
-  }
-  
-  .tag {
+}
+
+.tag {
     padding: 0.4rem 1rem;
     border-radius: 25px;
     background: var(--bg-light);
-    box-shadow: inset 4px 4px 8px var(--shadow-dark), 
-               inset -4px -4px 8px var(--shadow-light);
+    box-shadow: inset 4px 4px 8px var(--shadow-dark),
+        inset -4px -4px 8px var(--shadow-light);
     font-size: 0.8rem;
     font-weight: 600;
-  }
-  
-  .rating {
-    color: var(--primary);
+}
+
+/* Rating star styling */
+.rating {
+    color: #FFA500;
     font-size: 1.4rem;
     letter-spacing: 2px;
-  }
-  
-  .comment {
+}
+
+/* Comment text styling */
+.comment {
     color: var(--text-secondary);
     line-height: 1.6;
     font-size: 0.95rem;
-  }
-  
-  .userInfo {
+    word-wrap: break-word;
+    /* Ensures long words wrap onto the next line */
+    white-space: normal;
+    /* Allows the text to wrap naturally */
+    overflow-wrap: break-word;
+    /* Additional fallback for text wrapping */
+}
+
+/* User info section (user name and edit button) */
+.userInfo {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding-top: 1rem;
     border-top: 1px solid var(--border-color);
-  }
-  
-  .userName {
+    margin-top: auto;
+}
+
+.userName {
     color: var(--text-primary);
     font-weight: 500;
-  }
-  
-  .editBtn {
+}
+
+/* Edit button */
+.editBtn {
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
@@ -111,20 +128,20 @@
     border: none;
     border-radius: 12px;
     background: var(--bg-light);
-    box-shadow: 4px 4px 8px var(--shadow-dark), 
-               -4px -4px 8px var(--shadow-light);
+    box-shadow: 4px 4px 8px var(--shadow-dark),
+        -4px -4px 8px var(--shadow-light);
     color: var(--text-primary);
     cursor: pointer;
     transition: all 0.3s ease;
-  }
-  
-  .editBtn:hover {
-    box-shadow: inset 3px 3px 6px var(--shadow-dark), 
-               inset -3px -3px 6px var(--shadow-light);
-  }
-  
-  /* Modal Styles */
-  .modalOverlay {
+}
+
+.editBtn:hover {
+    box-shadow: inset 3px 3px 6px var(--shadow-dark),
+        inset -3px -3px 6px var(--shadow-light);
+}
+
+/* Modal styles */
+.modalOverlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
@@ -133,81 +150,78 @@
     align-items: center;
     backdrop-filter: blur(5px);
     z-index: 1000;
-  }
-  
-  .modal {
+}
+
+.modal {
     background: var(--bg-light);
     border-radius: 25px;
     padding: 2rem;
     width: 90%;
     max-width: 500px;
-   
-  }
-  
-  .formGroup {
+}
+
+/* Form group for inputs */
+.formGroup {
     margin-bottom: 1.5rem;
-  }
-  
-  .formGroup label {
+}
+
+.formGroup label {
     display: block;
     margin-bottom: 0.8rem;
     color: var(--text-primary);
     font-weight: 600;
-  }
-  
-  select, textarea {
+}
+
+select,
+textarea {
     width: 100%;
     padding: 1rem;
     border: none;
     border-radius: 12px;
     background: var(--bg-light);
-    box-shadow: inset 6px 6px 12px var(--shadow-dark), 
-               inset -6px -6px 12px var(--shadow-light);
+    box-shadow: inset 6px 6px 12px var(--shadow-dark),
+        inset -6px -6px 12px var(--shadow-light);
     font-size: 1rem;
     color: var(--text-primary);
-  }
-  
-  .modalActions {
+}
+
+/* Modal action buttons */
+.modalActions {
     display: flex;
     gap: 1rem;
     justify-content: flex-end;
     margin-top: 2rem;
-  }
-  
-  .primary {
+}
+
+/* Primary button styling */
+.primary {
     padding: 0.8rem 2rem;
     border: none;
     border-radius: 12px;
     background: var(--primary);
     color: white;
-    box-shadow: 4px 4px 8px var(--shadow-dark), 
-               -4px -4px 8px var(--shadow-light);
+    box-shadow: 4px 4px 8px var(--shadow-dark),
+        -4px -4px 8px var(--shadow-light);
     transition: all 0.3s ease;
     cursor: pointer;
-  }
-  
+}
 
-
-  .primary:hover:not(:disabled) {
+.primary:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: inset 5px 5px 10px #395784, inset -5px -5px 10px #4a6fa5;
 }
-  
-  .outline {
+
+/* Outline button styling */
+.outline {
     background: var(--bg-light);
     border-radius: 10px;
     border: none;
     color: var(--text-primary);
-    box-shadow: 4px 4px 8px var(--shadow-dark), 
-               -4px -4px 8px var(--shadow-light);
-  }
-  
+    box-shadow: 4px 4px 8px var(--shadow-dark),
+        -4px -4px 8px var(--shadow-light);
+}
 
-  .outline:hover {
+.outline:hover {
     transform: translateY(-2px);
     cursor: pointer;
-
-  }
-  
-
-
+}
