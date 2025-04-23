@@ -1,5 +1,7 @@
+// src/components/BookingModal/BookingModal.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import useUnsplash from "../../hooks/useUnsplash";
 import styles from "./BookingModal.module.css";
 import Spinner from "../Loading/Spinner";
 
@@ -34,27 +36,26 @@ export default function BookingModal({
     }
   }, [show]);
 
+  // pull in a hero image for this place
+  const imgSrc = useUnsplash(place?.imageDescription || place?.name);
+
   // simple form validation
   const validate = () => {
     const e = {};
     if (!from) e.from = "Check-in date required";
     if (!to)   e.to   = "Check-out date required";
     if (from && to) {
-      const dFrom = parseLocalDate(from);
-      const dTo   = parseLocalDate(to);
-      if (dTo < dFrom) e.dateRange = "Check-out can’t be before check-in";
+      const d1 = parseLocalDate(from), d2 = parseLocalDate(to);
+      if (d2 < d1) e.dateRange = "Check-out can’t be before check-in";
     }
     if (guests < 1) e.guests = "Must have at least 1 guest";
     setErrors(e);
     return !Object.keys(e).length;
   };
 
-  const handleNext = () => {
-    if (validate()) setStep(1);
-  };
-
+  const handleNext = () => { if (validate()) setStep(1); };
   const handleConfirm = async () => {
-    setStep(2); // loading
+    setStep(2);
     try {
       const res = await fetch("http://localhost:8000/TripMeUpApp/booking/", {
         method: "POST",
@@ -72,28 +73,24 @@ export default function BookingModal({
         throw new Error(err.error || err.detail || "Booking failed");
       }
       await res.json();
-      setStep(3); // success
+      setStep(3);
       onSubmit({ place, dates: { from, to }, guests });
     } catch (err) {
       setErrors({ submit: err.message });
-      setStep(1); // back to review
+      setStep(1);
     }
   };
 
-  // parse a 'YYYY-MM-DD' string into a local Date at midnight
+  // date helpers
   const parseLocalDate = (str) => {
-    const [y, m, d] = str.split('-').map(Number);
-    return new Date(y, m - 1, d);
+    const [y,m,d] = str.split("-").map(Number);
+    return new Date(y,m-1,d);
   };
-
-  const calculateNights = () => {
-    const dFrom = parseLocalDate(from);
-    const dTo   = parseLocalDate(to);
-    return Math.ceil((dTo - dFrom) / (1000 * 60 * 60 * 24));
-  };
-
-  // format for display
   const formatLocalDate = (str) => parseLocalDate(str).toLocaleDateString();
+  const calculateNights = () => {
+    const d1 = parseLocalDate(from), d2 = parseLocalDate(to);
+    return Math.ceil((d2 - d1) / (1000*60*60*24));
+  };
 
   if (!show) return null;
 
@@ -102,48 +99,31 @@ export default function BookingModal({
       <div className={styles.modal}>
         <header className={styles.header}>
           <h2>Book {place?.name || "—"}</h2>
-          <button onClick={onClose} className={styles.closeBtn} aria-label="Close">
-            ×
-          </button>
+          <button onClick={onClose} className={styles.closeBtn} aria-label="Close">×</button>
         </header>
 
         <div className={styles.modalContent}>
-
-          {/* STEP 0: Form */}
+          {/* STEP 0: form */}
           {step === 0 && (
             <div className={styles.formSection}>
               {children}
               <div className={styles.formGroup}>
                 <label>Check-in</label>
-                <input
-                  type="date"
-                  min={today}
-                  value={from}
-                  onChange={e => onChange("from", e.target.value)}
-                />
+                <input type="date" min={today} value={from}
+                  onChange={e => onChange("from", e.target.value)} />
                 {errors.from && <div className={styles.error}>{errors.from}</div>}
               </div>
               <div className={styles.formGroup}>
                 <label>Check-out</label>
-                <input
-                  type="date"
-                  min={from || today}
-                  value={to}
-                  onChange={e => onChange("to", e.target.value)}
-                />
+                <input type="date" min={from||today} value={to}
+                  onChange={e => onChange("to", e.target.value)} />
                 {errors.to && <div className={styles.error}>{errors.to}</div>}
               </div>
               {errors.dateRange && <div className={styles.error}>{errors.dateRange}</div>}
               <div className={styles.formGroup}>
                 <label>Guests</label>
-                <input
-                  type="number"
-                  min="1"
-                  value={guests}
-                  onChange={e =>
-                    onChange("guests", Math.max(1, parseInt(e.target.value) || 1))
-                  }
-                />
+                <input type="number" min="1" value={guests}
+                  onChange={e => onChange("guests", Math.max(1,parseInt(e.target.value)||1))} />
                 {errors.guests && <div className={styles.error}>{errors.guests}</div>}
               </div>
               <button className={styles.primaryBtn} onClick={handleNext}>
@@ -152,36 +132,28 @@ export default function BookingModal({
             </div>
           )}
 
-          {/* STEP 1: Review */}
+          {/* STEP 1: review */}
           {step === 1 && (
             <div className={styles.reviewSection}>
               <h3 className={styles.reviewTitle}>Booking Summary</h3>
               <div className={styles.placePreview}>
-                <img
-                  src={place?.image || place?.imageUrl}
-                  alt={place?.name}
-                  className={styles.placeImage}
-                />
+                <img src={imgSrc} alt={place?.name} className={styles.placeImage} />
                 <div className={styles.placeInfo}>
                   <h4>{place?.name}</h4>
                 </div>
               </div>
               <dl className={styles.detailGrid}>
                 <div className={styles.detailItem}>
-                  <dt>Check-in</dt>
-                  <dd>{formatLocalDate(from)}</dd>
+                  <dt>Check-in</dt><dd>{formatLocalDate(from)}</dd>
                 </div>
                 <div className={styles.detailItem}>
-                  <dt>Check-out</dt>
-                  <dd>{formatLocalDate(to)}</dd>
+                  <dt>Check-out</dt><dd>{formatLocalDate(to)}</dd>
                 </div>
                 <div className={styles.detailItem}>
-                  <dt>Nights</dt>
-                  <dd>{calculateNights()}</dd>
+                  <dt>Nights</dt><dd>{calculateNights()}</dd>
                 </div>
                 <div className={styles.detailItem}>
-                  <dt>Guests</dt>
-                  <dd>{guests}</dd>
+                  <dt>Guests</dt><dd>{guests}</dd>
                 </div>
               </dl>
               {errors.submit && <div className={styles.error}>{errors.submit}</div>}
@@ -196,7 +168,7 @@ export default function BookingModal({
             </div>
           )}
 
-          {/* STEP 2: Loading */}
+          {/* STEP 2: loading */}
           {step === 2 && (
             <div className={styles.loadingSection}>
               <Spinner />
@@ -204,7 +176,7 @@ export default function BookingModal({
             </div>
           )}
 
-          {/* STEP 3: Success */}
+          {/* STEP 3: success */}
           {step === 3 && (
             <div className={styles.successSection}>
               <div className={styles.successIcon}>✓</div>
@@ -216,19 +188,15 @@ export default function BookingModal({
                 <button className={styles.secondaryBtn} onClick={onClose}>
                   Close
                 </button>
-                <button
-                  className={styles.primaryBtn}
-                  onClick={() => {
-                    onClose();
-                    navigate("/bookings");
-                  }}
-                >
+                <button className={styles.primaryBtn} onClick={() => {
+                  onClose();
+                  navigate("/bookings");
+                }}>
                   View My Bookings
                 </button>
               </div>
             </div>
           )}
-          
         </div>
       </div>
     </div>

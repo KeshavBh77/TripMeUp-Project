@@ -53,7 +53,12 @@ function AppContent() {
           <Route path="/login" element={<Auth />} />
           <Route path="/register" element={<Auth />} />
           <Route path="/admin-login" element={<Auth />} />
-          <Route path="/admin/dashboard" element={<AdminBookings />} />
+          <Route path="/admin/dashboard" element={
+<PrivateRoute>
+<AdminBookings />
+
+</PrivateRoute>
+            } />
           <Route path="/places/:placeId/reviews"element={<Reviews />}/>
           <Route path="/reviews" element={<AllReviews />} />
 
