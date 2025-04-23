@@ -1,5 +1,6 @@
 // src/pages/Bookings/Bookings.jsx
 import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import SectionTitle from "../../components/SectionTitle/SectionTitle";
 import Skeleton from "../../components/Skeleton/Skeleton";
 import { AuthContext } from "../../context/AuthContext";
@@ -8,23 +9,22 @@ import { FaCalendarTimes, FaPlus } from "react-icons/fa";
 import useUnsplash from "../../hooks/useUnsplash";
 import styles from "./Booking.module.css";
 
-function BookingCard({ booking, onReload }) {
-  // try Unsplash on the place name
+function BookingCard({ booking }) {
   const unsplashUrl = useUnsplash(booking.place?.name);
-  const imageUrl =unsplashUrl;
-
   return (
     <div className={styles.cardWrapper}>
       <div className={`${styles.card} neo-embed`}>
         <img
-          src={imageUrl}
+          src={unsplashUrl}
           alt={booking.place?.name || "Place"}
           className={styles.image}
         />
         <div className={styles.info}>
           <h3>{booking.place?.name || "Unknown Place"}</h3>
           <div className={styles.meta}>
-            <span>{booking.starting_date} → {booking.ending_date}</span>
+            <span>
+              {booking.starting_date} → {booking.ending_date}
+            </span>
             <span>{booking.no_of_guests} Guests</span>
           </div>
         </div>
@@ -38,6 +38,7 @@ function BookingCard({ booking, onReload }) {
 
 export default function Bookings() {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [loading, setLoading]     = useState(true);
   const [bookings, setBookings]   = useState([]);
   const [places, setPlaces]       = useState([]);
@@ -49,6 +50,7 @@ export default function Bookings() {
     guests:  1
   });
 
+  // Fetch the user's bookings
   const reloadBookings = async () => {
     if (!user) return;
     setLoading(true);
@@ -60,12 +62,11 @@ export default function Bookings() {
     setLoading(false);
   };
 
-  // load existing bookings
   useEffect(() => {
     reloadBookings();
   }, [user]);
 
-  // load place-list for creation
+  // Load all places for the select dropdown
   useEffect(() => {
     (async () => {
       const res  = await fetch("http://localhost:8000/TripMeUpApp/place-list/");
@@ -75,24 +76,17 @@ export default function Bookings() {
   }, []);
 
   const handleCreate = () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
     setDetails({ placeId: null, from: "", to: "", guests: 1 });
     setModalOpen(true);
   };
 
   const handleSubmit = async ({ place, dates, guests }) => {
-    await fetch("http://localhost:8000/TripMeUpApp/booking/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        user_id:       user.user_id,
-        place_id:      place.place_id,
-        starting_date: dates.from,
-        ending_date:   dates.to,
-        no_of_guests:  guests
-      })
-    });
-
     await reloadBookings();
+
   };
 
   return (
@@ -125,11 +119,7 @@ export default function Bookings() {
       ) : (
         <div className={styles.list}>
           {bookings.map(b => (
-            <BookingCard
-              key={b.booking_id}
-              booking={b}
-              onReload={reloadBookings}
-            />
+            <BookingCard key={b.booking_id} booking={b} />
           ))}
         </div>
       )}
@@ -143,17 +133,15 @@ export default function Bookings() {
         to={details.to}
         onClose={() => setModalOpen(false)}
         onChange={(k, v) => setDetails(d => ({ ...d, [k]: v }))}
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit}   // <-- single source of truth
       >
-
         <div className={styles.formGroup}>
           <label>Select Place</label>
           <select
             value={details.placeId || ""}
-            onChange={e => setDetails(d => ({
-              ...d,
-              placeId: e.target.value
-            }))}
+            onChange={e =>
+              setDetails(d => ({ ...d, placeId: e.target.value }))
+            }
             required
           >
             <option value="">— pick a place —</option>
