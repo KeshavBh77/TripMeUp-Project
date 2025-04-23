@@ -28,9 +28,9 @@ function BookingCard({ booking }) {
             <span>{booking.no_of_guests} Guests</span>
           </div>
         </div>
-        <div className={styles.footer}>
+        {/* <div className={styles.footer}>
           <div className={styles.price}>${booking.charge || 0}</div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
