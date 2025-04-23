@@ -91,7 +91,7 @@ export default function Accommodations() {
 
   const handleBookingSubmit = ({ place, dates, guests }) => {
     console.log("Booking confirmed:", { place, dates, guests });
-    setBookingOpen(false);
+
   };
 
   const suggestions = places.map((item) => ({

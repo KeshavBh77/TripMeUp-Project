@@ -46,7 +46,7 @@ export default function CityDetail() {
 
   const handleBookingSubmit = ({ place, dates, guests }) => {
     console.log("Booking confirmed:", { place, dates, guests });
-    setBookingOpen(false);
+
   };
 
   useEffect(() => {

@@ -1,40 +1,32 @@
-// src/components/BookingModal/BookingModal.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./BookingModal.module.css";
 import Spinner from "../Loading/Spinner";
-import useUnsplash from "../../hooks/useUnsplash";
 
 export default function BookingModal({
-  user,       // from AuthContext
+  user,
   show,
-  place,      // selected place object, must have place_id and name
+  place,
   guests,
   from,
   to,
   onClose,
-  onChange    // callback to update { from, to, guests } in parent
+  onChange,
+  onSubmit,
+  children,
 }) {
   const [step, setStep]     = useState(0);
   const [errors, setErrors] = useState({});
   const today               = new Date().toISOString().split("T")[0];
   const navigate            = useNavigate();
 
-  // fetch an image based on place.name
-  const unsplashUrl = useUnsplash(place?.name);
-  const imageUrl =
-    unsplashUrl ||
-    place?.image ||
-    place?.imageUrl ||
-    "https://via.placeholder.com/400x300?text=No+Image";
-
-  // lock scroll when modal open
+  // lock scroll while modal is open
   useEffect(() => {
     document.body.style.overflow = show ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [show]);
 
-  // reset on open
+  // reset whenever the modal opens
   useEffect(() => {
     if (show) {
       setStep(0);
@@ -42,12 +34,16 @@ export default function BookingModal({
     }
   }, [show]);
 
+  // simple form validation
   const validate = () => {
     const e = {};
-    if (!from) e.from = "Check‑in date required";
-    if (!to)   e.to   = "Check‑out date required";
-    if (from && to && new Date(to) < new Date(from))
-      e.dateRange = "Check‑out can’t be before check‑in";
+    if (!from) e.from = "Check-in date required";
+    if (!to)   e.to   = "Check-out date required";
+    if (from && to) {
+      const dFrom = parseLocalDate(from);
+      const dTo   = parseLocalDate(to);
+      if (dTo < dFrom) e.dateRange = "Check-out can’t be before check-in";
+    }
     if (guests < 1) e.guests = "Must have at least 1 guest";
     setErrors(e);
     return !Object.keys(e).length;
@@ -58,53 +54,67 @@ export default function BookingModal({
   };
 
   const handleConfirm = async () => {
-    setStep(2);
+    setStep(2); // loading
     try {
       const res = await fetch("http://localhost:8000/TripMeUpApp/booking/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id:        user.user_id,
-          place_id:       place.place_id,
-          starting_date:  from,
-          ending_date:    to,
-          no_of_guests:   guests
-        })
+          user_id:       user.user_id,
+          place_id:      place.place_id,
+          starting_date: from,
+          ending_date:   to,
+          no_of_guests:  guests,
+        }),
       });
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.detail || "Booking failed");
+        throw new Error(err.error || err.detail || "Booking failed");
       }
       await res.json();
-      setStep(3);
+      setStep(3); // success
+      onSubmit({ place, dates: { from, to }, guests });
     } catch (err) {
-      console.error(err);
       setErrors({ submit: err.message });
-      setStep(1);
+      setStep(1); // back to review
     }
   };
 
-  const calculateNights = () =>
-    Math.ceil((new Date(to) - new Date(from)) / (1000 * 60 * 60 * 24));
+  // parse a 'YYYY-MM-DD' string into a local Date at midnight
+  const parseLocalDate = (str) => {
+    const [y, m, d] = str.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  };
 
-  if (!show || !place) return null;
+  const calculateNights = () => {
+    const dFrom = parseLocalDate(from);
+    const dTo   = parseLocalDate(to);
+    return Math.ceil((dTo - dFrom) / (1000 * 60 * 60 * 24));
+  };
+
+  // format for display
+  const formatLocalDate = (str) => parseLocalDate(str).toLocaleDateString();
+
+  if (!show) return null;
 
   return (
     <div className={styles.overlay} role="dialog" aria-modal="true">
       <div className={styles.modal}>
         <header className={styles.header}>
-          <h2>Book {place.name}</h2>
+          <h2>Book {place?.name || "—"}</h2>
           <button onClick={onClose} className={styles.closeBtn} aria-label="Close">
             ×
           </button>
         </header>
 
         <div className={styles.modalContent}>
-          {/* Step 0: form */}
+
+          {/* STEP 0: Form */}
           {step === 0 && (
             <div className={styles.formSection}>
+              {children}
               <div className={styles.formGroup}>
-                <label>Check‑in</label>
+                <label>Check-in</label>
                 <input
                   type="date"
                   min={today}
@@ -113,9 +123,8 @@ export default function BookingModal({
                 />
                 {errors.from && <div className={styles.error}>{errors.from}</div>}
               </div>
-
               <div className={styles.formGroup}>
-                <label>Check‑out</label>
+                <label>Check-out</label>
                 <input
                   type="date"
                   min={from || today}
@@ -125,7 +134,6 @@ export default function BookingModal({
                 {errors.to && <div className={styles.error}>{errors.to}</div>}
               </div>
               {errors.dateRange && <div className={styles.error}>{errors.dateRange}</div>}
-
               <div className={styles.formGroup}>
                 <label>Guests</label>
                 <input
@@ -138,37 +146,34 @@ export default function BookingModal({
                 />
                 {errors.guests && <div className={styles.error}>{errors.guests}</div>}
               </div>
-
               <button className={styles.primaryBtn} onClick={handleNext}>
                 Review Booking
               </button>
             </div>
           )}
 
-          {/* Step 1: review */}
+          {/* STEP 1: Review */}
           {step === 1 && (
             <div className={styles.reviewSection}>
               <h3 className={styles.reviewTitle}>Booking Summary</h3>
-
               <div className={styles.placePreview}>
                 <img
-                  src={imageUrl}
-                  alt={place.name}
+                  src={place?.image || place?.imageUrl}
+                  alt={place?.name}
                   className={styles.placeImage}
                 />
                 <div className={styles.placeInfo}>
-                  <h4>{place.name}</h4>
+                  <h4>{place?.name}</h4>
                 </div>
               </div>
-
               <dl className={styles.detailGrid}>
                 <div className={styles.detailItem}>
-                  <dt>Check‑in</dt>
-                  <dd>{new Date(from).toLocaleDateString()}</dd>
+                  <dt>Check-in</dt>
+                  <dd>{formatLocalDate(from)}</dd>
                 </div>
                 <div className={styles.detailItem}>
-                  <dt>Check‑out</dt>
-                  <dd>{new Date(to).toLocaleDateString()}</dd>
+                  <dt>Check-out</dt>
+                  <dd>{formatLocalDate(to)}</dd>
                 </div>
                 <div className={styles.detailItem}>
                   <dt>Nights</dt>
@@ -179,21 +184,19 @@ export default function BookingModal({
                   <dd>{guests}</dd>
                 </div>
               </dl>
-
               {errors.submit && <div className={styles.error}>{errors.submit}</div>}
-
               <div className={styles.buttonGroup}>
                 <button className={styles.secondaryBtn} onClick={() => setStep(0)}>
                   Edit
                 </button>
                 <button className={styles.primaryBtn} onClick={handleConfirm}>
-                  Confirm & Create
+                  Confirm &amp; Create
                 </button>
               </div>
             </div>
           )}
 
-          {/* Step 2: loading */}
+          {/* STEP 2: Loading */}
           {step === 2 && (
             <div className={styles.loadingSection}>
               <Spinner />
@@ -201,15 +204,13 @@ export default function BookingModal({
             </div>
           )}
 
-          {/* Step 3: success */}
+          {/* STEP 3: Success */}
           {step === 3 && (
             <div className={styles.successSection}>
               <div className={styles.successIcon}>✓</div>
               <h3>Booking Confirmed!</h3>
               <p>
-                Your stay at <strong>{place.name}</strong> from{" "}
-                {new Date(from).toLocaleDateString()} to{" "}
-                {new Date(to).toLocaleDateString()} has been booked.
+                Your stay at <strong>{place?.name}</strong> from {formatLocalDate(from)} to {formatLocalDate(to)} has been booked.
               </p>
               <div className={styles.buttonGroupConfirm}>
                 <button className={styles.secondaryBtn} onClick={onClose}>
@@ -227,6 +228,7 @@ export default function BookingModal({
               </div>
             </div>
           )}
+          
         </div>
       </div>
     </div>

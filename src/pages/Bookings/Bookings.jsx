@@ -94,7 +94,7 @@ export default function Bookings() {
         no_of_guests:  guests
       })
     });
-    setModalOpen(false);
+
     await reloadBookings();
   };
 
