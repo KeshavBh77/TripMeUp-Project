@@ -107,18 +107,16 @@ class Review(models.Model):
         return f"Review {self.review_id} for {self.place}"
 
 
-
 class Browses(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
 
 
 class Curates(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
 
 
 class Writes(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     review = models.ForeignKey(Review, on_delete=models.CASCADE)
-
