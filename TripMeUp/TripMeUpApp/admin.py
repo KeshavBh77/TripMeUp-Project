@@ -34,9 +34,6 @@ class AdminModelAdmin(admin.ModelAdmin):
 class ClientAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(Cuisine)
-class CuisineAdmin(admin.ModelAdmin):
-    pass
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
@@ -44,10 +41,6 @@ class BookingAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(ClientCuisine)
-class ClientCuisineAdmin(admin.ModelAdmin):
     pass
 
 @admin.register(Browses)
@@ -62,6 +55,3 @@ class CuratesAdmin(admin.ModelAdmin):
 class WritesAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(Serves)
-class ServesAdmin(admin.ModelAdmin):
-    pass
