@@ -1,4 +1,4 @@
-// src/pages/Home/Home.jsx
+
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Hero from "../../components/Hero/Hero";
@@ -125,8 +125,8 @@ export default function Home() {
     setBookingOpen(true);
   };
   const handleBookingSubmit = ({ place, dates, guests }) => {
-    /* …your submit logic… */
-    setBookingOpen(false);
+
+
   };
 
   return (
