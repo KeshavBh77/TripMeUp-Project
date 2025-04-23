@@ -30,11 +30,7 @@ const PrivateRoute = ({ children }) => {
     const { user } = React.useContext(AuthContext);
     return user ? children : <Navigate to="/login" replace />;
 };
-// PrivateRoute for admin access
-const AdminPrivateRoute = ({ children }) => {
-    const { user } = React.useContext(AuthContext);
-    return user && user.isAdmin ? children : <Navigate to="/admin-login" replace />;
-};
+
 function AppContent() {
     const location = useLocation();
     const onAuthPage =
