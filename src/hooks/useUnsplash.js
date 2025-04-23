@@ -10,7 +10,7 @@ export default function useUnsplash(query) {
     const fetchImage = async () => {
       try {
         const res = await fetch(
-          `https://api.unsplash.com/search/photos?page=1&query=${encodeURIComponent(query)}&client_id=${process.env.REACT_APP_UNSPLASH_ACCESS_KEY}`
+          `https://api.unsplash.com/search/photos?page=1&query=${encodeURIComponent(query)}&client_id=REACT_APP_UNSPLASH_ACCESS_KEY=AH5fk-1b36kz85JfE_Oy21Xh81ETsd6YGTlhOSv7-mA`
         );
         const json = await res.json();
         // grab the first result’s small thumb

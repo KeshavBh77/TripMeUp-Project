@@ -84,14 +84,6 @@ class Client(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
 
-class Cuisine(models.Model):
-    cuisine_id = models.AutoField(primary_key=True)
-    type = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.type
-
-
 class Booking(models.Model):
     booking_id = models.AutoField(primary_key=True)
     no_of_guests = models.IntegerField()
@@ -115,14 +107,6 @@ class Review(models.Model):
         return f"Review {self.review_id} for {self.place}"
 
 
-class ClientCuisine(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    cuisine = models.ForeignKey(Cuisine, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ("client", "cuisine")
-
-
 # Additional many-to-many helper models (if you want more control)
 class Browses(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
@@ -138,7 +122,3 @@ class Writes(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     review = models.ForeignKey(Review, on_delete=models.CASCADE)
 
-
-class Serves(models.Model):
-    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    cuisine = models.ForeignKey(Cuisine, on_delete=models.CASCADE)
