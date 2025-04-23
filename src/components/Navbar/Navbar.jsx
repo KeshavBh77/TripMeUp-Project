@@ -1,17 +1,16 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 import styles from "./Navbar.module.css";
 import logo from "../../assets/images/logo.png";
 import { FaHome } from "react-icons/fa";
-import { AuthContext } from "../../context/AuthContext";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
-  
   const location = useLocation();
+  const [isAdmin, setIsAdmin] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false); 
-
+  const [showConfirm, setShowConfirm] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
@@ -20,7 +19,39 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // are we on an auth page?
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+
+      try {
+        const res = await fetch(`http://localhost:8000/TripMeUpApp/checkadmin/?username=${user.username}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+
+        const data = await res.json();
+        console.log("Admin check result:", data);
+
+        if (res.ok) {
+          setIsAdmin(data.admin);
+        } else {
+          setIsAdmin(false);
+        }
+      } catch (err) {
+        console.error("Error checking admin:", err);
+        setIsAdmin(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [user]);
+
   const onAuthPage =
     location.pathname === "/login" || location.pathname === "/register";
 
@@ -29,41 +60,33 @@ const Navbar = () => {
       {/* Logo */}
       <div className={styles.logo}>
         <NavLink to="/" className={styles.logoLink}>
-          <img
-            src={logo}
-            alt="Trip Me Up Logo"
-            className={styles.logoImage}
-          />
+          <img src={logo} alt="Trip Me Up Logo" className={styles.logoImage} />
         </NavLink>
       </div>
 
-      {/* Links only when logged in */}
+      {/* Navigation Links */}
       {user && (
         <div className={styles.links}>
-          {[
-            ["Home", "/"],
-            ["Cities", "/cities"],
-            ["Restaurants", "/restaurants"],
-            ["Accommodations", "/accommodations"],
+          <NavLink to="/" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>Home</NavLink>
+          <NavLink to="/cities" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>Cities</NavLink>
+          <NavLink to="/restaurants" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>Restaurants</NavLink>
+          <NavLink to="/accommodations" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>Accommodations</NavLink>
+          <NavLink to="/bookings" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>My Bookings</NavLink>
+          <NavLink to="/reviews" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>Reviews</NavLink>
+          <NavLink to="/Profile" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>Profile</NavLink>
 
 
-          ].map(([label, path]) => (
-            <NavLink
-              key={path}
-              to={path}
-              className={({ isActive }) =>
-                `${styles.link} ${isActive ? styles.active : ""}`
-              }
-            >
-              {label}
+          {/* Only show if Admin */}
+          {isAdmin && (
+            <NavLink to="/admin/dashboard" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ""}`}>
+              Manage All Bookings
             </NavLink>
-          ))}
+          )}
         </div>
       )}
 
-      {/* Right‑side actions */}
+      {/* Right Side Actions */}
       <div className={styles.actions}>
-        {/* Always show Home icon */}
         <NavLink to="/" className={styles.homeIcon}>
           <FaHome />
         </NavLink>
@@ -79,19 +102,12 @@ const Navbar = () => {
             </button>
           </>
         ) : (
-          // only show Login/Sign Up when NOT on an auth page
           !onAuthPage && (
             <>
-              <NavLink
-                to="/login"
-                className={`${styles.btn} ${styles.outline}`}
-              >
+              <NavLink to="/login" className={`${styles.btn} ${styles.outline}`}>
                 Login
               </NavLink>
-              <NavLink
-                to="/register"
-                className={`${styles.btn} ${styles.primary}`}
-              >
+              <NavLink to="/register" className={`${styles.btn} ${styles.primary}`}>
                 Sign Up
               </NavLink>
             </>
@@ -99,12 +115,7 @@ const Navbar = () => {
         )}
       </div>
 
-
-      {showToast && (
-  <div className={styles.toast}>You’ve been logged out.</div>
-)}
-
-      {/* Logout confirmation modal */}
+      {/* Logout Confirm */}
       {showConfirm && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
@@ -118,7 +129,7 @@ const Navbar = () => {
               </button>
               <button
                 className={`${styles.btn} ${styles.primary}`}
-               onClick={() => {
+                onClick={() => {
                   logout();
                   setShowConfirm(false);
                   setShowToast(true);
@@ -131,6 +142,9 @@ const Navbar = () => {
           </div>
         </div>
       )}
+
+      {/* Toast */}
+      {showToast && <div className={styles.toast}>You've been logged out.</div>}
     </nav>
   );
 };

@@ -1,28 +1,80 @@
+.cityCard {
+    background: var(--bg-light);
+    margin: 1rem 0;
+    padding: 1.25rem;
+    border-radius: 1rem;
+    /* background: #dcabab; */
+    /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
+    box-shadow: 10px 10px 20px var(--shadow-light),
+            -10px -10px 20px var(--shadow-dark);
+}
+
 .reviewCard {
-  background: var(--bg-light);
-  padding: 1.5rem;
-  border-radius: 15px;
-  margin-bottom: 1rem;
-  box-shadow:
-    10px 10px 20px var(--shadow-dark),
-    -10px -10px 20px var(--shadow-light);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 900px;
 }
+
 .header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+
+.left,
+.right {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
 .author {
-  font-weight: 600;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #333;
 }
-.rating i {
-  color: var(--warning);
+
+.placeName {
+    font-size: 0.95rem;
+    color: #666;
 }
-.date {
-  color: #666;
-  font-size: 0.8rem;
+
+.icon {
+    color: #888;
 }
+
+.contentWrapper {
+    margin-top: 0.5rem;
+}
+
 .content {
-  color: #333;
-  line-height: 1.6;
+    font-style: italic;
+    color: #444;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 8rem;
+    overflow-y: auto;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rating {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.star {
+    color: #f4b400;
+}
+
+.date {
+    font-size: 0.85rem;
+    color: #999;
 }

@@ -1,84 +1,191 @@
-
 /* src/pages/Home/Home.module.css */
 .home {
-  background: var(--bg-light);
-  color: var(--dark);
+    background: var(--bg-light);
+    color: var(--dark);
 }
+
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
 }
+
 .list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
-  margin-bottom: 4rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 4rem;
 }
 
 
 .Rlist {
 
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
-  margin-bottom: 4rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 4rem;
 }
 
 
 .cardWrapper {
-  flex: 0 1 350px;
+    flex: 0 1 350px;
 }
+
 @media (max-width: 768px) {
-  .list {
-    flex-direction: column;
-    align-items: center;
-  }
-  .cardWrapper {
-    flex: 1 1 100%;
-  }
+    .list {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .cardWrapper {
+        flex: 1 1 100%;
+    }
 }
 
-
+/* Modal Styles */
 .modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  animation: fadeIn 0.3s ease-in-out;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease-in-out;
 }
 
 .loginModal {
-  background: #fff;
-  padding: 2rem 3rem;
-  border-radius: 16px;
-  font-size: 1.1rem;
-  color: #333;
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  animation: slideUp 0.3s ease-out;
+    background: #fff;
+    padding: 2rem 3rem;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    color: #333;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease-out;
 }
 
 @keyframes fadeIn {
-  from {
-    background: rgba(0, 0, 0, 0);
-  }
-  to {
-    background: rgba(0, 0, 0, 0.4);
-  }
+    from {
+        background: rgba(0, 0, 0, 0);
+    }
+
+    to {
+        background: rgba(0, 0, 0, 0.4);
+    }
 }
 
 @keyframes slideUp {
-  from {
-    transform: translateY(30px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Review Card Styles */
+.reviewCard {
+    padding: 1rem;
+    background: var(--bg-light);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 10px 10px 20px var(--shadow-light),
+        -10px -10px 20px var(--shadow-dark);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.reviewCard:hover {
+    transform: scale(1.03);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.author {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.placeName {
+    font-size: 1.1rem;
+    color: var(--secondary-color);
+}
+
+.contentWrapper {
+    margin-bottom: 1.5rem;
+}
+
+.content {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--text-light);
+    font-style: italic;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rating {
+    display: flex;
+    gap: 5px;
+}
+
+.star {
+    color: #ffac33;
+}
+
+.empty {
+    color: #ccc;
+}
+
+.date {
+    font-size: 0.9rem;
+    color: #777;
+    text-align: right;
+}
+
+/* Additional Styles for Mobile Responsiveness */
+@media (max-width: 768px) {
+    .reviewCard {
+        padding: 1.5rem;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .rating {
+        margin-bottom: 1rem;
+    }
 }

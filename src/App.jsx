@@ -1,11 +1,12 @@
 import React from "react";
 import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-  useLocation,
+    BrowserRouter as Router,
+    Routes,
+    Route,
+    Navigate,
+    useLocation,
 } from "react-router-dom";
+
 import { AuthProvider, AuthContext } from "./context/AuthContext";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
@@ -14,26 +15,30 @@ import Cities from "./pages/Cities/Cities";
 import CityDetail from "./pages/Cities/CityDetails";
 import Restaurants from "./pages/Restaurants/Restaurants";
 import Accommodations from "./pages/Accomodation/Accomodation";
-
-
+import Bookings from "./pages/Bookings/Bookings";
+import CreateBooking from "./pages/Bookings/CreateBooking"
 import Auth from "./pages/Auth/Auth";
-import ScrollToTop from "./components/ScrollToTop"; 
-import  NotFound from "./pages/NotFound404/404NotFound";
+import ScrollToTop from "./components/ScrollToTop";
+import NotFound from "./pages/NotFound404/404NotFound";
 import styles from "./App.module.css";
+import AdminBookings from './pages/Admin/AdminBookings';
+import Reviews from "./pages/Review/Reviews";
+import AllReviews from "./pages/AllReviews/AllReviews";
+import Profile from "./pages/Profile/Profile";
 
 const PrivateRoute = ({ children }) => {
-  const { user } = React.useContext(AuthContext);
-  return user ? children : <Navigate to="/login" replace />;
+    const { user } = React.useContext(AuthContext);
+    return user ? children : <Navigate to="/login" replace />;
 };
 
 function AppContent() {
-  const location = useLocation();
-  const onAuthPage =
-    location.pathname === "/login" || location.pathname === "/register";
+    const location = useLocation();
+    const onAuthPage =
+        location.pathname === "/login" || location.pathname === "/register";
 
-  return (
-    <div className={styles.app}>
-      <Navbar />
+    return (
+        <div className={styles.app}>
+            <Navbar />
 
       <main
         className={`${styles.content} ${
@@ -43,43 +48,75 @@ function AppContent() {
         <Routes>
           <Route path="/login" element={<Auth />} />
           <Route path="/register" element={<Auth />} />
+          {/* <Route path="/admin-login" element={<Auth />} /> */}
+          <Route path="/admin/dashboard" element={
+<PrivateRoute>
+<AdminBookings />
 
-          <Route path="/" element={<Home />} />
-          <Route path="/cities" element={
-            <PrivateRoute><Cities /></PrivateRoute>} />
-          <Route path="/cities/:title" element={
-            <PrivateRoute><CityDetail /></PrivateRoute>} />
-          <Route path="/restaurants" element={
-            <PrivateRoute>
-              <Restaurants />
-            </PrivateRoute>} />
-          <Route
-            path="/accommodations"
-            element={
-              <PrivateRoute>
-                <Accommodations />
-              </PrivateRoute>
-            }
-          />
+</PrivateRoute>
+            } />
+          <Route path="/places/:placeId/reviews"element={<Reviews />}/>
+          <Route path="/reviews" element={<AllReviews />} />
 
-          
+
+                    <Route path="/" element={<Home />} />
+                    <Route path="/cities" element={
+                        <PrivateRoute><Cities /></PrivateRoute>} />
+                    <Route path="/cities/:title" element={
+                        <PrivateRoute><CityDetail /></PrivateRoute>} />
+                    <Route path="/restaurants" element={
+                        <PrivateRoute>
+                            <Restaurants />
+                        </PrivateRoute>} />
+                    <Route
+                        path="/accommodations"
+                        element={
+                            <PrivateRoute>
+                                <Accommodations />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/bookings"
+                        element={
+                            <PrivateRoute>
+                                <Bookings />
+                            </PrivateRoute>
+                        }
+                    />
+
+                        <Route
+                        path="/profile"
+                        element={
+
+                                <Profile />
+
+                        }
+                    />
+
                     <Route path="*" element={<NotFound />} />
 
-        </Routes>
-      </main>
+                    <Route path="/create-booking" element={
+                        <PrivateRoute>
+                            <CreateBooking />
+                        </PrivateRoute>
+                    } />
+                </Routes>
 
-      <Footer />
-    </div>
-  );
+            </main>
+
+            <Footer />
+        </div>
+    );
 }
 
 export default function App() {
-  return (
-    <Router>
-      <AuthProvider>
-        <ScrollToTop /> 
-        <AppContent />
-      </AuthProvider>
-    </Router>
-  );
+    return (
+        <Router>
+            <AuthProvider>
+                <ScrollToTop />
+                <AppContent />
+            </AuthProvider>
+        </Router>
+    );
 }

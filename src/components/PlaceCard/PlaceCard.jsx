@@ -1,106 +1,138 @@
-import React from "react";
+// src/components/PlaceCard/PlaceCard.jsx
+import React, { useState } from "react";
 import styles from "./PlaceCard.module.css";
-import { FaStar, FaMapMarkerAlt, FaHeart } from "react-icons/fa";
+import {
+  FaStar,
+  FaMapMarkerAlt,
+  FaHome,
+  FaPhone,
+  FaMailBulk,
+  FaBed,
+  FaHotel,
+  FaUtensils,
+  FaClock,
+} from "react-icons/fa";
+import useUnsplash from "../../hooks/useUnsplash";
+import Skeleton from "../Skeleton/Skeleton";
 
-const PlaceCard = ({
-    name,
-    contact,
-    address,
-    street,
-    postal_code,
-    email,
-    rating,
-    description,
-    working_hours, // Added working_hours for restaurants
-    isAccommodation = false,
-    type,
-    charge,
-    amenities = [],
-    onBook,
-}) => (
-    <div
-        className={`${styles.card} neo-embed`}
-        style={{ cursor: isAccommodation ? "pointer" : "default" }}
-    >
+const typeIconMap = {
+  hostel: FaBed,
+  hotel: FaHotel,
+  apartment: FaHome,
+  restaurant: FaUtensils,
+};
+
+export default function PlaceCard({
+  place_id,
+  name,
+  contact,
+  address,
+  street,
+  postal_code,
+  email,
+  rating,
+  description,
+  working_hours,
+  isAccommodation = false,
+  type,
+  charge,
+  amenities = [],
+  onBook,
+  onToggleFavorite,
+  isFavorite,
+  onReview,
+  imageDescription = name,
+}) {
+  const src = useUnsplash(imageDescription);
+  const [imgLoaded, setImgLoaded] = useState(false);
+
+  const TypeIcon = type ? typeIconMap[type.toLowerCase()] || FaUtensils : null;
+
+  return (
+    <div className={styles.card}>
+      <div className={styles.imageWrapper}>
+        {!imgLoaded && <Skeleton height="200px" radius="8px" />}
+
         <img
-            src={`https://source.unsplash.com/random/400x300/?restaurant,${name}`} // placeholder image
-            alt={name}
-            className={styles.image}
+          src={
+            src 
+          }
+          alt={name}
+          className={styles.image}
+          style={{ display: imgLoaded ? "block" : "none" }}
+          onLoad={() => setImgLoaded(true)}
+          onError={() => setImgLoaded(true)}
         />
-        <div className={styles.details}>
-            <div className={styles.header}>
-                <h3 className={styles.title}>{name}</h3>
-                <div className={styles.rating}>
-                    <FaStar className={styles.star} /> <span>{rating}</span>
-                </div>
-            </div>
+      </div>
 
-            <div className={styles.location}>
-                <FaMapMarkerAlt className={styles.icon} /> {address}, {street}, {postal_code}
-            </div>
-
-            <p className={styles.description}>{description}</p>
-
-            {working_hours && (
-                <div className={styles.feature}>
-                    🕰 <strong>Working Hours:</strong> {working_hours}
-                </div>
-            )}
-
-            <div className={styles.features}>
-                <div className={styles.feature}>
-                    📞 <span>{contact}</span>
-                </div>
-                <div className={styles.feature}>
-                    📧 <span>{email}</span>
-                </div>
-                {type && (
-                    <div className={styles.feature}>
-                        🍽 <strong>Type:</strong> {type}
-                    </div>
-                )}
-                {charge && (
-                    <div className={styles.feature}>
-                        💰 <strong>Charge:</strong> ${charge}{" "}
-                        {isAccommodation ? "per night" : "per person"}
-                    </div>
-                )}
-            </div>
-
-            {amenities.length > 0 && (
-                <div className={styles.amenities}>
-                    <strong>Amenities:</strong>
-                    <ul>
-                        {amenities.map((a, index) => (
-                            <li key={index}>
-                                {a.name} – ${a.charge} ({a.timings})
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-
-            <div className={styles.actions}>
-                <div className={styles.price}>
-                    ${charge || rating * 20} <span>{isAccommodation ? "per night" : "per person"}</span>
-                </div>
-                <button className={styles.favorite}>
-                    <FaHeart />
-                </button>
-                {isAccommodation && (
-                    <button
-                        className={styles.bookNow}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onBook && onBook();
-                        }}
-                    >
-                        Book Now
-                    </button>
-                )}
-            </div>
+      <div className={styles.details}>
+        <div className={styles.header}>
+          <h3 className={styles.title}>{name}</h3>
+          <div className={styles.rating}>
+            <FaStar /> <span>{rating.toFixed(1)}</span>
+          </div>
         </div>
-    </div>
-);
 
-export default PlaceCard;
+        <div className={styles.location}>
+          <FaMapMarkerAlt /> {address}, {street}, {postal_code}
+        </div>
+
+        <p className={styles.description}>{description}</p>
+
+        {working_hours && (
+          <div className={styles.feature}>
+            <FaClock /> <strong>Hours:</strong> {working_hours}
+          </div>
+        )}
+
+        <div className={styles.meta}>
+          <div className={styles.metaItem}>
+            <FaPhone /> {contact}
+          </div>
+          <div className={styles.metaItem}>
+            <FaMailBulk /> {email}
+          </div>
+        </div>
+
+        {TypeIcon && (
+          <span className={styles.typeBadge}>
+            <TypeIcon /> {type}
+          </span>
+        )}
+
+        {charge && (
+          <div className={styles.feature}>
+            💰 <strong>Price:</strong> ${charge}{" "}
+            {isAccommodation ? "/ night" : "/ person"}
+          </div>
+        )}
+
+        {amenities.length > 0 && (
+          <div className={styles.amenities}>
+            <strong>Amenities</strong>
+            <ul>
+              {amenities.map((a, i) => (
+                <li key={i} className={styles.amenityItem}>
+                  {a.name} (${a.charge})
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div className={styles.actions}>
+          {onReview && (
+            <button className={styles.reviewBtn} onClick={onReview}>
+              Reviews
+            </button>
+          )}
+          {isAccommodation && (
+            <button className={styles.bookNow} onClick={onBook}>
+              Book Now
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

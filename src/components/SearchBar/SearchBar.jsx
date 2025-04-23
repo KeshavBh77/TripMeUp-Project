@@ -1,20 +1,42 @@
+// src/components/SearchBar/SearchBar.jsx
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import useUnsplash from '../../hooks/useUnsplash';
 import styles from './SearchBar.module.css';
 
-const SearchBar = ({ onSearch, suggestions = [], onSelect }) => {
-  const [query, setQuery]       = useState('');
+// individual suggestion with dynamic Unsplash image
+function Suggestion({ item, highlighted, onSelect }) {
+  // fetch image for suggestion label or provided imageDescription
+  const src = useUnsplash(item.imageDescription || item.label);
+
+  return (
+    <li
+      className={`${styles.suggestion} ${highlighted ? styles.highlighted : ''}`}
+      onClick={() => onSelect(item)}
+      role="option"
+      aria-selected={highlighted}
+    >
+      <img
+        src={src || item.image || 'https://via.placeholder.com/40'}
+        alt={item.label}
+        className={styles.suggestionAvatar}
+      />
+      <span className={styles.suggestionText}>{item.label}</span>
+    </li>
+  );
+}
+
+export default function SearchBar({ onSearch, suggestions = [], onSelect }) {
+  const [query, setQuery] = useState('');
   const [showDropdown, setShow] = useState(false);
   const [selectedIndex, setSel] = useState(-1);
   const ref = useRef();
 
-  // filter by label, two‑phase (prefix then contains)
   const filtered = useMemo(() => {
     if (!query) return [];
     const q = query.toLowerCase();
-    const starts   = suggestions.filter(s => s.label.toLowerCase().startsWith(q));
-    const contains = suggestions.filter(s =>
-      !s.label.toLowerCase().startsWith(q) &&
-      s.label.toLowerCase().includes(q)
+    const starts = suggestions.filter(s => s.label.toLowerCase().startsWith(q));
+    const contains = suggestions.filter(
+      s => !s.label.toLowerCase().startsWith(q) && s.label.toLowerCase().includes(q)
     );
     return [...starts, ...contains].slice(0, 10);
   }, [query, suggestions]);
@@ -31,7 +53,7 @@ const SearchBar = ({ onSearch, suggestions = [], onSelect }) => {
     return () => document.removeEventListener('mousedown', onOutside);
   }, []);
 
-  // keyboard navigation
+  // keyboard nav
   useEffect(() => {
     const onKey = e => {
       if (!showDropdown) return;
@@ -62,13 +84,14 @@ const SearchBar = ({ onSearch, suggestions = [], onSelect }) => {
     setSel(-1);
     onSearch?.(e.target.value);
   };
-// src/components/SearchBar/SearchBar.jsx
-const handleSelect = item => {
-  setQuery(item.label);
-  setShow(false);
-  setSel(-1);
-  onSelect?.(item); // Pass the full item object instead of just the label
-};
+
+  const handleSelect = item => {
+    setQuery(item.label);
+    setShow(false);
+    setSel(-1);
+    onSelect?.(item);
+  };
+
   const handleSubmit = e => {
     e.preventDefault();
     onSearch?.(query);
@@ -95,38 +118,26 @@ const handleSelect = item => {
       </form>
 
       {showDropdown && (
-        <div className={styles.dropdownModal}>
-        {query.trim() === '' ? (
-  <div className={styles.noResults}>Start typing to search for a city...</div>
-) : filtered.length > 0 ? (
-  <ul className={styles.suggestions} role="listbox">
-    {filtered.map((item, i) => (
-      <li
-        key={item.label}
-        className={`${styles.suggestion} ${
-          i === selectedIndex ? styles.highlighted : ''
-        }`}
-        onClick={() => handleSelect(item)}
-        role="option"
-        aria-selected={i === selectedIndex}
-      >
-        <img
-          src={item.image}
-          alt={item.label}
-          className={styles.suggestionAvatar}
-        />
-        <span className={styles.suggestionText}>{item.label}</span>
-      </li>
-    ))}
-  </ul>
-) : (
-  <div className={styles.noResults}>No matches found</div>
-)}
-
+        <div className={styles.dropdownModal} role="listbox">
+          {query.trim() === '' ? (
+            <div className={styles.noResults}>Start typing to search...</div>
+          ) : filtered.length > 0 ? (
+            <ul className={styles.suggestions}>
+              {filtered.map((item, i) => (
+                <Suggestion
+                  key={item.label}
+                  item={item}
+                  highlighted={i === selectedIndex}
+                  onSelect={handleSelect}
+                />
+              ))}
+            </ul>
+          ) : (
+            <div className={styles.noResults}>No matches found</div>
+          )}
         </div>
       )}
     </div>
   );
-};
+}
 
-export default SearchBar;

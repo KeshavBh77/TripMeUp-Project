@@ -1,80 +1,75 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useState, useEffect } from 'react';
 
-// Key under which we’ll keep our “database” of users
-const USERS_KEY = 'app_users';
-// Key for the currently logged‑in user
-const CURRENT_KEY = 'app_currentUser';
-
 export const AuthContext = createContext();
+const API_BASE = 'http://localhost:8000/TripMeUpApp/users/';
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+    const [user, setUser] = useState(null);
 
-  // On mount, rehydrate from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem(CURRENT_KEY);
-    if (stored) setUser(JSON.parse(stored));
-  }, []);
-
-  // Helper to read/write our local “DB”
-  const getUsers = () => {
-    try {
-      return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
-    } catch {
-      return [];
-    }
-  };
-  const saveUsers = (users) =>
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-
-  // REGISTER: simulate async, then add to localStorage
-  const register = (userData) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const users = getUsers();
-        if (users.find((u) => u.email === userData.email)) {
-          return reject(new Error('Email already in use'));
+    useEffect(() => {
+        const stored = localStorage.getItem('app_currentUser');
+        if (stored) {
+            setUser(JSON.parse(stored));
         }
-        // you might hash passwords here in prod
-        users.push(userData);
-        saveUsers(users);
+    }, []);
 
-        // auto‑login after register
-        localStorage.setItem(CURRENT_KEY, JSON.stringify(userData));
-        setUser(userData);
+    const register = async (userData) => {
+        try {
+            const res = await fetch(API_BASE, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: "include",
+                body: JSON.stringify(userData),
+            });
 
-        resolve(userData);
-      }, 300);
-    });
-  };
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.detail || 'Registration failed');
+            }
 
-  // LOGIN: simulate async, check against localStorage users
-  const login = (email, password) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const users = getUsers();
-        const found = users.find(
-          (u) => u.email === email && u.password === password
-        );
-        if (!found) {
-          return reject(new Error('Invalid email or password'));
+            const newUser = await res.json();
+            localStorage.setItem('app_currentUser', JSON.stringify(newUser));
+            setUser(newUser);
+            return newUser;
+        } catch (error) {
+            throw error;
         }
-        localStorage.setItem(CURRENT_KEY, JSON.stringify(found));
-        setUser(found);
-        resolve(found);
-      }, 300);
-    });
-  };
+    };
 
-  const logout = () => {
-    localStorage.removeItem(CURRENT_KEY);
-    setUser(null);
-  };
+    const login = async (username, password) => {
+        try {
+            const res = await fetch(API_BASE, {
+                credentials: "include",
+            });
 
-  return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+            const users = await res.json();
+
+            const found = users.find(
+                (u) => u.username === username && u.password === password
+            );
+
+            if (!found) {
+                throw new Error('Invalid email or password');
+            }
+
+            localStorage.setItem('app_currentUser', JSON.stringify(found));
+            setUser(found);
+            return found;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    const logout = () => {
+        localStorage.removeItem('app_currentUser');
+        setUser(null);
+    };
+
+    return (
+        <AuthContext.Provider value={{ user, register, login, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
 }
+
+export default AuthProvider;

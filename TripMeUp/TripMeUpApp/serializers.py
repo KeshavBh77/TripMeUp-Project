@@ -8,14 +8,11 @@ from .models import (
     User,
     Admin,
     Client,
-    Cuisine,
     Booking,
     Review,
-    ClientCuisine,
     Browses,
     Curates,
     Writes,
-    Serves,
 )
 
 
@@ -61,11 +58,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class AdminSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = UserSerializer()
 
     class Meta:
         model = Admin
-        fields = "__all__"
+        fields = ["user"]
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -76,27 +73,33 @@ class ClientSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class CuisineSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Cuisine
-        fields = "__all__"
-
 
 class BookingSerializer(serializers.ModelSerializer):
+    place = PlaceSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
+    client = ClientSerializer(read_only=True)
     class Meta:
         model = Booking
         fields = "__all__"
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    place = PlaceSerializer(read_only=True)
+    client = ClientSerializer(read_only=True)
+
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), source="user", write_only=True
+    )
+    place_id = serializers.PrimaryKeyRelatedField(
+        queryset=Place.objects.all(), source="place", write_only=True
+    )
+    client_id = serializers.PrimaryKeyRelatedField(
+        queryset=Client.objects.all(), source="client", write_only=True, required=False
+    )
+
     class Meta:
         model = Review
-        fields = "__all__"
-
-
-class ClientCuisineSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ClientCuisine
         fields = "__all__"
 
 
@@ -118,7 +121,7 @@ class WritesSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ServesSerializer(serializers.ModelSerializer):
+class LoginSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Serves
-        fields = "__all__"
+        model = User
+        fields = ['username', 'password']  # only username and password

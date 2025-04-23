@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Hero from "../../components/Hero/Hero";
@@ -5,194 +6,187 @@ import SectionTitle from "../../components/SectionTitle/SectionTitle";
 import CityCard from "../../components/CityCard/CityCard";
 import Tabs from "../../components/Tabs/Tabs";
 import PlaceCard from "../../components/PlaceCard/PlaceCard";
-import ReviewCard from "../../components/ReviewCard/ReviewCard";
 import Skeleton from "../../components/Skeleton/Skeleton";
 import BookingModal from "../../components/BookingModal/BookingModal";
 import styles from "./Home.module.css";
 import { AuthContext } from "../../context/AuthContext";
-
-import restaurant from "../../assets/images/restaurant.png";
-import hotel1 from "../../assets/images/hotel1.png";
+import { FaUser, FaStar } from "react-icons/fa";
+import { HiLocationMarker } from "react-icons/hi";
 
 export default function Home() {
-    const [activeTab, setActiveTab] = useState("restaurants");
-    const [favorites, setFavorites] = useState({});
-    const [cities, setCities] = useState([]);
-    const [restaurants, setRestaurants] = useState([]);
-    const [accommodations, setAccommodations] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [showLoginModal, setShowLoginModal] = useState(false);
-    const [bookingOpen, setBookingOpen] = useState(false);
-    const [selectedPlace, setSelectedPlace] = useState(null);
-    const [bookingDetails, setBookingDetails] = useState({ guests: 1, from: '', to: '', guestNames: [''] });
+  const [activeTab, setActiveTab] = useState("restaurants");
+  const [cities, setCities] = useState([]);
+  const [restaurants, setRestaurants] = useState([]);
+  const [accommodations, setAccommodations] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [selectedPlace, setSelectedPlace] = useState(null);
+  const [bookingDetails, setBookingDetails] = useState({
+    guests: 1,
+    from: "",
+    to: "",
+  });
 
-    const navigate = useNavigate();
-    const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
 
-    // Fetch cities, restaurants, and accommodations data
-    useEffect(() => {
-        const loadData = async () => {
+  // simple helper to preload an array of image URLs
+  const preloadImages = (urls = []) =>
+    Promise.all(
+      urls.map(
+        (src) =>
+          new Promise((res) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = img.onerror = res;
+          })
+      )
+    );
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // artificial delay
+        await new Promise((r) => setTimeout(r, 1500));
+
+        // 1) Fetch cities
+        const cityData = await fetch(
+          "http://localhost:8000/TripMeUpApp/city/"
+        ).then((r) => r.json());
+
+        // 2) PRELOAD all city images before rendering
+        const cityImageUrls = cityData.map((c) => c.image_url).filter(Boolean);
+        await preloadImages(cityImageUrls);
+
+        setCities(cityData);
+
+        // 3) Restaurants
+        const resData = await fetch(
+          "http://localhost:8000/TripMeUpApp/restaurants/"
+        ).then((r) => r.json());
+        const topR = Array.isArray(resData)
+          ? resData
+              .sort((a, b) => b.place.rating - a.place.rating)
+              .slice(0, 5)
+              .map((r) => ({
+                ...r.place,
+                imageDescription: r.place.imageDescription || r.place.name,
+              }))
+          : [];
+        setRestaurants(topR);
+
+        // 4) Accommodations
+        const accData = await fetch(
+          "http://localhost:8000/TripMeUpApp/accommodation/"
+        ).then((r) => r.json());
+        const topA = Array.isArray(accData)
+          ? accData
+              .sort((a, b) => b.place.rating - a.place.rating)
+              .slice(0, 5)
+              .map((a) => ({
+                ...a.place,
+                imageDescription: a.place.imageDescription || a.place.name,
+              }))
+          : [];
+        setAccommodations(topA);
+
+        // 5) Reviews
+        const revData = await fetch(
+          "http://localhost:8000/TripMeUpApp/reviews/"
+        ).then((r) => r.json());
+        const topRaw = revData.sort((a, b) => b.rating - a.rating).slice(0, 5);
+        const topWithUser = await Promise.all(
+          topRaw.map(async (rev) => {
             try {
-                // Simulate loading delay
-                await new Promise(resolve => setTimeout(resolve, 1500));
-
-                // Fetch cities
-                const cityRes = await fetch("http://localhost:8000/TripMeUpApp/");
-                const cityData = await cityRes.json();
-                setCities(cityData);
-
-                // Fetch restaurants
-                const restaurantRes = await fetch("http://localhost:8000/TripMeUpApp/restaurants/");
-                const restaurantData = await restaurantRes.json();
-                const topRestaurants = restaurantData
-                    .sort((a, b) => b.place.rating - a.place.rating)
-                    .slice(0, 5);
-                setRestaurants(topRestaurants);
-
-                // Fetch accommodations
-                const accommodationRes = await fetch("http://localhost:8000/TripMeUpApp/accommodation/");
-                const accommodationData = await accommodationRes.json();
-                const topAccommodations = accommodationData
-                    .sort((a, b) => b.place.rating - a.place.rating)
-                    .slice(0, 5);
-                setAccommodations(topAccommodations);
-
-            } catch (err) {
-                console.error("Fetch error:", err);
-                setError("Failed to fetch data.");
-            } finally {
-                setLoading(false);
+              const u = await fetch(
+                `http://localhost:8000/TripMeUpApp/users/${rev.user}/`
+              ).then((r) => r.json());
+              return { ...rev, username: u.username };
+            } catch {
+              return { ...rev, username: "Anonymous" };
             }
-        };
-
-        loadData();
-    }, []);
-
-    const toggleFavorite = (id) => {
-        setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
+          })
+        );
+        setReviews(topWithUser);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
+    loadData();
+  }, []);
 
-    const handleBook = (place) => {
-        setSelectedPlace(place);
-        setBookingDetails({ guests: 1, from: '', to: '', guestNames: [''] });
-        setBookingOpen(true);
-    };
+  const handleBook = (place) => {
+    setSelectedPlace(place);
+    setBookingDetails({ guests: 1, from: "", to: "" });
+    setBookingOpen(true);
+  };
+  const handleBookingSubmit = ({ place, dates, guests }) => {
 
-  const handleBookingSubmit = ({ place, dates, guests, guestNames }) => {
-    console.log("Booking confirmed:", {
-      place,
-      dates,
-      guests,
-      guestNames
-    });
 
   };
 
-  const featuredPlaces = {
-    restaurants: [
-      {
-        image: restaurant,
-        title: "La Belle Cuisine",
-        rating: 4.8,
-        location: "Paris, France • French, Italian",
-        description: "An exquisite dining experience...",
-        features: [
-          { icon: "fas fa-clock", text: "Open: 11 AM - 11 PM" },
-          { icon: "fas fa-utensils", text: "Fine Dining" },
-        ],
-        price: 50,
-        unit: "person",
-      },
-    ],
-    accommodations: [
-      {
-        image: hotel1,
-        title: "Grand Plaza Hotel",
-        rating: 4.7,
-        location: "New York, USA • 5-star Hotel",
-        description: "Luxury accommodations...",
-        features: [
-          { icon: "fas fa-wifi", text: "Free WiFi" },
-          { icon: "fas fa-swimming-pool", text: "Pool" },
-        ],
-        price: 250,
-        unit: "night",
-      },
-    ],
-  };
+  return (
+    <div className={styles.home}>
+      <Hero
+        cities={cities}
+        loading={loading}
+      />
 
-    const reviews = [
-        {
-            author: "Sarah Johnson",
-            rating: 5,
-            date: "May 15, 2023",
-            content: "Absolutely fantastic experience...",
-        },
-        {
-            author: "Michael Chen",
-            rating: 4,
-            date: "April 28, 2023",
-            content: "Authentic Japanese sushi experience...",
-        },
-    ];
+      <div className={styles.container}>
+        <SectionTitle
+          title="Popular Destinations"
+          subtitle="Explore our most popular cities"
+        />
 
-    return (
-        <div className={styles.home}>
-            <Hero cities={cities} />
+        {showLoginModal && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.loginModal}>
+              <p>Please log in to view city details.</p>
+            </div>
+          </div>
+        )}
 
-            <div className={styles.container}>
-                <SectionTitle
-                    title="Popular Destinations"
-                    subtitle="Explore our most popular cities"
-                />
-
-                {showLoginModal && (
-                    <div className={styles.modalOverlay}>
-                        <div className={styles.loginModal}>
-                            <p>Please login to view city details.</p>
-                        </div>
-                    </div>
-                )}
-
-                <div className={styles.list}>
-                    {loading
-                        ? Array.from({ length: 4 }).map((_, i) => (
-                            <div key={i} className={styles.cardWrapper}>
-                                <Skeleton height="260px" radius="16px" />
-                            </div>
-                        ))
-                        : cities.map((city, i) => (
-                            <div key={i} className={styles.cardWrapper}>
-                                <CityCard
-                                    image={"https://via.placeholder.com/300"}
-                                    title={city.name}
-                                    description={city.location}
-                                    types={["Restaurants", "Hotels", "Landmarks"]}
-                                    onExplore={() => {
-                                        if (!user) {
-                                            setShowLoginModal(true);
-                                            setTimeout(() => {
-                                                setShowLoginModal(false);
-                                                navigate("/login");
-                                            }, 1500);
-                                        } else {
-                                            navigate(`/cities/${city.name}`);
-                                        }
-                                    }}
-                                />
-                            </div>
-                        ))}
+        <div className={styles.list}>
+          {loading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className={styles.cardWrapper}>
+                  <Skeleton height="260px" radius="16px" />
                 </div>
+              ))
+            : cities.map((city) => (
+                <div
+                  key={city.city_id}
+                  className={styles.cardWrapper}
+                  onClick={() => {
+                    if (!user) {
+                      setShowLoginModal(true);
+                      setTimeout(() => {
+                        setShowLoginModal(false);
+                        navigate("/login");
+                      }, 1500);
+                    } else navigate(`/cities/${city.name}`);
+                  }}
+                >
+                  <CityCard
+                    image={city.image_url}
+                    title={city.name}
+                    description={city.location}
+                    types={["Restaurants", "Hotels", "Landmarks"]}
+                    onExplore={() => navigate(`/cities/${city.name}`)}
+                  />
+                </div>
+              ))}
+        </div>
 
-                <SectionTitle
-                    title="Featured Places"
-                    subtitle="Discover top-rated options"
-                />
+                <SectionTitle title="Featured Places" subtitle="Discover top-rated options" />
                 <Tabs
                     tabs={[
                         { id: "restaurants", label: "Restaurants" },
-                        { id: "accommodations", label: "Accommodations" },
+                        { id: "accommodations", label: "Accommodations" }
                     ]}
                     activeTab={activeTab}
                     onTabChange={setActiveTab}
@@ -208,29 +202,60 @@ export default function Home() {
                         : (activeTab === "restaurants" ? restaurants : accommodations).map((place, i) => (
                             <div key={i} className={styles.cardWrapper}>
                                 <PlaceCard
-                                    {...place.place}
+                                    {...place}
                                     isAccommodation={activeTab === "accommodations"}
-                                    isFavorite={favorites[i]}
-                                    onToggleFavorite={() => toggleFavorite(i)}
                                     onBook={() => handleBook(place)}
+                                    onReview={() => navigate(`/places/${place.place_id}/reviews`)}
                                 />
                             </div>
                         ))}
                 </div>
 
-                <SectionTitle title="Recent Reviews" subtitle="" />
+                <SectionTitle title="Top Rated Reviews" />
                 <div className={styles.list}>
-                    {loading
-                        ? Array.from({ length: 2 }).map((_, i) => (
+                    {loading ? (
+                        Array.from({ length: 2 }).map((_, i) => (
                             <div key={i} className={styles.cardWrapper}>
                                 <Skeleton height="180px" radius="16px" />
                             </div>
                         ))
-                        : reviews.map((rev, i) => (
+                    ) : reviews.length ? (
+                        reviews.map((rev, i) => (
                             <div key={i} className={styles.cardWrapper}>
-                                <ReviewCard {...rev} />
+                                <div className={`${styles.reviewCard} neo-embed`}>
+                                    <div className={styles.header}>
+                                        <div className={styles.left}>
+                                            <FaUser className={styles.icon} />
+                                            <span className={styles.author}>{rev.user?.username || "Anonymous"}</span>
+                                        </div>
+                                        <div className={styles.right}>
+                                            <HiLocationMarker className={styles.icon} />
+                                            <span className={styles.placeName}>{rev.place?.name}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.contentWrapper}>
+                                        <p className={styles.content}>"{rev.comment}"</p>
+                                        <div className={styles.footer}>
+                                            <div className={styles.rating}>
+                                                {Array.from({ length: 5 }).map((_, i) => (
+                                                    <FaStar
+                                                        key={i}
+                                                        className={`${styles.star} ${i < rev.rating ? '' : styles.empty}`}
+                                                    />
+                                                ))}
+                                            </div>
+                                            <span className={styles.date}>
+                                                {new Date(rev.created_at || rev.date).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        ))}
+                        ))
+                    ) : (
+                        <p className={styles.noReviews}>No reviews available.</p>
+                    )}
                 </div>
             </div>
 
@@ -241,10 +266,11 @@ export default function Home() {
         guests={bookingDetails.guests}
         from={bookingDetails.from}
         to={bookingDetails.to}
-        guestNames={bookingDetails.guestNames}
         onClose={() => setBookingOpen(false)}
         onSubmit={handleBookingSubmit}
-        onChange={(key, value) => setBookingDetails(prev => ({ ...prev, [key]: value }))}
+        onChange={(k, v) =>
+          setBookingDetails((b) => ({ ...b, [k]: v }))
+        }
       />
     </div>
   );
