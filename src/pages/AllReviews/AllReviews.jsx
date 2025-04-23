@@ -67,6 +67,17 @@ export default function AllReviews() {
         setModalOpen(true);
     };
 
+    const fetchReviews = async () => {
+        try {
+            const res = await fetch(`${API_BASE}/reviews/`);
+            if (!res.ok) throw new Error('Failed to fetch reviews');
+            const data = await res.json();
+            setReviews(data);
+        } catch (err) {
+            console.error('Error fetching reviews:', err);
+        }
+    };
+
     const onChange = (field, val) =>
         setForm(f => ({ ...f, [field]: val }));
 
@@ -97,15 +108,10 @@ export default function AllReviews() {
                 const err = await res.json();
                 throw new Error(err.detail || 'Failed');
             }
-            const updated = await res.json();
-            setReviews(rs => {
-                if (isEditing) {
-                    return rs.map(r => r.review_id === updated.review_id ? updated : r);
-                } else {
-                    const placeObj = places.find(p => p.place_id === updated.place) || {};
-                    return [{ ...updated, place: placeObj }, ...rs];
-                }
-            });
+            await res.json(); 
+
+            await fetchReviews();
+
             setModalOpen(false);
             setError('');
         } catch (err) {
@@ -115,6 +121,7 @@ export default function AllReviews() {
             setSubmitting(false);
         }
     };
+
 
     return (
         <div className={styles.page}>
