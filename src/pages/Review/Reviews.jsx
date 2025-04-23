@@ -5,43 +5,31 @@ import { AuthContext } from '../../context/AuthContext';
 import styles from './Reviews.module.css';
 
 const API_BASE = 'http://localhost:8000/TripMeUpApp/reviews/';
-const USER_API_BASE = 'http://localhost:8000/TripMeUpApp/users/'; // Assuming this is your user API
 
 export default function Reviews() {
     const { user } = useContext(AuthContext);
-    const { placeId } = useParams(); // grab placeId from URL
+    const { placeId } = useParams();
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    // Fetching reviews and usernames
     useEffect(() => {
-        if (!placeId) return; // nothing to load if we don't have a place
+        if (!placeId) return;
         setLoading(true);
         setError('');
-        fetch(`${API_BASE}?place=${placeId}`) // Fetch reviews for this specific place
+
+        fetch(`${API_BASE}?place=${placeId}`)
             .then((res) => {
                 if (!res.ok) throw new Error(`Server returned ${res.status}`);
                 return res.json();
             })
             .then((data) => {
-                // For each review, fetch the username
-                const fetchReviewsWithUsernames = data.map((review) => {
-                    return fetch(`${USER_API_BASE}${review.user}/`) // Fetch user data using user_id
-                        .then((res) => res.json())
-                        .then((userData) => ({
-                            ...review, // Spread the original review data
-                            username: userData.username, // Add the username to the review data
-                        }))
-                        .catch(() => ({
-                            ...review,
-                            username: 'Anonymous', // Default to 'Anonymous' if the user API fails
-                        }));
-                });
-
-                // Wait for all user data to be fetched
-                Promise.all(fetchReviewsWithUsernames)
-                    .then((reviewsWithUsernames) => setReviews(reviewsWithUsernames));
+                const reviewsWithUsernames = data.map((review) => ({
+                    ...review,
+                    username: review.user?.username || 'Anonymous',
+                    placeId: review.place?.place_id || review.place,
+                }));
+                setReviews(reviewsWithUsernames);
             })
             .catch((err) => {
                 console.error(err);
@@ -66,14 +54,16 @@ export default function Reviews() {
             {!loading && !error && reviews.length > 0 && (
                 <ul className={styles.list}>
                     {reviews
-                        .filter((review) => review.place === parseInt(placeId)) // Filter reviews by placeId
+                        .filter((review) => review.placeId === parseInt(placeId))
                         .map((r) => (
                             <li key={r.review_id} className={styles.reviewCard}>
                                 <div className={styles.header}>
                                     <strong className={styles.author}>
-                                        {r.username || 'Anonymous'} {/* Display the username */}
+                                        {r.username || 'Anonymous'}
                                     </strong>
-                                    <span className={styles.rating}>★ {r.rating.toFixed(1)}</span>
+                                    <span className={styles.rating}>
+                                        ★ {r.rating ? r.rating.toFixed(1) : 'N/A'}
+                                    </span>
                                 </div>
                                 <p className={styles.comment}>{r.comment}</p>
                                 <div className={styles.date}>
@@ -87,7 +77,16 @@ export default function Reviews() {
             {user ? (
                 <AddReviewForm
                     placeId={placeId}
-                    onNewReview={(rev) => setReviews([rev, ...reviews])}
+                    onNewReview={(rev) =>
+                        setReviews([
+                            {
+                                ...rev,
+                                username: user.username,
+                                placeId: parseInt(placeId, 10),
+                            },
+                            ...reviews,
+                        ])
+                    }
                 />
             ) : (
                 <p className={styles.loginPrompt}>
@@ -118,7 +117,7 @@ function AddReviewForm({ placeId, onNewReview }) {
                     rating,
                     comment,
                     user: user.user_id,
-                    place: parseInt(placeId, 10), // Ensure place is correctly sent
+                    place: parseInt(placeId, 10),
                 }),
             });
             if (!res.ok) {
