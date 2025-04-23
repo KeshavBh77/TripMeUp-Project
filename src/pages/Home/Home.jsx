@@ -1,4 +1,3 @@
-// src/pages/Home/Home.jsx
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Hero from "../../components/Hero/Hero";
@@ -42,25 +41,29 @@ export default function Home() {
 
         // Restaurants
         const resData = await fetch("http://localhost:8000/TripMeUpApp/restaurants/").then(r => r.json());
-        setRestaurants(
-          Array.isArray(resData)
-            ? resData
-                .sort((a, b) => b.place.rating - a.place.rating)
-                .slice(0, 5)
-                .map(r => ({ ...r.place || r.place.name }))
-            : []
-        );
+        const topR = Array.isArray(resData)
+          ? resData
+              .sort((a, b) => b.place.rating - a.place.rating)
+              .slice(0, 5)
+              .map((r) => ({
+                ...r.place,
+                imageDescription: r.place.imageDescription || r.place.name
+              }))
+          : [];
+        setRestaurants(topR);
 
         // Accommodations
         const accData = await fetch("http://localhost:8000/TripMeUpApp/accommodation/").then(r => r.json());
-        setAccommodations(
-          Array.isArray(accData)
-            ? accData
-                .sort((a, b) => b.place.rating - a.place.rating)
-                .slice(0, 5)
-                .map(a => ({ ...a.place, imageDescription: a.place.imageDescription || a.place.name }))
-            : []
-        );
+        const topA = Array.isArray(accData)
+          ? accData
+              .sort((a, b) => b.place.rating - a.place.rating)
+              .slice(0, 5)
+              .map((a) => ({
+                ...a.place,
+                imageDescription: a.place.imageDescription || a.place.name
+              }))
+          : [];
+        setAccommodations(topA);
 
         // Reviews
         const revData = await fetch("http://localhost:8000/TripMeUpApp/reviews/").then(r => r.json());
@@ -90,26 +93,33 @@ export default function Home() {
     setBookingDetails({ guests: 1, from: "", to: "" });
     setBookingOpen(true);
   };
+  const handleBookingSubmit = ({ place, dates, guests }) => {
 
-  const handleBookingSubmit = async ({ place, dates, guests }) => {
-    try {
-      const res = await fetch("http://localhost:8000/TripMeUpApp/booking/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          client: user.user_id,
-          place: place.place_id,
-          starting_date: dates.from,
-          ending_date: dates.to,
-          no_of_guests: guests
-        })
-      });
-      if (!res.ok) throw new Error((await res.json()).detail || "Booking failed");
-      setBookingOpen(false);
-    } catch (err) {
-      alert(err.message);
-    }
+
   };
+
+
+  // const handleBookingSubmit = async ({ place, dates, guests }) => {
+  //   try {
+  //     const res = await fetch("http://localhost:8000/TripMeUpApp/booking/", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         client: user.user_id,
+  //         place: place.place_id,
+  //         starting_date: dates.from,
+  //         ending_date: dates.to,
+  //         no_of_guests: guests
+  //       })
+  //     });
+  //     if (!res.ok) throw new Error((await res.json()).detail || "Booking failed");
+  //     setBookingOpen(false);
+  //   } catch (err) {
+  //     alert(err.message);
+  //   }
+  // };
+
+  
 
   return (
     <div className={styles.home}>
@@ -167,6 +177,7 @@ export default function Home() {
           activeTab={activeTab}
           onTabChange={setActiveTab}
         />
+
         <div className={styles.list}>
           {loading
             ? Array.from({ length: 2 }).map((_, i) => (
@@ -186,7 +197,7 @@ export default function Home() {
               ))}
         </div>
 
-        <SectionTitle title="Top Rated Reviews" subtitle="" />
+        <SectionTitle title="Top Rated Reviews" />
         <div className={styles.list}>
           {loading ? (
             Array.from({ length: 2 }).map((_, i) => (
