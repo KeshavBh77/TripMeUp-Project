@@ -41,7 +41,7 @@ export default function Reviews() {
     return (
         <div className={styles.page}>
             <SectionTitle
-                title={`Reviews for Place #${placeId}`}
+                title={`Reviews`}
                 subtitle="What people are saying"
             />
 
